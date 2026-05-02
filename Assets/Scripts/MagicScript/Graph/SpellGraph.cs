@@ -4,14 +4,17 @@ public class SpellGraph
 {
     public GraphNode StartNode;
     public List<GraphNode> Nodes = new();
-    public List<GraphEdge> Edges = new();
 
-    public GraphEdge Connect(GraphNode a, GraphNode b)
+    public void Connect(GraphNode a, GraphNode b)
     {
-        var edge = new GraphEdge { From = a, To = b };
-        a.Edges.Add(edge);
-        b.Edges.Add(edge);
-        Edges.Add(edge);
-        return edge;
+        a.AddNeighbour(b);
+        b.AddNeighbour(a);
+    }
+
+    public GraphNode CreateNode(NodeBase data)
+    {
+        var node = new GraphNode { Data = data };
+        Nodes.Add(node);
+        return node;
     }
 }

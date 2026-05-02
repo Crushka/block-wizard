@@ -1,7 +1,8 @@
 ﻿
 
+//оставили на случай если понадобится 
+
 public class GraphEdge
 {
-    public GraphNode From;
-    public GraphNode To;
+   
 }

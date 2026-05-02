@@ -1,7 +1,7 @@
-﻿
+﻿using System.Collections.Generic;
 internal class MixAlgorithms
 {
-    static private void IncreaseValue(NodeBase node1, NodeBase node2, float k)
+    static public void IncreaseValue(NodeBase node1, NodeBase node2, float k)
     {
         if (node1 != null)
         {
@@ -67,6 +67,26 @@ internal class MixAlgorithms
         }
     }
 
+    static private bool ChekSig(GraphNode node1, GraphNode node2)
+    {
+        return node1.Data.SynergyWith.Contains(node2.Data.NodeType) ||
+               node2.Data.SynergyWith.Contains(node1.Data.NodeType) ;
+    }
+
+    static public float CountBuff(List<GraphNode> nodes)
+    {
+        float buff = 1f;
+        for (int i = 0; i < nodes.Count - 1; i++)
+        {
+            for (int j = i + 1; j < nodes.Count; j++)
+            {
+                buff += ChekSig(nodes[i], nodes[j]) == true ? 0.25f : -0.4f ;
+            }
+        }
+
+        return buff;
+    }
+
     static public NodeBase MixNodes(NodeBase node1, NodeBase node2)
     {
         NodeBase workpiece = CheckWorkpiece(node1, node2);
@@ -82,4 +102,6 @@ internal class MixAlgorithms
 
         return new CompositeNode(comp, node1, node2);
     }
+
+
 }
