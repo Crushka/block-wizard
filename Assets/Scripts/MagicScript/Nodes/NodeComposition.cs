@@ -24,6 +24,14 @@ public class NodeComposition
         NormalizeDict(Effects);
     }
 
+    public void Threshold()
+    {
+        float minValue = 0.35f;
+        ThresholdDict(Elements, minValue);
+        ThresholdDict(AttackTypes, minValue);
+        ThresholdDict(Effects, minValue);
+    }
+
     private void NormalizeDict<T>(Dictionary<T, float> dict)
     {
         float total = 0;
@@ -31,6 +39,14 @@ public class NodeComposition
         if (total <= 0) return;
         var keys = new List<T>(dict.Keys);
         foreach (var k in keys) dict[k] /= total;
+    }
+
+    private void ThresholdDict<T>(Dictionary<T, float> dict, float minValue)
+    {
+        var keys = new List<T>(dict.Keys);
+        foreach (var k in keys)
+            if (dict[k] < minValue)
+                dict.Remove(k);
     }
 
     public ElementType GetDominantElement() => GetDominant(Elements, ElementType.None);

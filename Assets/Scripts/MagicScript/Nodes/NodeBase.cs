@@ -8,7 +8,6 @@ public abstract class NodeBase
     public virtual float Range { get; set; } 
     public virtual float Speed { get; set; } 
     public virtual float Weight { get; set; }
-    public virtual float TreeWeight { get; set; }
 
     public abstract List<ElementType> SynergyWith { get; }
     public abstract List<ElementType> IncompatibleWith { get; }

@@ -9,7 +9,6 @@ internal class MixAlgorithms
             node1.Range *= k;
             node1.Speed *= k;
             node1.Weight *= k;
-            node1.TreeWeight *= k;
         }
 
         if (node2 != null)
@@ -18,7 +17,6 @@ internal class MixAlgorithms
             node2.Range *= k;
             node2.Speed *= k;
             node2.Weight *= k;
-            node2.TreeWeight *= k;
         }
     }
 
@@ -80,7 +78,7 @@ internal class MixAlgorithms
         {
             for (int j = i + 1; j < nodes.Count; j++)
             {
-                buff += ChekSig(nodes[i], nodes[j]) == true ? 0.25f : -0.4f ;
+                buff += ChekSig(nodes[i], nodes[j]) ? 0.25f : -0.4f ;
             }
         }
 
@@ -89,6 +87,9 @@ internal class MixAlgorithms
 
     static public NodeBase MixNodes(NodeBase node1, NodeBase node2)
     {
+        IncreaseValue(node1, null, node1.Weight);
+        IncreaseValue(node2, null, node2.Weight);
+
         NodeBase workpiece = CheckWorkpiece(node1, node2);
         if (workpiece != null)
             return workpiece;

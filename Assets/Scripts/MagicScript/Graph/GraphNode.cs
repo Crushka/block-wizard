@@ -4,6 +4,8 @@ public class GraphNode
 {
     public NodeBase Data;
     private List<GraphNode> _neighbours = new();
+    public virtual float Weight { get; set; }
+    public int num;
 
     public IReadOnlyList<GraphNode> GetNeighbours() => _neighbours;
 

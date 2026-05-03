@@ -2,6 +2,8 @@
 
 public abstract class ElementNode : NodeBase { }
 
+
+//элементы 1 уровня (для игрока)
 public class FireNode : ElementNode
 {
     public override ElementType NodeType => ElementType.Fire;
@@ -125,3 +127,9 @@ public class PlasmaNode : ElementNode
         return comp;
     }
 }
+
+
+// элемента 2 уровня (только свмещением первых)
+
+
+//элемнты 3 уровня 
