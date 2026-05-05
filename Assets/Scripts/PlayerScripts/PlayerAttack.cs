@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -8,10 +9,13 @@ public class PlayerAttack : MonoBehaviour
     public CameraController cameraController;
     public PlayerController playerController;
     public BookInteraction bookInteraction;
-    public Animator playerAnimator; [Header("Настройки прицеливания (Атаки)")]
-    public float aimDistance = 2.0f; // Насколько близко подъедет камера
-    public Vector3 aimCameraOffset = new Vector3(0.5f, 1.5f, 0f); // Смещение к руке/плечу (X - вправо, Y - вверх)
-    public float transitionSpeed = 8.0f; // Скорость приближения/отдаления
+    public Animator playerAnimator;
+    public RawImage aimMarker;
+
+    [Header("Настройки прицеливания (Атаки)")]
+    public float aimDistance = 1.5f;
+    public Vector3 aimCameraOffset = new Vector3(0.5f, 0.5f, 0f);
+    public float transitionSpeed = 9.5f;
 
     private InputAction aimAction;
     private bool isAiming = false;
@@ -19,9 +23,9 @@ public class PlayerAttack : MonoBehaviour
 
     void Awake()
     {
+        aimMarker.enabled = false;
         aimAction = new InputAction("Aim", InputActionType.Button);
         aimAction.AddBinding("<Mouse>/rightButton");
-        // При желании можно добавить триггер геймпада:
         aimAction.AddBinding("<Gamepad>/leftTrigger");
     }
 
@@ -49,25 +53,20 @@ public class PlayerAttack : MonoBehaviour
 
     private void OnAimStart(InputAction.CallbackContext ctx)
     {
-        // Не даем прицелиться, если игрок сейчас читает книгу
         if (bookInteraction != null && bookInteraction.IsReading) return;
 
         isAiming = true;
+        aimMarker.enabled = true;
 
-        // Блокируем возможность открыть книгу
         if (bookInteraction != null) bookInteraction.canRead = false;
-
-        // Передаем состояние в контроллер игрока (чтобы он крутился за мышью)
         if (playerController != null) playerController.isAiming = true;
 
-        // Передаем состояние в камеру (блокируем зум колесиком)
         if (cameraController != null)
         {
             cameraController.isAiming = true;
-            originalDistance = cameraController.distance; // Запоминаем текущий зум перед прицеливанием
+            originalDistance = cameraController.distance;
         }
 
-        // Запускаем анимацию поднятия руки
         if (playerAnimator != null)
         {
             playerAnimator.SetBool("IsAiming", true);
@@ -78,15 +77,13 @@ public class PlayerAttack : MonoBehaviour
     {
         if (!isAiming) return;
         isAiming = false;
+        aimMarker.enabled = false;
 
-        // Возвращаем возможность читать
         if (bookInteraction != null) bookInteraction.canRead = true;
 
-        // Возвращаем обычное поведение движения и камеры
         if (playerController != null) playerController.isAiming = false;
         if (cameraController != null) cameraController.isAiming = false;
 
-        // Запускаем анимацию опускания руки (переход в Idle настраивается в Animator)
         if (playerAnimator != null)
         {
             playerAnimator.SetBool("IsAiming", false);
@@ -97,7 +94,6 @@ public class PlayerAttack : MonoBehaviour
     {
         if (cameraController == null) return;
 
-        // Плавное изменение дистанции и смещения камеры (эффект приближения к руке)
         float targetDistance = isAiming ? aimDistance : originalDistance;
         Vector3 targetOffset = isAiming ? aimCameraOffset : Vector3.zero;
 
