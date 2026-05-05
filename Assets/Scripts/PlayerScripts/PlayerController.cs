@@ -13,9 +13,9 @@ public class PlayerController : MonoBehaviour
     public float rotationSpeed = 10.0f;
 
     [Header("Настройки рывка (Dash)")]
-    public float dashSpeed = 15.0f; [Tooltip("Длительность рывка в секундах (60 тиков при 60 fps = 1 сек)")]
+    public float dashSpeed = 10.0f;
     public float dashDuration = 1.0f;
-    public float dashCooldown = 1.5f;
+    public float dashCooldown = 1.0f;
     public bool allowAirDash = false; [Header("Компоненты")]
     public Camera playerCamera;
     public Animator playerAnimator; [Header("Состояние")]
@@ -83,7 +83,6 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // Таймеры рывка и кулдауна
         if (dashCooldownTimer > 0) dashCooldownTimer -= Time.deltaTime;
 
         if (isDashing)
@@ -107,14 +106,12 @@ public class PlayerController : MonoBehaviour
 
             bool canDash = allowAirDash || controller.isGrounded;
 
-            // Инициализация рывка
             if (dashAction.WasPressedThisFrame() && !isAiming && !isDashing && dashCooldownTimer <= 0 && canDash)
             {
                 isDashing = true;
                 dashTimer = dashDuration;
                 dashCooldownTimer = dashCooldown;
 
-                // Определяем направление рывка
                 if (playerCamera != null)
                 {
                     Vector3 camForward = playerCamera.transform.forward;
@@ -135,14 +132,11 @@ public class PlayerController : MonoBehaviour
                         dashDirection = transform.forward;
                 }
 
-                // Моментально поворачиваем персонажа лицом в сторону рывка
-                // Это нужно, чтобы одна анимация рывка "вперед" смотрелась корректно при движении в любую сторону
                 if (dashDirection.sqrMagnitude > 0.001f)
                 {
                     transform.rotation = Quaternion.LookRotation(dashDirection);
                 }
 
-                // Запускаем единственную анимацию рывка
                 if (playerAnimator != null)
                 {
                     playerAnimator.SetTrigger("Dash");
@@ -154,8 +148,6 @@ public class PlayerController : MonoBehaviour
             if (isDashing)
             {
                 horizontalMove = dashDirection * dashSpeed;
-                // ВАЖНО: Принудительно отключаем флаг обычного движения во время рывка, 
-                // чтобы аниматор не пытался запустить анимацию бега из состояния Idle
                 isMoving = false;
             }
             else
@@ -182,7 +174,6 @@ public class PlayerController : MonoBehaviour
             moveDirection.x = horizontalMove.x;
             moveDirection.z = horizontalMove.z;
 
-            // Плавный поворот персонажа работает ТОЛЬКО если мы не в рывке
             if (!isDashing)
             {
                 if (isAiming)
@@ -211,7 +202,6 @@ public class PlayerController : MonoBehaviour
             isDashing = false;
         }
 
-        // Логика прыжка
         if (controller.isGrounded)
         {
             if (moveDirection.y < 0.0f)
@@ -234,13 +224,11 @@ public class PlayerController : MonoBehaviour
 
         controller.Move(moveDirection * Time.deltaTime);
 
-        // Обновление анимаций
         if (playerAnimator != null)
         {
             playerAnimator.SetBool("IsMoving", isMoving);
             playerAnimator.SetBool("IsGrounded", controller.isGrounded);
 
-            // Добавлен новый Bool-параметр, на случай если вы захотите использовать его в аниматоре вместо Trigger
             playerAnimator.SetBool("IsDashing", isDashing);
 
             animInputX = Mathf.Lerp(animInputX, h, Time.deltaTime * 10f);
