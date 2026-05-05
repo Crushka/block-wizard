@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+
 internal class MixAlgorithms
 {
     static public void IncreaseValue(NodeBase node1, NodeBase node2, float k)
@@ -8,7 +10,6 @@ internal class MixAlgorithms
             node1.Damage *= k;
             node1.Range *= k;
             node1.Speed *= k;
-            node1.Weight *= k;
         }
 
         if (node2 != null)
@@ -16,28 +17,52 @@ internal class MixAlgorithms
             node2.Damage *= k;
             node2.Range *= k;
             node2.Speed *= k;
-            node2.Weight *= k;
         }
     }
 
     static private NodeBase CheckWorkpiece(NodeBase node1, NodeBase node2)
     {
+        
+
         var a = node1.NodeType;
         var b = node2.NodeType;
 
-        if ((a == ElementType.Fire && b == ElementType.Water) ||
+        if (a == ElementType.None) return node2;
+        if (b == ElementType.None) return node1;
+        
+
+        UnityEngine.Debug.Log($"{a} {b}");
+
+        NodeBase result = null;
+
+        if (a == ElementType.Unknown || b == ElementType.Unknown)
+            return null;
+   
+        else if (a == b)
+        {
+            result = node1;
+            IncreaseValue(result, null, 0);
+        }
+        else if ((a == ElementType.Fire && b == ElementType.Water) ||
             (a == ElementType.Water && b == ElementType.Fire))
-            return new SteamNode();
+            result = new SteamNode();
+        else if ((a == ElementType.Water && b == ElementType.Earth) ||
+                 (a == ElementType.Earth && b == ElementType.Water))
+            result = new MudNode();
+        else if ((a == ElementType.Fire && b == ElementType.Air) ||
+                 (a == ElementType.Air && b == ElementType.Fire))
+            result = new PlasmaNode();
 
-        if ((a == ElementType.Water && b == ElementType.Earth) ||
-            (a == ElementType.Earth && b == ElementType.Water))
-            return new MudNode();
+        if (result != null)
+        {
+            // Переносим накопленные статы вместо дефолтных
+            result.Damage = node1.Damage + node2.Damage;
+            result.Range = node1.Range + node2.Range;
+            result.Speed = (node1.Speed + node2.Speed) * 0.5f;
+            result.Weight = node1.Weight + node2.Weight;
+        }
 
-        if ((a == ElementType.Fire && b == ElementType.Air) ||
-            (a == ElementType.Air && b == ElementType.Fire))
-            return new PlasmaNode();
-
-        return null;
+        return result;
     }
 
     static private void CheckSynergyAndIncrease(NodeBase node1, NodeBase node2)
@@ -61,7 +86,7 @@ internal class MixAlgorithms
         }
         else
         {
-            IncreaseValue(node1, node2, 0.5f);
+            IncreaseValue(node1, node2, 3f);
         }
     }
 
@@ -82,13 +107,11 @@ internal class MixAlgorithms
             }
         }
 
-        return buff;
+        return buff ;
     }
 
     static public NodeBase MixNodes(NodeBase node1, NodeBase node2)
     {
-        IncreaseValue(node1, null, node1.Weight);
-        IncreaseValue(node2, null, node2.Weight);
 
         NodeBase workpiece = CheckWorkpiece(node1, node2);
         if (workpiece != null)

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using UnityEngine;
 
 //ничего не проверял, но выглядит правлиьно 
 //  1. разделить граф на подграфы, относительно root - готово
@@ -117,6 +119,8 @@ internal class SpellGraphSolver
         List<GraphNode> cycle)
     {
         var cycleSet = new HashSet<GraphNode>(cycle);
+        GraphNode newNode = ProcessCycle(cycle);
+        if (newNode == null) return;
 
         var externalNeighbors = new HashSet<GraphNode>();
         foreach (GraphNode node in cycle)
@@ -124,15 +128,20 @@ internal class SpellGraphSolver
                 if (!cycleSet.Contains(neighbor))
                     externalNeighbors.Add(neighbor);
 
-        GraphNode newNode = ProcessCycle(cycle);
-        if (newNode == null) return;
+        foreach (GraphNode cycleNode in cycle)
+            if (cycleNode != newNode)
+                newNode.RemoveNeighbour(cycleNode);
 
         foreach (GraphNode external in externalNeighbors)
         {
             foreach (GraphNode cycleNode in cycle)
                 external.RemoveNeighbour(cycleNode);
-            external.AddNeighbour(newNode);
-            newNode.AddNeighbour(external);
+
+            // Добавляем симметрично только если ещё нет
+            if (!newNode.GetNeighbours().Contains(external))
+                newNode.AddNeighbour(external);
+            if (!external.GetNeighbours().Contains(newNode))  // <-- это и было пропущено
+                external.AddNeighbour(newNode);
         }
 
         var node_ = graph.First;
@@ -175,7 +184,14 @@ internal class SpellGraphSolver
         while (iterations++ < MaxCollapseIterations)
         {
             List<GraphNode> cycle = FindFirstCycle(graph, nodeSet, nodeIndex, sortedNodes);
+
+            
+
             if (cycle == null) break;
+            for (int i = 0; i< cycle.Count; i++)
+            {
+                UnityEngine.Debug.Log($"cycle dmg:   {cycle[i].Data.Damage}");
+            }
             CollapseSingleCycle(graph, nodeSet, nodeIndex, sortedNodes, cycle);
         }
 
@@ -212,8 +228,16 @@ internal class SpellGraphSolver
         return result;
     }
 
-    public static GraphNode SlowGraph(SpellGraph graph)
+    private static void NormalizeFinalNode(GraphNode node, float graphWeight)
     {
+        MixAlgorithms.IncreaseValue(node.Data, null, graphWeight);
+
+        // дописать всякую хуйню
+    }
+
+    public static NodeBase SlowGraph(SpellGraph graph)
+    {
+        graph.PrepareGraph();
         GraphNode finalSpell;
         List<List<GraphNode>> separateGraphs = SeparateGraph(graph);
         var collapsedNodes = new List<GraphNode>(separateGraphs.Count);
@@ -222,6 +246,7 @@ internal class SpellGraphSolver
         {
             CollapseCycles(subgraph);
             GraphNode collapsed = CollapseTree(subgraph);
+            UnityEngine.Debug.Log($"dmg: {collapsed.Data.Damage}");
             if (collapsed != null)
                 collapsedNodes.Add(collapsed);
         }
@@ -231,7 +256,9 @@ internal class SpellGraphSolver
         {
             finalSpell.Data = MixAlgorithms.MixNodes(finalSpell.Data, collapsedNodes[i].Data);
         }
+
+        NormalizeFinalNode(finalSpell, graph.Weight);
         
-        return finalSpell;
+        return finalSpell.Data;
     }
 }

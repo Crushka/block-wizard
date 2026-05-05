@@ -4,8 +4,9 @@ public class GraphNode
 {
     public NodeBase Data;
     private List<GraphNode> _neighbours = new();
+
     public virtual float Weight { get; set; }
-    public int num;
+    public int num = 1;
 
     public IReadOnlyList<GraphNode> GetNeighbours() => _neighbours;
 
@@ -17,6 +18,6 @@ public class GraphNode
 
     public void RemoveNeighbour(GraphNode node)
     {
-        _neighbours.Remove(node); // List<T>.Remove сам находит и удаляет первый
+        _neighbours.Remove(node);
     }
 }

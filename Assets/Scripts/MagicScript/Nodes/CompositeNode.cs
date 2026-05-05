@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using UnityEngine;
 
 public class CompositeNode : NodeBase
 {
@@ -12,10 +14,11 @@ public class CompositeNode : NodeBase
     {
         _composition = composition;
 
-        Damage = (node1.Damage + node2.Damage) / 2f;
-        Range = (node1.Range + node2.Range) / 2f;
-        Speed = (node1.Speed + node2.Speed) / 2f;
-        Weight = (node1.Weight + node2.Weight) / 2f;
+        Damage = (node1.Damage + node2.Damage) ;
+        Range = (node1.Range + node2.Range);
+        Speed = (node1.Speed + node2.Speed) ;
+        // UnityEngine.Debug.Log($"dma1: {node1.Damage} dmg2: {node2.Damage}");
+        Weight = (node1.Weight + node2.Weight) / 2;
     }
 
     public override NodeComposition GetBaseComposition() => _composition;
