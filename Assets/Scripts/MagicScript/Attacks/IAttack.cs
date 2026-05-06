@@ -1,7 +1,8 @@
 using UnityEngine;
 
-internal interface IAttack
+public interface IAttack
 {
-    void init();
-    void applyVisual();
+    void Init(NodeBase node, GameObject prefab);
+    void Cast(Transform spawnPoint);
+    void Stop();
 }

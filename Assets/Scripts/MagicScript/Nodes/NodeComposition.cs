@@ -53,7 +53,7 @@ public class NodeComposition
     public AttackType GetDominantAttack() => GetDominant(AttackTypes, AttackType.Ball);
     public EffectType GetDominantEffect() => GetDominant(Effects, EffectType.Burn);
 
-    private T GetDominant<T>(Dictionary<T, float> dict, T fallback) where T : struct
+    public static T GetDominant<T>(Dictionary<T, float> dict, T fallback) where T : struct
     {
         T best = fallback;
         float max = -1;

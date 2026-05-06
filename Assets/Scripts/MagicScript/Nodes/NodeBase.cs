@@ -9,6 +9,8 @@ public abstract class NodeBase
     public virtual float Speed { get; set; } 
     public virtual float Weight { get; set; }
 
+    public abstract AttackType GetDominantAttack();
+
     public abstract List<ElementType> SynergyWith { get; }
     public abstract List<ElementType> IncompatibleWith { get; }
 

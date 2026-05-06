@@ -3,14 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
-//ничего не проверял, но выглядит правлиьно 
-//  1. разделить граф на подграфы, относительно root - готово
-//  2. найти циклы подграфа через алгоритм Хортона - готово
-//  3. цикл обработать и вернуть 1 нод - готово
-//  4. заменить все циклы на полученые ноды - готово
-//  5. обрабаотать полученные деревья
-//  6. обрбабоать полученые ноды все вместе
-
 internal class SpellGraphSolver
 {
     private static readonly System.Random Rng = new System.Random();
@@ -44,31 +36,33 @@ internal class SpellGraphSolver
         return result;
     }
 
-    private static List<GraphNode> FindFirstCycle(
-    LinkedList<GraphNode> graph,
+    private static List<List<GraphNode>> FindAllCycles(
     HashSet<GraphNode> nodeSet,
     Dictionary<GraphNode, int> nodeIndex,
     List<GraphNode> sortedNodes)
     {
+        var allCycles = new List<List<GraphNode>>();
+        var seen = new HashSet<string>();
         var onPath = new HashSet<GraphNode>();
 
         foreach (GraphNode root in sortedNodes)
         {
             if (!nodeSet.Contains(root)) continue;
             onPath.Clear();
-            var result = DfsFind(root, null, root, nodeSet, nodeIndex, onPath);
-            if (result != null) return result;
+            DfsCollectAll(root, null, root, nodeSet, nodeIndex, onPath, allCycles, seen);
         }
-        return null;
-    }
 
-    private static List<GraphNode> DfsFind(
-        GraphNode current,
-        GraphNode parent,
-        GraphNode root,
-        HashSet<GraphNode> nodeSet,
-        Dictionary<GraphNode, int> nodeIndex,
-        HashSet<GraphNode> onPath)
+        return allCycles;
+    }
+    private static void DfsCollectAll(
+    GraphNode current,
+    GraphNode parent,
+    GraphNode root,
+    HashSet<GraphNode> nodeSet,
+    Dictionary<GraphNode, int> nodeIndex,
+    HashSet<GraphNode> onPath,
+    List<List<GraphNode>> result,
+    HashSet<string> seen)
     {
         onPath.Add(current);
 
@@ -78,8 +72,15 @@ internal class SpellGraphSolver
 
             if (neighbor == root && onPath.Count >= 3)
             {
-                var cycle = new List<GraphNode>(onPath);
-                return cycle;
+                var ids = onPath
+                    .Select(n => nodeIndex[n].ToString())
+                    .OrderBy(s => s);
+                string sig = string.Join(",", ids);
+
+                if (seen.Add(sig))
+                    result.Add(new List<GraphNode>(onPath));
+
+                continue;
             }
 
             if (neighbor != parent
@@ -87,13 +88,12 @@ internal class SpellGraphSolver
                 && nodeIndex.TryGetValue(neighbor, out int nIdx)
                 && nIdx >= nodeIndex[root])
             {
-                var result = DfsFind(neighbor, current, root, nodeSet, nodeIndex, onPath);
-                if (result != null) return result;
+                DfsCollectAll(neighbor, current, root, nodeSet, nodeIndex, onPath, result, seen);
             }
         }
 
         onPath.Remove(current);
-        return null;
+
     }
 
     private static GraphNode ProcessCycle(List<GraphNode> cycle)
@@ -104,9 +104,32 @@ internal class SpellGraphSolver
         foreach (GraphNode node in cycle)
             MixAlgorithms.IncreaseValue(node.Data, null, buff);
 
+        bool foundReaction = true;
+        while (foundReaction)
+        {
+            foundReaction = false;
+            for (int i = 0; i < cycle.Count - 1; i++)
+            {
+                for (int j = i + 1; j < cycle.Count; j++)
+                {
+                    NodeBase new_data = MixAlgorithms.CheckWorkpiece(cycle[i].Data, cycle[j].Data);
+                    if (new_data != null)
+                    {
+                        cycle[i].Data = new_data;
+                        cycle.RemoveAt(j);
+                        foundReaction = true;
+                        break;
+                    }
+                }
+                if (foundReaction) break;
+            }
+        }
+
         GraphNode mixed = cycle[0];
         for (int i = 1; i < cycle.Count; i++)
+        {
             mixed.Data = MixAlgorithms.MixNodes(mixed.Data, cycle[i].Data);
+        }
 
         return mixed;
     }
@@ -137,10 +160,9 @@ internal class SpellGraphSolver
             foreach (GraphNode cycleNode in cycle)
                 external.RemoveNeighbour(cycleNode);
 
-            // Добавляем симметрично только если ещё нет
             if (!newNode.GetNeighbours().Contains(external))
                 newNode.AddNeighbour(external);
-            if (!external.GetNeighbours().Contains(newNode))  // <-- это и было пропущено
+            if (!external.GetNeighbours().Contains(newNode))
                 external.AddNeighbour(newNode);
         }
 
@@ -183,15 +205,18 @@ internal class SpellGraphSolver
         int iterations = 0;
         while (iterations++ < MaxCollapseIterations)
         {
-            List<GraphNode> cycle = FindFirstCycle(graph, nodeSet, nodeIndex, sortedNodes);
+            List<List<GraphNode>> allCycles = FindAllCycles(nodeSet, nodeIndex, sortedNodes);
+            //UnityEngine.Debug.Log($" {allCycles.Count}");
 
-            
+            if (allCycles.Count == 0) break;
 
-            if (cycle == null) break;
-            for (int i = 0; i< cycle.Count; i++)
-            {
-                UnityEngine.Debug.Log($"cycle dmg:   {cycle[i].Data.Damage}");
-            }
+            int minSize = allCycles.Min(c => c.Count);
+            List<List<GraphNode>> smallest = allCycles.Where(c => c.Count == minSize).ToList();
+            List<GraphNode> cycle = smallest[Rng.Next(smallest.Count)];
+
+            //for (int i = 0; i < cycle.Count; i++)
+            //    UnityEngine.Debug.Log($"cycle dmg: {cycle[i].Data.Damage}");
+
             CollapseSingleCycle(graph, nodeSet, nodeIndex, sortedNodes, cycle);
         }
 
@@ -230,9 +255,12 @@ internal class SpellGraphSolver
 
     private static void NormalizeFinalNode(GraphNode node, float graphWeight)
     {
+        
         MixAlgorithms.IncreaseValue(node.Data, null, graphWeight);
+        MixAlgorithms.IncreaseValue(node.Data, null, node.Data.Weight);
+        //UnityEngine.Debug.Log(node.Data.Weight);
+        //UnityEngine.Debug.Log(node.Data.Damage);
 
-        // дописать всякую хуйню
     }
 
     public static NodeBase SlowGraph(SpellGraph graph)
@@ -253,12 +281,10 @@ internal class SpellGraphSolver
 
         finalSpell = collapsedNodes[0];
         for (int i = 1; i < collapsedNodes.Count; i++)
-        {
             finalSpell.Data = MixAlgorithms.MixNodes(finalSpell.Data, collapsedNodes[i].Data);
-        }
 
         NormalizeFinalNode(finalSpell, graph.Weight);
-        
+
         return finalSpell.Data;
     }
 }

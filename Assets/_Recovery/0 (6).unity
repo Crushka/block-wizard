@@ -124,11 +124,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8759745951148566060, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
   m_PrefabInstance: {fileID: 851502127}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &311167096 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6309623068751934174, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-  m_PrefabInstance: {fileID: 851502127}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,10 +485,6 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2538559597644866719, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-      propertyPath: spellCaster
-      value: 
-      objectReference: {fileID: 1871435536}
-    - target: {fileID: 2538559597644866719, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
       propertyPath: playerAnimator
       value: 
       objectReference: {fileID: 851502131}
@@ -576,20 +567,14 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 16662757466534581, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1871435537}
-    - targetCorrespondingSourceObject: {fileID: 16662757466534581, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1871435536}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
 --- !u!114 &851502128 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8365344179072560971, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
   m_PrefabInstance: {fileID: 851502127}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1871435535}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed1e78fab25f7a34bab78b2a259264a2, type: 3}
@@ -806,40 +791,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1871435535 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 16662757466534581, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-  m_PrefabInstance: {fileID: 851502127}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1871435536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1871435535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7199b3443694eea4897ce2650a98c885, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpellCaster
-  attackFactory: {fileID: 1871435537}
-  spawnPoint: {fileID: 311167096}
---- !u!114 &1871435537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1871435535}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f38c796bff92524792f8837d1f86f26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AttackFactory
-  sprayPrefab: {fileID: 8488124839849164149, guid: 518f152e79d627b448b654a166a1d225, type: 3}
-  ballPrefab: {fileID: 5521224882582312425, guid: 7910c8ea9d623f3489141d213fa23e47, type: 3}
-  thunderPrefab: {fileID: 2277203461014763456, guid: 7a1099df61a05c54c9be2d7e3db06eff, type: 3}
 --- !u!1 &2060388847
 GameObject:
   m_ObjectHideFlags: 0

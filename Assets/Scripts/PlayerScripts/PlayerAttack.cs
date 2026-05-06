@@ -8,12 +8,15 @@ public class PlayerAttack : MonoBehaviour
     public CameraController cameraController;
     public PlayerController playerController;
     public BookInteraction bookInteraction;
-    public Animator playerAnimator; [Header("Настройки прицеливания (Атаки)")]
-    public float aimDistance = 2.0f; // Насколько близко подъедет камера
-    public Vector3 aimCameraOffset = new Vector3(0.5f, 1.5f, 0f); // Смещение к руке/плечу (X - вправо, Y - вверх)
-    public float transitionSpeed = 8.0f; // Скорость приближения/отдаления
+    public Animator playerAnimator;
+    public SpellCaster spellCaster;
+    [Header("Настройки прицеливания (Атаки)")]
+    public float aimDistance = 2.0f; 
+    public Vector3 aimCameraOffset = new Vector3(0.5f, 1.5f, 0f);
+    public float transitionSpeed = 8.0f;
 
     private InputAction aimAction;
+    private InputAction fireAction;
     private bool isAiming = false;
     private float originalDistance;
 
@@ -21,8 +24,11 @@ public class PlayerAttack : MonoBehaviour
     {
         aimAction = new InputAction("Aim", InputActionType.Button);
         aimAction.AddBinding("<Mouse>/rightButton");
-        // При желании можно добавить триггер геймпада:
         aimAction.AddBinding("<Gamepad>/leftTrigger");
+
+        fireAction = new InputAction("Fire", InputActionType.Button);
+        fireAction.AddBinding("<Mouse>/leftButton");
+        fireAction.AddBinding("<Gamepad>/rightTrigger");
     }
 
     void OnEnable()
@@ -30,6 +36,10 @@ public class PlayerAttack : MonoBehaviour
         aimAction.Enable();
         aimAction.started += OnAimStart;
         aimAction.canceled += OnAimCancel;
+
+        fireAction.Enable();
+        fireAction.started += OnFire;
+        fireAction.canceled += OnFireCancel;
     }
 
     void OnDisable()
@@ -37,6 +47,18 @@ public class PlayerAttack : MonoBehaviour
         aimAction.started -= OnAimStart;
         aimAction.canceled -= OnAimCancel;
         aimAction.Disable();
+
+        fireAction.started -= OnFire;
+        fireAction.Disable();
+    }
+    private void OnFire(InputAction.CallbackContext ctx)
+    {
+        if (!isAiming) return;
+        spellCaster?.Cast();
+    }
+    private void OnFireCancel(InputAction.CallbackContext ctx)
+    {
+        spellCaster?.StopCast();
     }
 
     void Start()
@@ -49,25 +71,20 @@ public class PlayerAttack : MonoBehaviour
 
     private void OnAimStart(InputAction.CallbackContext ctx)
     {
-        // Не даем прицелиться, если игрок сейчас читает книгу
         if (bookInteraction != null && bookInteraction.IsReading) return;
 
         isAiming = true;
 
-        // Блокируем возможность открыть книгу
         if (bookInteraction != null) bookInteraction.canRead = false;
 
-        // Передаем состояние в контроллер игрока (чтобы он крутился за мышью)
         if (playerController != null) playerController.isAiming = true;
 
-        // Передаем состояние в камеру (блокируем зум колесиком)
         if (cameraController != null)
         {
             cameraController.isAiming = true;
-            originalDistance = cameraController.distance; // Запоминаем текущий зум перед прицеливанием
+            originalDistance = cameraController.distance;
         }
 
-        // Запускаем анимацию поднятия руки
         if (playerAnimator != null)
         {
             playerAnimator.SetBool("IsAiming", true);
@@ -79,14 +96,11 @@ public class PlayerAttack : MonoBehaviour
         if (!isAiming) return;
         isAiming = false;
 
-        // Возвращаем возможность читать
         if (bookInteraction != null) bookInteraction.canRead = true;
 
-        // Возвращаем обычное поведение движения и камеры
         if (playerController != null) playerController.isAiming = false;
         if (cameraController != null) cameraController.isAiming = false;
 
-        // Запускаем анимацию опускания руки (переход в Idle настраивается в Animator)
         if (playerAnimator != null)
         {
             playerAnimator.SetBool("IsAiming", false);
@@ -97,7 +111,6 @@ public class PlayerAttack : MonoBehaviour
     {
         if (cameraController == null) return;
 
-        // Плавное изменение дистанции и смещения камеры (эффект приближения к руке)
         float targetDistance = isAiming ? aimDistance : originalDistance;
         Vector3 targetOffset = isAiming ? aimCameraOffset : Vector3.zero;
 
