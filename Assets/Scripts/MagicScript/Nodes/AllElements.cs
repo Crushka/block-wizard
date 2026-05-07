@@ -19,7 +19,7 @@ public class NoneElement : ElementNode // 0
     public override List<ElementType> SynergyWith { get; } = new() { };
     public override List<ElementType> IncompatibleWith { get; } = new() {  };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
 
     public override NodeComposition GetBaseComposition()
     {
@@ -45,12 +45,12 @@ public class FireNode : ElementNode // 1
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Fire, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(AttackType.Thunder, 1.0f);
         comp.Add(EffectType.Burn, 0.8f);
         return comp;
     }
@@ -78,7 +78,7 @@ public class WaterNode : ElementNode // 2
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(AttackType.Spray, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
@@ -101,12 +101,12 @@ public class EartNode : ElementNode // 3
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Air, ElementType.Lightning };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(AttackType.Spray, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
@@ -129,12 +129,12 @@ public class AirNode : ElementNode // 4
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Earth, ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Air, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(AttackType.Spray, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
@@ -157,12 +157,12 @@ public class LightningNode : ElementNode // 5
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Earth, ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
-        comp.Add(ElementType.Water, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(ElementType.Lightning, 1.0f);
+        comp.Add(AttackType.Thunder, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }

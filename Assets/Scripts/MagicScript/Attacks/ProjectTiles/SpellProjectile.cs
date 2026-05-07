@@ -9,6 +9,7 @@ public class SpellProjectile : MonoBehaviour
 {
     private float _damage, _range, _speed;
     private Vector3 _startPos;
+    private bool _isDestroyed = false;
 
     public void Setup(float damage, float range, float speed)
     {
@@ -20,7 +21,7 @@ public class SpellProjectile : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector3.forward * _speed * Time.deltaTime);
+        transform.Translate(Vector3.forward * _speed * Time.deltaTime, Space.Self);
 
         if (Vector3.Distance(_startPos, transform.position) >= _range)
             Destroy(gameObject);
@@ -28,8 +29,14 @@ public class SpellProjectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        
 
+
+        DestroySelf();
+    }
+    private void DestroySelf()
+    {
+        if (_isDestroyed) return;
+        _isDestroyed = true;
         Destroy(gameObject);
     }
 }

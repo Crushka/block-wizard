@@ -15,6 +15,7 @@ public class SpellCaster : MonoBehaviour
     public void PrepareSpell(SpellGraph graph)
     {
         NodeBase result = SpellGraphSolver.SlowGraph(graph);
+        Debug.Log($"dmg : {result.Damage} | speed : {result.Speed} | range :  {result.Range}");
         _currentAttack = attackFactory.GetAttack(result);
     }
 
@@ -26,13 +27,13 @@ public class SpellCaster : MonoBehaviour
         var graph = new SpellGraph();
         graph.StartNode = graph.CreateNode(new NoneElement() { Weight = 1.0f }, 0, 1f);
 
-        var hub = graph.CreateNode(new WaterNode() { Weight = 2.3f }, 1, 2.3f);
+        var hub = graph.CreateNode(new LightningNode() { Weight = 2.3f }, 1, 2.3f);
 
-        var branchA = graph.CreateNode(new WaterNode() { Weight = 1.8f }, 2, 1.8f);
-        var branchB = graph.CreateNode(new WaterNode() { Weight = 1.8f }, 2, 1.8f);
-        var branchC = graph.CreateNode(new WaterNode() { Weight = 1.4f }, 3, 1.4f);
+        var branchA = graph.CreateNode(new LightningNode() { Weight = 1.8f }, 2, 1.8f);
+        var branchB = graph.CreateNode(new LightningNode() { Weight = 1.8f }, 2, 1.8f);
+        var branchC = graph.CreateNode(new LightningNode() { Weight = 1.4f }, 3, 1.4f);
 
-        var nodeD = graph.CreateNode(new WaterNode() { Weight = 2f }, 4, 2f);
+        var nodeD = graph.CreateNode(new LightningNode() { Weight = 2f }, 4, 2f);
 
         graph.Connect(graph.StartNode, hub);
 

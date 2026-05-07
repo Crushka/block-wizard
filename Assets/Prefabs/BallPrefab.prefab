@@ -4958,7 +4958,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5320612188505235526}
   - component: {fileID: 5618445607096011848}
-  - component: {fileID: 8430918363616712867}
+  - component: {fileID: 2754866667666140847}
   m_Layer: 0
   m_Name: BallPrefab
   m_TagString: Untagged
@@ -5004,7 +5004,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.15
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8430918363616712867
+--- !u!114 &2754866667666140847
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5013,7 +5013,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5521224882582312425}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb15e69f99555714280159eb1b97197b, type: 3}
+  m_Script: {fileID: 11500000, guid: ef7938d4e516dbd418231f54e7d496ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpellProjectile
 --- !u!1 &6503799790525927502

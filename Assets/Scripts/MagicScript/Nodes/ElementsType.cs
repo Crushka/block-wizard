@@ -1,1 +1,14 @@
-﻿public enum ElementType { None, Fire, Water, Earth, Air, Ice, Poison, Lightning, Mud, Steam, Plasma, Unknown }
+﻿public enum ElementType { 
+    None, 
+    Fire, 
+    Water, 
+    Earth, 
+    Air, 
+    Ice, 
+    Poison, 
+    Lightning, 
+    Mud, 
+    Steam, 
+    Plasma, 
+    Unknown
+}

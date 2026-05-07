@@ -1,11 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ThunderAttack : IAttack
 {
     private NodeBase _nodeData;
     private GameObject _prefab;
+
+    private const float CylinderRadius = 1.5f;
+    private const float DefaultRange = 15f;
+    private const float DamageInterval = 0.25f;
+
+    private static readonly LayerMask EnemyMask = LayerMask.GetMask("Enemy");
+
+    private GameObject _activeBolt;
+    private ThunderProjectile _boltScript;
+    private bool _isCasting;
+    private float _damageTimer;
 
     public void Init(NodeBase node, GameObject prefab)
     {
@@ -15,18 +24,55 @@ public class ThunderAttack : IAttack
 
     public void Cast(Transform spawnPoint)
     {
-        GameObject projectile = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
-        var spellScript = projectile.GetComponent<SpellProjectile>();
+        if (_activeBolt == null)
+            CreateBolt(spawnPoint);
 
-        spellScript.Setup(_nodeData.Damage, _nodeData.Range, _nodeData.Speed);
+        float range = _nodeData?.Range ?? DefaultRange;
+        Vector3 target = ThunderTargetFinder.Find(
+            spawnPoint.position,
+            spawnPoint.forward,
+            range,
+            CylinderRadius,
+            EnemyMask
+        );
 
-        ApplyVisual(projectile);
+        _boltScript?.UpdateBolt(spawnPoint.position, target);
+
+        _damageTimer -= Time.deltaTime;
+        if (_damageTimer <= 0f)
+        {
+            _damageTimer = DamageInterval;
+        }
     }
 
-    private void ApplyVisual(GameObject obj)
+    
+    public void Stop()
     {
-        var renderer = obj.GetComponent<Renderer>();
+        _isCasting = false;
+        _damageTimer = 0f;
+
+        if (_activeBolt != null)
+        {
+            Object.Destroy(_activeBolt);
+            _activeBolt = null;
+            _boltScript = null;
+        }
     }
 
-    public void Stop() { }
+    private void CreateBolt(Transform spawnPoint)
+    {
+        _activeBolt = Object.Instantiate(_prefab, spawnPoint.position, Quaternion.identity);
+        _boltScript = _activeBolt.GetComponent<ThunderProjectile>();
+
+        if (_boltScript == null)
+        {
+            Debug.LogError("[ThunderAttack] префаб не найден ThunderProjectile");
+            Object.Destroy(_activeBolt);
+            _activeBolt = null;
+            return;
+        }
+
+        _isCasting = true;
+        _damageTimer = 0f;
+    }
 }

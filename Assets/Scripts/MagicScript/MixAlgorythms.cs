@@ -60,10 +60,10 @@ internal class MixAlgorithms
 
     private static NodeBase MergeStats(NodeBase n1, NodeBase n2, NodeBase target)
     {
-        target.Weight = (n1.Weight + n2.Weight) * 0.3f;
+        target.Weight = (n1.Weight + n2.Weight) * 0.4f;
         target.Damage = (n1.Damage + n2.Damage) * target.Weight;
-        target.Range = n1.Range + n2.Range;
-        target.Speed = (n1.Speed + n2.Speed) * 0.5f;
+        target.Range = (n1.Range + n2.Range) * target.Weight;
+        target.Speed = (n1.Speed + n2.Speed) * target.Weight;
         return target;
     }
 

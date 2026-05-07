@@ -4,6 +4,7 @@ public class BallAttack : IAttack
 {
     private NodeBase _nodeData;
     private GameObject _prefab;
+    private bool _hasFired;
 
     public void Init(NodeBase node, GameObject prefab)
     {
@@ -13,18 +14,16 @@ public class BallAttack : IAttack
 
     public void Cast(Transform spawnPoint)
     {
+        if (_hasFired) return;
+        _hasFired = true;
+
         GameObject projectile = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
         var spellScript = projectile.GetComponent<SpellProjectile>();
-
         spellScript.Setup(_nodeData.Damage, _nodeData.Range, _nodeData.Speed);
-        
-        ApplyVisual(projectile);
     }
 
-    private void ApplyVisual(GameObject obj)
+    public void Stop()
     {
-        var renderer = obj.GetComponent<Renderer>();
+        _hasFired = false;
     }
-
-    public void Stop() { }
 }

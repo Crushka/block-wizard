@@ -4,7 +4,13 @@ public class SprayAttack : IAttack
 {
     private NodeBase _nodeData;
     private GameObject _prefab;
-    private GameObject _activeVFX;
+
+    private const float FireInterval = 0.01f;
+    private const float ProjectileSpeed = 12f;
+    private const float ProjectileLifetime = 1.8f;
+    private const float SpreadAngle = 12f;
+
+    private float _fireTimer;
 
     public void Init(NodeBase node, GameObject prefab)
     {
@@ -14,15 +20,35 @@ public class SprayAttack : IAttack
 
     public void Cast(Transform spawnPoint)
     {
-        if (_activeVFX != null) return;
-        _activeVFX = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
-        _activeVFX.transform.SetParent(spawnPoint);
+        _fireTimer -= Time.deltaTime;
+        if (_fireTimer > 0f) return;
+        _fireTimer = FireInterval;
+
+        SpawnParticle(spawnPoint);
     }
 
     public void Stop()
     {
-        if (_activeVFX == null) return;
-        Object.Destroy(_activeVFX);
-        _activeVFX = null;
+        _fireTimer = 0f;
+    }
+
+    private void SpawnParticle(Transform spawnPoint)
+    {
+        if (_prefab == null) return;
+
+        GameObject proj = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
+        proj.tag = "SprayProjectile";
+
+        var spray = proj.GetComponent<SprayProjectile>();
+        if (spray != null)
+        {
+            float dmg = _nodeData != null ? _nodeData.Damage : 10f;
+            spray.Setup(dmg, ProjectileSpeed, ProjectileLifetime, SpreadAngle);
+        }
+        else
+        {
+            var spell = proj.GetComponent<SpellProjectile>();
+            spell?.Setup(_nodeData?.Damage ?? 10f, _nodeData?.Range ?? 12f, _nodeData?.Speed ?? 10f);
+        }
     }
 }
