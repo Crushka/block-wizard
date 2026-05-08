@@ -20,10 +20,9 @@ public class BookInteraction : MonoBehaviour
     private bool isReading = false;
     private bool isTransitioning = false;
 
-    // Input Action
     private InputAction toggleReadAction;
     [HideInInspector] public bool canRead = true;
-    public bool IsReading => isReading; // Публичное свойство для чтения переменной
+    public bool IsReading => isReading;
 
     void Awake()
     {

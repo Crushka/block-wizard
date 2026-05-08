@@ -23,13 +23,11 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController controller;
 
-    // Input Actions
     private InputAction moveAction;
     private InputAction jumpAction;
 
     void Awake()
     {
-        // Создаём actions вручную (без asset'а)
         moveAction = new InputAction("Move", InputActionType.Value, binding: "<Gamepad>/leftStick");
         moveAction.AddCompositeBinding("2DVector")
             .With("Up", "<Keyboard>/w")
@@ -69,6 +67,7 @@ public class PlayerController : MonoBehaviour
     {
         bool isMoving = false;
 
+
         if (controller.isGrounded)
         {
             if (isMovementEnabled)
@@ -98,11 +97,10 @@ public class PlayerController : MonoBehaviour
 
                 if (isAiming)
                 {
-                    // Во время прицеливания игрок всегда жестко поворачивается в сторону камеры
                     if (playerCamera != null)
                     {
                         Vector3 camForward = playerCamera.transform.forward;
-                        camForward.y = 0; // Игнорируем наклон камеры вверх/вниз
+                        camForward.y = 0;
                         if (camForward.sqrMagnitude > 0.001f)
                         {
                             transform.rotation = Quaternion.LookRotation(camForward.normalized);
@@ -111,7 +109,6 @@ public class PlayerController : MonoBehaviour
                 }
                 else if (moveDirection.magnitude > 0.1f)
                 {
-                    // Обычное вращение по вектору движения
                     Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
                     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
                 }
@@ -129,7 +126,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // Если игрок в прыжке/падении, тоже проверяем двигается ли он по горизонтали
             Vector3 horizontalMove = new Vector3(moveDirection.x, 0, moveDirection.z);
             isMoving = horizontalMove.magnitude > 0.1f && isMovementEnabled;
         }
