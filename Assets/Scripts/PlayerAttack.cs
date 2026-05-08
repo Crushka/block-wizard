@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,7 +9,8 @@ public class PlayerAttack : MonoBehaviour
     public CameraController cameraController;
     public PlayerController playerController;
     public BookInteraction bookInteraction;
-    public Animator playerAnimator; [Header("Настройки прицеливания (Атаки)")]
+    public Animator playerAnimator;
+    [Header("Настройки прицеливания (Атаки)")]
     public float aimDistance = 2.0f; // Насколько близко подъедет камера
     public Vector3 aimCameraOffset = new Vector3(0.5f, 1.5f, 0f); // Смещение к руке/плечу (X - вправо, Y - вверх)
     public float transitionSpeed = 8.0f; // Скорость приближения/отдаления
@@ -16,12 +18,13 @@ public class PlayerAttack : MonoBehaviour
     private InputAction aimAction;
     private bool isAiming = false;
     private float originalDistance;
+    public float interactionDamage = 25f;
+    public float interactionRange = 5f;
 
     void Awake()
     {
         aimAction = new InputAction("Aim", InputActionType.Button);
         aimAction.AddBinding("<Mouse>/rightButton");
-        // При желании можно добавить триггер геймпада:
         aimAction.AddBinding("<Gamepad>/leftTrigger");
     }
 
@@ -103,5 +106,35 @@ public class PlayerAttack : MonoBehaviour
 
         cameraController.distance = Mathf.Lerp(cameraController.distance, targetDistance, Time.deltaTime * transitionSpeed);
         cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, targetOffset, Time.deltaTime * transitionSpeed);
+
+        if (Keyboard.current.eKey.wasPressedThisFrame)
+        {
+            PerformSimpleAttack();
+            Debug.Log("Попытка атаки");
+        }
+    }
+    private void PerformSimpleAttack()
+    {
+        GolemAI closest = null;
+        float minDist = interactionRange;
+
+        // Просто перебираем наш готовый статический список
+        foreach (GolemAI g in GolemAI.AllGolems)
+        {
+            if (g == null || g.isDead) continue;
+
+            float dist = Vector3.Distance(transform.position, g.transform.position);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closest = g;
+            }
+        }
+
+        if (closest != null)
+        {
+            Debug.Log("-25 Hp");
+            closest.TakeDamage(interactionDamage);
+        }
     }
 }

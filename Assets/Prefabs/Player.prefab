@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1366455102288685453}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -82,7 +82,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -125,6 +125,7 @@ MonoBehaviour:
   gravity: 20
   rotationSpeed: 10
   playerCamera: {fileID: 0}
+  playerAnimator: {fileID: 0}
   isMovementEnabled: 1
   isAiming: 0
 --- !u!114 &2538559597644866719
@@ -146,6 +147,8 @@ MonoBehaviour:
   aimDistance: 1.5
   aimCameraOffset: {x: 0.5, y: 0.5, z: 0}
   transitionSpeed: 9.5
+  interactionDamage: 25
+  interactionRange: 30
 --- !u!143 &1366455102288685453
 CharacterController:
   m_ObjectHideFlags: 0
