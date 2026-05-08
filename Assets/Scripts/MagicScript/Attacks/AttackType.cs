@@ -4,5 +4,6 @@ public enum AttackType
 {
     Spray,
     Ball,
-    Thunder
+    Thunder,
+    Stream
 }

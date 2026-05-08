@@ -3,14 +3,14 @@
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class SprayProjectile : MonoBehaviour
+public class StreamProjecttile : MonoBehaviour
 {
     private float _damage;
     private float _lifetime;
     private bool _isDead;
     private Rigidbody _rb;
 
-   
+
     public void Setup(float damage, float speed, float lifetime, float spread = 8f)
     {
         _damage = damage;
@@ -30,20 +30,20 @@ public class SprayProjectile : MonoBehaviour
 
         _rb.linearVelocity = dir * speed;
 
-        _rb.useGravity = true;
+        _rb.useGravity = false;
 
         Destroy(gameObject, lifetime);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("SprayProjectile") || other.CompareTag("Player") || other.CompareTag("Untagged")) return;
+        if (other.CompareTag("StreamProjectile") || other.CompareTag("Player") || other.CompareTag("Untagged")) return;
         Die();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("SprayProjectile")) return;
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("StreamProjectile")) return;
         Die();
     }
 

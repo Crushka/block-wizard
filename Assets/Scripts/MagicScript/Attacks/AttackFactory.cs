@@ -11,6 +11,7 @@ public class AttackFactory : MonoBehaviour
     [SerializeField] private GameObject sprayPrefab;
     [SerializeField] private GameObject ballPrefab;
     [SerializeField] private GameObject thunderPrefab;
+    [SerializeField] private GameObject streamPrefab;
 
     private readonly Dictionary<NodeBase, IAttack> _cache = new();
 
@@ -43,6 +44,11 @@ public class AttackFactory : MonoBehaviour
                 var thunder = new ThunderAttack();
                 thunder.Init(node, thunderPrefab);
                 return thunder;
+            
+            case AttackType.Stream:
+                var stream = new Stream();
+                stream.Init(node, streamPrefab);
+                return stream;
 
             default:
                 var def = new BallAttack();

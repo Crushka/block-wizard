@@ -1,7 +1,9 @@
+﻿
 using UnityEngine;
 
-public class SprayAttack : IAttack
+public class Stream : IAttack
 {
+
     private NodeBase _nodeData;
     private GameObject _prefab;
 
@@ -37,9 +39,9 @@ public class SprayAttack : IAttack
         if (_prefab == null) return;
 
         GameObject proj = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
-        proj.tag = "SprayProjectile";
+        proj.tag = "StreamProjectile";
 
-       
+
 
         var spray = proj.GetComponent<SprayProjectile>();
         if (spray != null)
