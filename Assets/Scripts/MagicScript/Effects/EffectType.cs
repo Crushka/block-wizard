@@ -1,0 +1,1 @@
+﻿public enum EffectType { Burn, Freeze, Slow, PoisonTick, Stun, Shield }

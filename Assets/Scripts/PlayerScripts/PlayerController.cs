@@ -19,6 +19,11 @@ public class PlayerController : MonoBehaviour
     public bool allowAirDash = false; [Header("Компоненты")]
     public Camera playerCamera;
     public Animator playerAnimator; [Header("Состояние")]
+    [Header("Компоненты")]
+    public Camera playerCamera;
+    public Animator playerAnimator;
+
+    [Header("Состояние")]
     public bool isMovementEnabled = true;
 
     [HideInInspector] public bool isAiming = false;
@@ -153,6 +158,16 @@ public class PlayerController : MonoBehaviour
             else
             {
                 float currentSpeed = isAiming ? aimSpeed : speed;
+        bool isMoving = false;
+
+
+        if (controller.isGrounded)
+        {
+            if (isMovementEnabled)
+            {
+                Vector2 input = moveAction.ReadValue<Vector2>();
+                float h = input.x;
+                float v = input.y;
 
                 if (playerCamera != null)
                 {
@@ -176,6 +191,21 @@ public class PlayerController : MonoBehaviour
 
             if (!isDashing)
             {
+                    camForward.y = 0;
+                    camRight.y = 0;
+                    camForward.Normalize();
+                    camRight.Normalize();
+
+                    moveDirection = (camForward * v + camRight * h).normalized;
+                    moveDirection *= speed;
+                }
+                else
+                {
+                    moveDirection = new Vector3(h, 0, v).normalized * speed;
+                }
+
+                isMoving = moveDirection.magnitude > 0.1f;
+
                 if (isAiming)
                 {
                     if (playerCamera != null)
@@ -223,6 +253,28 @@ public class PlayerController : MonoBehaviour
         moveDirection.y -= gravity * Time.deltaTime;
 
         controller.Move(moveDirection * Time.deltaTime);
+                else if (moveDirection.magnitude > 0.1f)
+                {
+                    Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                }
+            }
+            else
+            {
+                moveDirection.x = 0;
+                moveDirection.z = 0;
+            }
+
+            if (jumpAction.WasPressedThisFrame() && isMovementEnabled)
+            {
+                moveDirection.y = jumpForce;
+            }
+        }
+        else
+        {
+            Vector3 horizontalMove = new Vector3(moveDirection.x, 0, moveDirection.z);
+            isMoving = horizontalMove.magnitude > 0.1f && isMovementEnabled;
+        }
 
         if (playerAnimator != null)
         {
@@ -237,5 +289,9 @@ public class PlayerController : MonoBehaviour
             playerAnimator.SetFloat("InputX", animInputX);
             playerAnimator.SetFloat("InputY", animInputY);
         }
+        }
+
+        moveDirection.y -= gravity * Time.deltaTime;
+        controller.Move(moveDirection * Time.deltaTime);
     }
 }
