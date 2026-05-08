@@ -7,6 +7,8 @@ TagManager:
   - CinemachineTarget
   - Bat
   - Golem
+  - SprayProjectile
+  - StreamProjectile
   layers:
   - Default
   - TransparentFX

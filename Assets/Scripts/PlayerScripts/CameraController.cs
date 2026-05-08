@@ -26,7 +26,6 @@ public class CameraController : MonoBehaviour
     private float currentX = 0.0f;
     private float currentY = 0.0f;
 
-    // Input Actions
     private InputAction lookAction;
     private InputAction zoomAction;
 
@@ -71,7 +70,7 @@ public class CameraController : MonoBehaviour
         currentY -= lookDelta.y * sensitivity;
         currentY = Mathf.Clamp(currentY, yMinLimit, yMaxLimit);
 
-        if (!isAiming) // <--- Не даем менять зум во время атаки/прицеливания
+        if (!isAiming)
         {
             float scroll = zoomAction.ReadValue<float>();
             distance -= scroll * zoomSpeed;
@@ -89,7 +88,6 @@ public class CameraController : MonoBehaviour
 
     public Vector3 GetOrbitPosition()
     {
-        // Учитываем смещение в локальных координатах персонажа (чтобы оно поворачивалось вместе с ним)
         Vector3 worldOffset = target.TransformDirection(targetOffset);
         return target.position + worldOffset + GetOrbitRotation() * new Vector3(0.0f, 0.0f, -distance);
     }

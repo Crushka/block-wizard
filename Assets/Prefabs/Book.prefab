@@ -33,7 +33,6 @@ Transform:
   - {fileID: 4049680898465345020}
   - {fileID: 7888866912574708955}
   - {fileID: 1655952738477716815}
-  - {fileID: 2993904039075740681}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3805325796393897957
@@ -50,38 +49,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BookInteraction
   cameraController: {fileID: 0}
   bookViewPoint: {fileID: 0}
+  playerController: {fileID: 0}
+  playerAnimator: {fileID: 0}
   transitionDuration: 1
---- !u!1 &2459621846343524670
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2993904039075740681}
-  m_Layer: 0
-  m_Name: CameraPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2993904039075740681
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2459621846343524670}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.298, y: 2.74, z: -0.018}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7113702022783314035}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  grabDuration: 0.6
+  releaseDuration: 0.6
+  canRead: 1
 --- !u!1 &3969095026248444654
 GameObject:
   m_ObjectHideFlags: 0
