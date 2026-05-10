@@ -12,14 +12,16 @@ public class AttackFactory : MonoBehaviour
     [SerializeField] private GameObject ballPrefab;
     [SerializeField] private GameObject thunderPrefab;
     [SerializeField] private GameObject streamPrefab;
-
+    [SerializeField] private GameObject circleWave;
+    [SerializeField] private GameObject spikePrefab;
+    [SerializeField] private GameObject beamPrefab;
     private readonly Dictionary<NodeBase, IAttack> _cache = new();
 
     public IAttack GetAttack(NodeBase node)
     {
         if (_cache.TryGetValue(node, out IAttack cached))
             return cached;
-
+        
         IAttack attack = ParseNode(node);
         _cache[node] = attack;
         return attack;
@@ -50,7 +52,23 @@ public class AttackFactory : MonoBehaviour
                 stream.Init(node, streamPrefab);
                 return stream;
 
+            case AttackType.CircularWave:
+                var waveAttack = new CircleWaveAttack();
+                waveAttack.Init(node, circleWave);
+                return waveAttack;
+
+            case AttackType.Spike:
+                var spike = new SpikeAttack();
+                spike.Init(node, spikePrefab);
+                return spike;
+
+            case AttackType.Beam:
+                var beam = new BeamAttack();
+                beam.Init(node, beamPrefab);
+                return beam;
+
             default:
+                Debug.Log("[AttacFactory] не определённый type атаки");
                 var def = new BallAttack();
                 def.Init(node, ballPrefab);
                 return def;

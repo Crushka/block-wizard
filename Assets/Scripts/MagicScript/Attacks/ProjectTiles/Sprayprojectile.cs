@@ -5,8 +5,7 @@
 [RequireComponent(typeof(Collider))]
 public class SprayProjectile : MonoBehaviour
 {
-    private float _damage;
-    private float _lifetime;
+    private float _damage, _lifetime;
     private bool _isDead;
     private Rigidbody _rb;
 
@@ -33,12 +32,6 @@ public class SprayProjectile : MonoBehaviour
         _rb.useGravity = true;
 
         Destroy(gameObject, lifetime);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("SprayProjectile") || other.CompareTag("Player") || other.CompareTag("Untagged")) return;
-        Die();
     }
 
     private void OnCollisionEnter(Collision collision)
