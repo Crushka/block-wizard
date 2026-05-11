@@ -354,7 +354,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   target: {fileID: 851502129}
-  distance: 5
+  distance: 4
   minDistance: 2
   maxDistance: 15
   zoomSpeed: 1
@@ -925,13 +925,13 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2538559597644866719, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-      propertyPath: spellCaster
-      value: 
-      objectReference: {fileID: 1871435536}
-    - target: {fileID: 2538559597644866719, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
       propertyPath: aimMarker
       value: 
       objectReference: {fileID: 344236052}
+    - target: {fileID: 2538559597644866719, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
+      propertyPath: spellCaster
+      value: 
+      objectReference: {fileID: 1871435536}
     - target: {fileID: 2538559597644866719, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
       propertyPath: playerAnimator
       value: 
@@ -1448,3 +1448,4 @@ SceneRoots:
   - {fileID: 851502127}
   - {fileID: 662202781}
   - {fileID: 72018068}
+  - {fileID: 1905015260}
