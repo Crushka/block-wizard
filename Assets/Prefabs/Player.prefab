@@ -155,6 +155,11 @@ MonoBehaviour:
   aimDistance: 1.5
   aimCameraOffset: {x: 0.5, y: 0.5, z: 0}
   transitionSpeed: 9.5
+  headBone: {fileID: 8284183531608094792}
+  rightArmBone: {fileID: 2903085443872505056}
+  headIKWeight: 0.6
+  armIKWeight: 0.4
+  ikBlendSpeed: 8
 --- !u!143 &1366455102288685453
 CharacterController:
   m_ObjectHideFlags: 0
