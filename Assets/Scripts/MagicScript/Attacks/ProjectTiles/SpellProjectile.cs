@@ -27,13 +27,12 @@ public class SpellProjectile : MonoBehaviour
             Destroy(gameObject);
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-
-
-        DestroySelf();
+        Debug.Log(collision.gameObject.tag);
+        Die();
     }
-    private void DestroySelf()
+    private void Die()
     {
         if (_isDestroyed) return;
         _isDestroyed = true;

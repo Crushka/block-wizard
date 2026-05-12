@@ -3,13 +3,13 @@
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class SprayProjectile : MonoBehaviour
+public class StreamProjecttile : MonoBehaviour
 {
     private float _damage, _lifetime;
     private bool _isDead;
     private Rigidbody _rb;
 
-   
+
     public void Setup(float damage, float speed, float lifetime, float spread = 8f)
     {
         _damage = damage;
@@ -19,8 +19,8 @@ public class SprayProjectile : MonoBehaviour
 
         Vector3 dir = transform.forward;
         dir = Quaternion.Euler(
-            Random.Range(-spread, spread),
-            Random.Range(-spread, spread),
+            Random.Range(-speed, spread),
+            Random.Range(-speed, spread),
             0f
         ) * dir;
 
@@ -29,14 +29,16 @@ public class SprayProjectile : MonoBehaviour
 
         _rb.linearVelocity = dir * speed;
 
-        _rb.useGravity = true;
+        _rb.useGravity = false;
 
         Destroy(gameObject, lifetime);
     }
 
+
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("SprayProjectile")) return;
+        Debug.Log($"trigger {collision.gameObject.tag}");
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("StreamProjectile") || collision.gameObject.CompareTag("Untagged")) return;
         Die();
     }
 
