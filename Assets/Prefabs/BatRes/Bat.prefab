@@ -121,11 +121,12 @@ MonoBehaviour:
   speedMultiplier: 4
   leadAccuracy: 1
   moveSpeed: 10
-  heightAdjustSpeed: 5
+  heightAdjustSpeed: 3
   stopDistance: 9
   reengageDistance: 6
-  hoverHeight: 6
+  hoverHeight: 4
   rotationSpeed: 8
+  health: 100
 --- !u!65 &578664946612473146
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -311,7 +312,7 @@ Transform:
   m_GameObject: {fileID: 8199467683810257849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.753}
+  m_LocalPosition: {x: 0, y: 0, z: 0.956}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

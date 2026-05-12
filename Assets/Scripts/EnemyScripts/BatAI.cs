@@ -1,17 +1,16 @@
-using Unity.AI.Assistant.FunctionCalling;
 using UnityEngine;
 
 public class BatAI : MonoBehaviour, IDamageable
 {
     [Header("Ссылки")]
     [SerializeField] private Transform player;
-    [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask groundMask; // Должен включать ТОЛЬКО уровень (Ground/Default)
 
     [Header("Настройки стрельбы")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float fireRate = 1.5f;
-    [SerializeField] private LayerMask obstacleMask;
+    [SerializeField] private LayerMask obstacleMask; // Должен включать стены, но НЕ саму мышь и НЕ игрока
     [SerializeField] private float arcHeight = 2f;
     [SerializeField] private float speedMultiplier = 3f;
     [Range(0f, 1f)]
@@ -19,18 +18,17 @@ public class BatAI : MonoBehaviour, IDamageable
 
     [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float heightAdjustSpeed = 5f;
+    [SerializeField] private float heightAdjustSpeed = 2f; // Немного уменьшим для плавности
     [SerializeField] private float stopDistance = 4f;
     [SerializeField] private float reengageDistance = 6f;
     [SerializeField] private float hoverHeight = 3f;
     [SerializeField] private float rotationSpeed = 8f;
 
     [Header("Состояние")]
+    public float health = 100f;
+    private bool isDead = false;
     private bool isInAttackRange = false;
     private float nextFireTime = 0f;
-    private bool isDead = false;
-    public float health = 100f;
-
 
     private Vector3 lastPlayerPosition;
     private Vector3 playerVelocity;
@@ -43,51 +41,66 @@ public class BatAI : MonoBehaviour, IDamageable
             if (playerObj != null) player = playerObj.transform;
         }
 
-        if (groundMask == 0) groundMask = ~(1 << gameObject.layer);
-
-        if (firePoint == null) firePoint = transform;
+        // ВАЖНО: Если маски не настроены в инспекторе, код ниже может привести к ошибкам
+        if (groundMask == 0) Debug.LogWarning("BatAI: Ground Mask не установлена!");
     }
 
     void Update()
     {
-        if (player == null) return;
+        if (isDead || player == null) return; // Проверка на смерть
 
-        Vector3 currentPlayerPos = player.position;
-        playerVelocity = (currentPlayerPos - lastPlayerPosition) / Time.deltaTime;
-        lastPlayerPosition = currentPlayerPos;
+        CalculatePlayerVelocity();
 
         float distance = Vector3.Distance(transform.position, player.position);
 
         LookAtPlayer();
 
+        // Логика переключения состояний
         if (distance >= reengageDistance) isInAttackRange = false;
 
         if (!isInAttackRange && distance > stopDistance)
         {
             MoveBat();
         }
-        else if (distance <= stopDistance)
+        else
         {
             isInAttackRange = true;
+            // Когда стоим, просто парим
             MaintainHeight();
             TryShoot();
         }
     }
 
+    void CalculatePlayerVelocity()
+    {
+        Vector3 currentPlayerPos = player.position;
+        // Защита от деления на 0 в первом кадре или при паузе
+        float dt = Time.deltaTime > 0 ? Time.deltaTime : 0.01f;
+        playerVelocity = (currentPlayerPos - lastPlayerPosition) / dt;
+        lastPlayerPosition = currentPlayerPos;
+
+        // Ограничиваем безумную скорость, если игрок телепортировался
+        if (playerVelocity.magnitude > 50f) playerVelocity = Vector3.zero;
+    }
 
     void TryShoot()
     {
         if (Time.time >= nextFireTime)
         {
-            if (!Physics.Linecast(firePoint.position, player.position, obstacleMask))
+            // ИСПРАВЛЕНИЕ: Проверяем линию видимости не в ноги, а в центр игрока
+            Vector3 playerCenter = player.position + Vector3.up * 1.0f;
+
+            // Рисуем линию в окне Scene (красная - заблокировано, зеленая - чисто)
+            bool blocked = Physics.Linecast(firePoint.position, playerCenter, obstacleMask);
+            Debug.DrawLine(firePoint.position, playerCenter, blocked ? Color.red : Color.green);
+
+            if (!blocked)
             {
                 Shoot();
                 nextFireTime = Time.time + fireRate;
             }
         }
     }
-
-
     void Shoot()
     {
         if (projectilePrefab == null) return;
@@ -160,7 +173,9 @@ public class BatAI : MonoBehaviour, IDamageable
     void MaintainHeight()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position + Vector3.up * 1f, Vector3.down, out hit, hoverHeight + 10f, groundMask))
+        // Пускаем луч вниз. 
+        // ВАЖНО: Мышь должна игнорировать свой слой и слой игрока!
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out hit, 20f, groundMask))
         {
             float targetY = hit.point.y + hoverHeight;
             float newY = Mathf.Lerp(transform.position.y, targetY, Time.deltaTime * heightAdjustSpeed);
@@ -172,27 +187,31 @@ public class BatAI : MonoBehaviour, IDamageable
     {
         Vector3 direction = (player.position - transform.position);
         direction.y = 0;
-        if (direction != Vector3.zero)
+        if (direction.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }
     }
 
-    public void Die()
-    {
-        isDead = true;
-        StopAllCoroutines();
-        Destroy(gameObject, 0.5f);
-    }
-        
     public void takeDamage(float damage)
     {
         if (isDead) return;
         health -= damage;
-        if(health <= 0)
-        {
-            Die();
-        }
+        Debug.Log("Мышь получила урон, HP: " + health);
+        if (health <= 0) Die();
+    }
+
+    public void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+        Debug.Log("Мышь погибла!");
+
+        // Включаем гравитацию, чтобы тушка упала
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null) rb.useGravity = true;
+
+        Destroy(gameObject, 1.5f);
     }
 }

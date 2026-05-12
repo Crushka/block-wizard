@@ -302,15 +302,12 @@ public class GolemAI : MonoBehaviour, IDamageable
         float dist = Vector3.Distance(throwPoint.position, target.position);
         float travelTime = dist / stoneSpeed;
 
+        // Считаем позицию игрока + упреждение
         Vector3 predictedTarget = target.position + (playerVelocity * travelTime * leadAccuracy);
-        if (targetController != null)
-        {
-            predictedTarget += Vector3.up * (targetController.height * 0.5f);
-        }
-        else
-        {
-            predictedTarget += Vector3.up * 1.2f; 
-        }
+
+        // ИСПРАВЛЕНИЕ: Целимся в живот (чуть ниже центра), чтобы не попадать в шляпу
+        float yOffset = (targetController != null) ? (targetController.height * 0.3f) : 0.8f;
+        predictedTarget += Vector3.up * yOffset;
 
         Vector3 throwDir = (predictedTarget - throwPoint.position).normalized;
 
