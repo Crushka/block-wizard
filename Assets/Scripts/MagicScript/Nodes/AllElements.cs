@@ -157,12 +157,12 @@ public class LightningNode : ElementNode // 5
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Earth, ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Stream;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Lightning, 1.0f);
-        comp.Add(AttackType.Stream, 1.0f);
+        comp.Add(AttackType.Thunder, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
