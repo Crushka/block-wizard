@@ -3,17 +3,18 @@ using UnityEngine;
 public class BatProj : MonoBehaviour
 {
     public float gravityScale = 3f;
+    public float damage = 5f;
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Bat"))
-        {
-            return;
-        }
+        IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
 
-        if (collision.gameObject.CompareTag("Player"))
+        if(damageable != null)
         {
-            Debug.Log("HIT!");
+            if(!collision.gameObject.CompareTag("Bat"))
+            {
+                damageable.takeDamage(damage);
+            }
         }
 
         Destroy(gameObject);

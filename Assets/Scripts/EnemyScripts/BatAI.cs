@@ -1,6 +1,7 @@
+using Unity.AI.Assistant.FunctionCalling;
 using UnityEngine;
 
-public class BatAI : MonoBehaviour
+public class BatAI : MonoBehaviour, IDamageable
 {
     [Header("Ссылки")]
     [SerializeField] private Transform player;
@@ -27,6 +28,8 @@ public class BatAI : MonoBehaviour
     [Header("Состояние")]
     private bool isInAttackRange = false;
     private float nextFireTime = 0f;
+    private bool isDead = false;
+    public float health = 100f;
 
 
     private Vector3 lastPlayerPosition;
@@ -173,6 +176,23 @@ public class BatAI : MonoBehaviour
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+        }
+    }
+
+    public void Die()
+    {
+        isDead = true;
+        StopAllCoroutines();
+        Destroy(gameObject, 0.5f);
+    }
+        
+    public void takeDamage(float damage)
+    {
+        if (isDead) return;
+        health -= damage;
+        if(health <= 0)
+        {
+            Die();
         }
     }
 }

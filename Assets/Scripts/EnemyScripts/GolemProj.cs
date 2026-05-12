@@ -9,7 +9,6 @@ public class GolemProj : MonoBehaviour
     {
         Destroy(gameObject, lifetime);
 
-        // Чтобы камень не пролетал сквозь объекты на большой скорости
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
@@ -19,13 +18,11 @@ public class GolemProj : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
+        if (damageable != null)
         {
-            Debug.Log("ПРЯМОЕ ПОПАДАНИЕ! Игрок получил урон.");
-            // target.TakeDamage(damage);
+            damageable.takeDamage(damage);
         }
-
-        // Эффект удара (можно добавить частицы пыли)
         Destroy(gameObject);
     }
 }

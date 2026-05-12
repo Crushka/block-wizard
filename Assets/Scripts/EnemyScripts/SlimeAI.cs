@@ -1,13 +1,15 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SlimeAI : MonoBehaviour
+public class SlimeAI : MonoBehaviour, IDamageable
 {
     public Transform target;
     public float lookRadius = 10f;
 
     private NavMeshAgent agent;
     private int enemyLayerMask;
+    private bool isDead = false;
+    public float health = 100f;
 
     private void Start()
     {
@@ -57,5 +59,23 @@ public class SlimeAI : MonoBehaviour
             targetRotation = Quaternion.LookRotation(forwardOnSlope, surfaceNormal);
         }
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
+    }
+
+    public void Die()
+    {
+        isDead = true;
+        StopAllCoroutines();
+        Destroy(gameObject, 0.5f);
+    }
+
+    public void takeDamage(float damage)
+    {
+        if (isDead) return;
+        health -= damage;
+        Debug.Log("СЛизень уебан получил урон: " + damage + ", осталось здоровья: " + health);
+        if (health <= 0)
+        {
+            Die();
+        }
     }
 }

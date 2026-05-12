@@ -11,6 +11,11 @@ public class SpawnEnemies : MonoBehaviour
         {
             for(int j = 0; j < 1; j++)
             {
+                if(enemies[i].name == "Slime")
+                {
+                    Instantiate(enemies[i], new Vector3(RandomNumber(), 1, 10), Quaternion.Euler(0, 0, 0));
+                    continue;
+                }
                 Instantiate(enemies[i], new Vector3(RandomNumber(), 5, 10), Quaternion.Euler(0, 0, 0));
             }
         }

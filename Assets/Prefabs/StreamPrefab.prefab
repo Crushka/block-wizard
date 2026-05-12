@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8413856097244017033}
   - component: {fileID: 3513508174779034187}
   - component: {fileID: 404776069851075379}
-  - component: {fileID: -5293521604360807478}
+  - component: {fileID: -8577843986891491634}
   m_Layer: 0
   m_Name: StreamPrefab
   m_TagString: Untagged
@@ -83,7 +83,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-5293521604360807478
+--- !u!114 &-8577843986891491634
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,9 +92,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5330108422660898962}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9ddf86b09f0fed4baab856c659ba02f, type: 3}
+  m_Script: {fileID: 11500000, guid: eb33be165c079fd4f97ec693e6ae2607, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SprayProjectile
+  m_EditorClassIdentifier: Assembly-CSharp::StreamProjecttile
 --- !u!1 &8301951489868899706
 GameObject:
   m_ObjectHideFlags: 0

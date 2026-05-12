@@ -37,7 +37,13 @@ public class SprayProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("SprayProjectile") || other.CompareTag("Player") || other.CompareTag("Untagged")) return;
+        if (other.CompareTag("SprayProjectile") || other.CompareTag("StreamProjectile") || other.CompareTag("Player")) return;
+
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.takeDamage(_damage);
+        }
         Die();
     }
 

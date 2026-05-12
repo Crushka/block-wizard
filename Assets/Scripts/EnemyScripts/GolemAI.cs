@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class GolemAI : MonoBehaviour
+public class GolemAI : MonoBehaviour, IDamageable
 {
     [Header("Stats")]
     public float maxHealth = 100f;
@@ -184,19 +184,16 @@ public class GolemAI : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        // 2. ОПРЕДЕЛЯЕМ ТОЧКИ
         Vector3 centerPoint = GetGroundPosition(target.position);
         List<Vector3> dangerPoints = new List<Vector3>();
         dangerPoints.Add(centerPoint);
 
-        // Круг 1
         for (int i = 0; i < rocksInFirstCircle; i++)
         {
             float angle = i * Mathf.PI * 2 / rocksInFirstCircle;
             Vector3 pos = centerPoint + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * firstCircleRadius;
             dangerPoints.Add(GetGroundPosition(pos));
         }
-        // Круг 2
         for (int i = 0; i < rocksInSecondCircle; i++)
         {
             float angle = i * Mathf.PI * 2 / rocksInSecondCircle;
@@ -204,7 +201,6 @@ public class GolemAI : MonoBehaviour
             dangerPoints.Add(GetGroundPosition(pos));
         }
 
-        // 3. СПАВНИМ МЕТКИ (уменьшенные размеры)
         List<GameObject> activeMarkers = new List<GameObject>();
         foreach (Vector3 pos in dangerPoints)
         {
@@ -212,7 +208,6 @@ public class GolemAI : MonoBehaviour
             {
                 GameObject m = Instantiate(slamMarkerPrefab, pos, Quaternion.identity);
 
-                // УСТАНОВКА МАЛЕНЬКОГО РАЗМЕРА
                 if (pos == centerPoint)
                     m.transform.localScale = Vector3.one * centerMarkerSize;
                 else
@@ -224,14 +219,12 @@ public class GolemAI : MonoBehaviour
 
         yield return new WaitForSeconds(2.0f);
 
-        // 4. ПАДЕНИЕ КАМНЕЙ
         for (int i = 1; i < dangerPoints.Count; i++)
         {
             SpawnFallingStone(dangerPoints[i]);
         }
         foreach (var m in activeMarkers) Destroy(m);
 
-        // 5. ПАДЕНИЕ ГОЛЕМА
         transform.position = centerPoint + Vector3.up * 40f;
         foreach (var r in rs) r.enabled = true;
 
@@ -243,11 +236,14 @@ public class GolemAI : MonoBehaviour
 
         transform.position = centerPoint;
 
-        // Взрывной урон (радиус оставляем большим, а визуальную метку маленькой)
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, slamRadius);
         foreach (var col in hitColliders)
         {
-            if (col.CompareTag("Player")) Debug.Log("Игрок задет прыжком!");
+            IDamageable damageable = col.GetComponent<IDamageable>();
+            if(damageable != null && col.gameObject != this.gameObject)
+            {
+                damageable.takeDamage(slamDamage);
+            }
         }
 
         yield return new WaitForSeconds(1f);
@@ -258,10 +254,9 @@ public class GolemAI : MonoBehaviour
     private Vector3 GetGroundPosition(Vector3 startPos)
     {
         RaycastHit hit;
-        // Используем ТОЛЬКО groundMask. Игрок будет проигнорирован.
         if (Physics.Raycast(startPos + Vector3.up * 10f, Vector3.down, out hit, 20f, groundMask))
         {
-            return hit.point + Vector3.up * 0.02f; // Совсем крошечный отступ
+            return hit.point + Vector3.up * 0.02f;
         }
         return startPos;
     }
@@ -270,19 +265,18 @@ public class GolemAI : MonoBehaviour
     {
         if (stonePrefab == null) return;
 
-        // Создаем камень высоко в небе над меткой
         GameObject stone = Instantiate(stonePrefab, targetPos + Vector3.up * 20f, Quaternion.identity);
         Rigidbody rb = stone.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.useGravity = true;
-            rb.linearVelocity = Vector3.down * 20f; // Принудительно толкаем вниз
+            rb.linearVelocity = Vector3.down * 20f;
         }
-        // Уничтожаем через 3 секунды после падения
+
         Destroy(stone, 3f);
     }
 
-    // Корутина замаха и броска
+
     private IEnumerator ThrowStoneRoutine()
     {
         isAttacking = true;
@@ -291,10 +285,6 @@ public class GolemAI : MonoBehaviour
 
         Debug.Log("ГОЛЕМ: Начал замах... (игрок, беги!)");
 
-        // В этом месте можно запустить анимацию замаха:
-        // animator.SetTrigger("StartThrow");
-
-        // Ждем время замаха
         yield return new WaitForSeconds(windUpTime);
 
         if (!isDead && target != null)
@@ -309,16 +299,12 @@ public class GolemAI : MonoBehaviour
     {
         if (stonePrefab == null || throwPoint == null) return;
 
-        // Предсказание (теперь оно линейное и простое)
-        // Считаем время, за которое камень долетит до игрока
         float dist = Vector3.Distance(throwPoint.position, target.position);
         float travelTime = dist / stoneSpeed;
 
         Vector3 predictedTarget = target.position + (playerVelocity * travelTime * leadAccuracy);
-        // Чтобы камень летел в тело, а не в пол
         if (targetController != null)
         {
-            // Это автоматически найдет "живот" игрока независимо от высоты модели
             predictedTarget += Vector3.up * (targetController.height * 0.5f);
         }
         else
@@ -328,13 +314,12 @@ public class GolemAI : MonoBehaviour
 
         Vector3 throwDir = (predictedTarget - throwPoint.position).normalized;
 
-        // Создаем камень
         GameObject stone = Instantiate(stonePrefab, throwPoint.position, Quaternion.LookRotation(throwDir));
         Rigidbody rb = stone.GetComponent<Rigidbody>();
 
         if (rb != null)
         {
-            rb.useGravity = false; // Включаем "прямой" полет без дуги
+            rb.useGravity = false;
             rb.linearVelocity = throwDir * stoneSpeed;
         }
 
@@ -342,7 +327,6 @@ public class GolemAI : MonoBehaviour
         Destroy(stone, 5f);
     }
 
-    // --- Остальные системные методы ---
     public void TakeDamage(float damage)
     {
         if (isDead) return;
@@ -353,7 +337,7 @@ public class GolemAI : MonoBehaviour
     private void Die()
     {
         isDead = true;
-        StopAllCoroutines(); // Прекратить замах, если умерли
+        StopAllCoroutines();
         agent.isStopped = true;
         Destroy(gameObject, 0.5f);
     }
@@ -362,13 +346,25 @@ public class GolemAI : MonoBehaviour
     {
         if (isDead) return;
 
-        // Во время замаха голем должен продолжать медленно поворачиваться к игроку
         Vector3 direction = (target.position - transform.position).normalized;
         direction.y = 0;
         if (direction != Vector3.zero)
         {
             Quaternion targetRot = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 5f);
+        }
+    }
+
+    public void takeDamage(float amount)
+    {
+        if (isDead) return;
+
+        health -= amount;
+        Debug.Log("Голем получил урон: " + amount + ", Осталось: " + health);
+
+        if(health <= 0)
+        {
+            Die();
         }
     }
 }

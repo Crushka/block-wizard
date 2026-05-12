@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2538559597644866719}
   - component: {fileID: 1366455102288685453}
   - component: {fileID: 8581740190408769137}
+  - component: {fileID: -3954806289179580198}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -123,14 +124,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 6
-  aimSpeed: 3
   jumpForce: 8
   gravity: 20
   rotationSpeed: 10
-  dashSpeed: 10
-  dashDuration: 1
-  dashCooldown: 1
-  allowAirDash: 0
   playerCamera: {fileID: 0}
   playerAnimator: {fileID: 0}
   isMovementEnabled: 1
@@ -152,11 +148,10 @@ MonoBehaviour:
   bookInteraction: {fileID: 0}
   playerAnimator: {fileID: 0}
   aimMarker: {fileID: 0}
+  spellCaster: {fileID: 0}
   aimDistance: 1.5
   aimCameraOffset: {x: 0.5, y: 0.5, z: 0}
   transitionSpeed: 9.5
-  interactionDamage: 25
-  interactionRange: 30
 --- !u!143 &1366455102288685453
 CharacterController:
   m_ObjectHideFlags: 0
@@ -202,6 +197,18 @@ MonoBehaviour:
   - Attack1
   - Attack2
   - Attack3
+--- !u!114 &-3954806289179580198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 16662757466534581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45cf4fbd52274442bc41d3dd90b0b57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
 --- !u!1 &198218823499644239
 GameObject:
   m_ObjectHideFlags: 0

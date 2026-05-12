@@ -28,20 +28,29 @@ public class ThunderAttack : IAttack
             CreateBolt(spawnPoint);
 
         float range = _nodeData?.Range ?? DefaultRange;
-        Vector3 target = ThunderTargetFinder.Find(
+        Vector3 targetPos = ThunderTargetFinder.Find(
             spawnPoint.position,
             spawnPoint.forward,
             range,
             CylinderRadius,
             EnemyMask
-        );
-
-        _boltScript?.UpdateBolt(spawnPoint.position, target);
+            );
+        _boltScript?.UpdateBolt(spawnPoint.position, targetPos);
 
         _damageTimer -= Time.deltaTime;
-        if (_damageTimer <= 0f)
+        if(_damageTimer <= 0)
         {
             _damageTimer = DamageInterval;
+
+            Collider[] hitEnemies = Physics.OverlapSphere(targetPos, 0.5f, EnemyMask);
+            foreach(var enemy in hitEnemies)
+            {
+                IDamageable damageable = enemy.GetComponent<IDamageable>();
+                if(damageable != null)
+                {
+                    damageable.takeDamage(_nodeData?.Damage ?? 10f);
+                }
+            }
         }
     }
 

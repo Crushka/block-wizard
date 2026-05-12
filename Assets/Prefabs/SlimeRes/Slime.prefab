@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1667574684095641254}
   - component: {fileID: -8887190291045638322}
   - component: {fileID: 1947046693401887623}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Slime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6569809931073920061}
@@ -128,9 +128,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4330252952242696161}
     m_Modifications:
+    - target: {fileID: 702074280687349099, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8373193598122710450, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_Name
       value: slimev1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8373193598122710450, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 9185196557083709192, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_LocalPosition.x
