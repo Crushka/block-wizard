@@ -27,12 +27,6 @@ public class SpellProjectile : MonoBehaviour
             Destroy(gameObject);
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        Debug.Log(other.tag);
-        Die();
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log(collision.gameObject.tag);

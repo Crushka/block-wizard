@@ -16,7 +16,6 @@ public class PlayerAttack : MonoBehaviour
     public Vector3 aimCameraOffset = new Vector3(0.5f, 0.5f, 0f);
     public float transitionSpeed = 9.5f;
 
-    // Убрали дубликаты переменных, оставили только нужные
     private InputAction _aimAction;
     private InputAction _fireAction;
 
@@ -61,12 +60,11 @@ public class PlayerAttack : MonoBehaviour
     {
         if (cameraController != null)
         {
-            // Исправлено: теперь правильно сохраняем в нужную переменную
             _originalDistance = cameraController.distance;
         }
 
         if (aimMarker != null)
-            aimMarker.enabled = false; // Прячем прицел на старте
+            aimMarker.enabled = false;
     }
 
     void Update()
@@ -76,32 +74,25 @@ public class PlayerAttack : MonoBehaviour
 
         if (cameraController == null) return;
 
-        // ЛОГИКА КАМЕРЫ:
         if (_isAiming)
         {
-            // Если целимся - плавно переводим камеру в позицию для прицеливания
             cameraController.distance = Mathf.Lerp(cameraController.distance, aimDistance, Time.deltaTime * transitionSpeed);
             cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, aimCameraOffset, Time.deltaTime * transitionSpeed);
         }
         else
         {
-            // Если НЕ целимся - плавно возвращаем обратно
             if (Mathf.Abs(cameraController.distance - _originalDistance) > 0.01f)
             {
                 cameraController.distance = Mathf.Lerp(cameraController.distance, _originalDistance, Time.deltaTime * transitionSpeed);
             }
             else
             {
-                // Когда камера вернулась на место, мы начинаем обновлять _originalDistance.
-                // Благодаря этому, если игрок крутит колесико мыши, мы запоминаем новый зум 
-                // и скрипт не пытается с ним "бороться".
                 _originalDistance = cameraController.distance;
             }
 
             cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, Vector3.zero, Time.deltaTime * transitionSpeed);
         }
 
-        // Убрали playerAnimator.SetBool("IsAiming", false); из Update, чтобы анимация не ломалась
     }
 
     private void OnFireStart(InputAction.CallbackContext ctx)
@@ -120,7 +111,7 @@ public class PlayerAttack : MonoBehaviour
         if (bookInteraction != null && bookInteraction.IsReading) return;
 
         _isAiming = true;
-        if (aimMarker != null) aimMarker.enabled = true; // Показываем прицел
+        if (aimMarker != null) aimMarker.enabled = true;
 
         if (bookInteraction != null) bookInteraction.canRead = false;
         if (playerController != null) playerController.isAiming = true;
@@ -128,7 +119,7 @@ public class PlayerAttack : MonoBehaviour
         if (cameraController != null)
         {
             cameraController.isAiming = true;
-            _originalDistance = cameraController.distance; // Запоминаем текущий зум игрока
+            _originalDistance = cameraController.distance;
         }
 
         if (playerAnimator != null)
@@ -140,7 +131,7 @@ public class PlayerAttack : MonoBehaviour
         if (!_isAiming) return;
 
         _isAiming = false;
-        if (aimMarker != null) aimMarker.enabled = false; // ИСПРАВЛЕНО: Прячем прицел при отпускании ПКМ
+        if (aimMarker != null) aimMarker.enabled = false;
 
         if (bookInteraction != null) bookInteraction.canRead = true;
         if (playerController != null) playerController.isAiming = false;

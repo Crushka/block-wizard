@@ -10,5 +10,6 @@
     Mud, 
     Steam, 
     Plasma, 
-    Unknown
+    Unknown,
+    Magic
 }

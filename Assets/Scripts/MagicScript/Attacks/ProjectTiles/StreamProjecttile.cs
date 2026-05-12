@@ -5,8 +5,7 @@
 [RequireComponent(typeof(Collider))]
 public class StreamProjecttile : MonoBehaviour
 {
-    private float _damage;
-    private float _lifetime;
+    private float _damage, _lifetime;
     private bool _isDead;
     private Rigidbody _rb;
 
@@ -20,8 +19,8 @@ public class StreamProjecttile : MonoBehaviour
 
         Vector3 dir = transform.forward;
         dir = Quaternion.Euler(
-            Random.Range(-spread, spread),
-            Random.Range(-spread, spread),
+            Random.Range(-speed, spread),
+            Random.Range(-speed, spread),
             0f
         ) * dir;
 
@@ -35,15 +34,11 @@ public class StreamProjecttile : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("StreamProjectile") || other.CompareTag("Player") || other.CompareTag("Untagged")) return;
-        Die();
-    }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("StreamProjectile")) return;
+        Debug.Log($"trigger {collision.gameObject.tag}");
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("StreamProjectile") || collision.gameObject.CompareTag("Untagged")) return;
         Die();
     }
 
