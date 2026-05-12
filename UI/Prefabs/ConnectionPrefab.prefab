@@ -90,6 +90,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConnectionView
   sourceView: {fileID: 0}
   targetView: {fileID: 0}
+  rectTransform: {fileID: 3094467960598521715}
+  lineImage: {fileID: 4905325084056921634}
+  lineWidth: 12
   idA: 
   idB: 
-  thickness: 20
+  hoverColor: {r: 1, g: 0, b: 0, a: 1}

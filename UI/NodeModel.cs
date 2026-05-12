@@ -1,62 +1,76 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MagicType { Fire, Water, Earth, Air, Magic }
-
 [System.Serializable]
-public class NodeModel
+public class NodeModel 
 {
     public string id;
-    public MagicType type;
+    public ElementType type; 
     public int weight = int.MaxValue;
     public List<string> connectedIds = new List<string>();
 
-    public NodeModel(MagicType t)
+    public NodeModel(ElementType t) 
     {
         id = System.Guid.NewGuid().ToString();
         type = t;
-        if (type == MagicType.Magic) weight = 0;
+
+        if (type == ElementType.None) 
+            weight = 0;
     }
 
-    public void AddLink(string targetId)
+    public void AddLink(string targetId) 
     {
-        if (string.IsNullOrEmpty(targetId)) return;
-        
-        // Если этого ID еще нет в списке, добавляем его
-        if (!connectedIds.Contains(targetId))
-        {
+        if (!string.IsNullOrEmpty(targetId) && !connectedIds.Contains(targetId))
             connectedIds.Add(targetId);
-            Debug.Log($"ID {targetId} добавлен в связи. Всего связей: {connectedIds.Count}");
-        }
     }
 }
 
 [System.Serializable]
-public class GraphModel
+public class GraphModel 
 {
     public List<NodeModel> Nodes = new List<NodeModel>();
 
-    public void RecalculateWeights()
+    public void RecalculateWeights() 
     {
         foreach (var node in Nodes)
-            node.weight = (node.type == MagicType.Magic) ? 0 : int.MaxValue;
+            node.weight = (node.type == ElementType.None) ? 0 : int.MaxValue;
 
         Queue<NodeModel> queue = new Queue<NodeModel>();
-        var magicNode = Nodes.Find(n => n.type == MagicType.Magic);
-        if (magicNode != null) queue.Enqueue(magicNode);
+        var startNode = Nodes.Find(n => n.type == ElementType.None);
+        
+        if (startNode != null) 
+            queue.Enqueue(startNode);
 
-        while (queue.Count > 0)
+        while (queue.Count > 0) 
         {
             var current = queue.Dequeue();
-            foreach (var neighborId in current.connectedIds)
+            foreach (var neighborId in current.connectedIds) 
             {
                 var neighbor = Nodes.Find(n => n.id == neighborId);
-                if (neighbor != null && neighbor.weight == int.MaxValue)
+                if (neighbor != null && neighbor.weight == int.MaxValue) 
                 {
                     neighbor.weight = current.weight + 1;
                     queue.Enqueue(neighbor);
                 }
             }
         }
+    }
+
+    public NodeBase GetElementData(ElementType nodeType)
+    {
+        return nodeType switch
+        {
+            ElementType.None      => new NoneElement(),
+            ElementType.Fire      => new FireNode(),
+            ElementType.Water     => new WaterNode(),
+            ElementType.Earth     => new EartNode(),
+            ElementType.Air       => new AirNode(),
+            ElementType.Lightning => new LightningNode(),
+            ElementType.Mud       => new MudNode(),
+            ElementType.Steam     => new SteamNode(),
+            ElementType.Plasma    => new PlasmaNode(),
+
+            _ => new NoneElement() 
+        };
     }
 }
