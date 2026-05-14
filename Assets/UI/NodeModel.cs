@@ -69,6 +69,7 @@ public class GraphModel
             ElementType.Mud       => new MudNode(),
             ElementType.Steam     => new SteamNode(),
             ElementType.Plasma    => new PlasmaNode(),
+            ElementType.Cold => new ColdNode(),
 
             _ => new NoneElement() 
         };

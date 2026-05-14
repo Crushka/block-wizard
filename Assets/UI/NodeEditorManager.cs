@@ -230,46 +230,47 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
     }
 
     private void FinishConnection(Vector2 screenMousePos)
-{
-    PointerEventData eventData = new PointerEventData(EventSystem.current);
-    eventData.position = screenMousePos;
-
-    List<RaycastResult> results = new List<RaycastResult>();
-    EventSystem.current.RaycastAll(eventData, results);
-
-    NodeView targetNode = null;
-
-    foreach (var result in results)
     {
-        if (result.gameObject.transform.IsChildOf(lineContainer)) continue;
-        targetNode = result.gameObject.GetComponentInParent<NodeView>();
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = screenMousePos;
 
-        if (targetNode != null && targetNode != currentSource) break; 
-    }
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
 
-    if (targetNode != null)
-    {
-        string rootSource = GetRootBranchId(currentSource);
-        string rootTarget = GetRootBranchId(targetNode);
+        NodeView targetNode = null;
 
-        bool isDifferentBranches = rootSource != null && rootTarget != null && 
-                                   rootSource != "START_NODE" && rootTarget != "START_NODE" && 
-                                   rootSource != rootTarget;
-
-        if (isDifferentBranches)
+        foreach (var result in results)
         {
-            Debug.LogError("[Logic Error] Нельзя соединять разные подграфы!");
-        }
-        else if (!currentSource.Data.connectedIds.Contains(targetNode.Data.id))
-        {
-            currentSource.Data.AddLink(targetNode.Data.id);
-            targetNode.Data.AddLink(currentSource.Data.id);
-            RefreshGraph(); 
-        }
-    }
+            if (result.gameObject.transform.IsChildOf(lineContainer)) continue;
+            targetNode = result.gameObject.GetComponentInParent<NodeView>();
 
-    if (tempLine != null) Destroy(tempLine.gameObject);
-    currentSource = null;
-    tempLine = null;
-}
+            if (targetNode != null && targetNode != currentSource) break; 
+        }
+
+        if (targetNode != null)
+        {
+            string rootSource = GetRootBranchId(currentSource);
+            string rootTarget = GetRootBranchId(targetNode);
+
+            bool isDifferentBranches = rootSource != null && rootTarget != null && 
+                                       rootSource != "START_NODE" && rootTarget != "START_NODE" && 
+                                       rootSource != rootTarget;
+
+            if (isDifferentBranches)
+            {
+                Debug.LogError("[Logic Error] Нельзя соединять разные подграфы!");
+                return;
+            }
+            else if (!currentSource.Data.connectedIds.Contains(targetNode.Data.id))
+            {
+                currentSource.Data.AddLink(targetNode.Data.id);
+                targetNode.Data.AddLink(currentSource.Data.id);
+                RefreshGraph(); 
+            }
+        }
+
+        if (tempLine != null) Destroy(tempLine.gameObject);
+        currentSource = null;
+        tempLine = null;
+    }
 }

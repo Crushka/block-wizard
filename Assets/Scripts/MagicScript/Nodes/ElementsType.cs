@@ -1,15 +1,16 @@
 ﻿public enum ElementType { 
-    None, 
     Fire, 
     Water, 
     Earth, 
-    Air, 
-    Ice, 
-    Poison, 
+    Air,
+    Cold,
     Lightning, 
-    Mud, 
     Steam, 
+    Ice, 
+    Mud, 
     Plasma, 
+    Poison, 
+    Magic,
     Unknown,
-    Magic
+    None
 }

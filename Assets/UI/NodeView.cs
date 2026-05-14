@@ -110,6 +110,7 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         ElementType.Water => Color.blue,
         ElementType.Earth => new Color(0.4f, 0.3f, 0.1f),
         ElementType.Air => Color.cyan,
+        ElementType.Cold => new Color(0.5f, 0.8f, 1f),
         _ => Color.gray
     };
 }

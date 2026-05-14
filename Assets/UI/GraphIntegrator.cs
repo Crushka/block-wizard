@@ -46,9 +46,11 @@ public class GraphIntegrator : MonoBehaviour
         {
             case ElementType.Fire:      return new FireNode();
             case ElementType.Water:     return new WaterNode();
-            case ElementType.Earth:     return new EartNode(); // Опечатка друга сохранена для компиляции
+            case ElementType.Earth:     return new EartNode();
             case ElementType.Air:       return new AirNode();
             case ElementType.Magic:     return new NoneElement();
+            case ElementType.Lightning: return new LightningNode();
+            case ElementType.Cold: return new ColdNode();
             default:                  return new NoneElement();
         }
     }

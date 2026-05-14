@@ -32,9 +32,10 @@ public class SpellCasterButton : MonoBehaviour
 
             if (elementData == null && uiNode.type != ElementType.None) continue;
 
-            float weight = (uiNode.weight == int.MaxValue) ? 1.0f : uiNode.weight;
+            int num = (uiNode.weight == int.MaxValue) ? 0 : uiNode.weight;
+            float baseWeight = elementData.Weight > 0 ? elementData.Weight : 1.0f;
 
-            GraphNode newNode = calculationGraph.CreateNode(elementData, 0, weight);
+            GraphNode newNode = calculationGraph.CreateNode(elementData, num, baseWeight); // <-- num теперь правильный
             map.Add(uiNode.id, newNode);
 
             if (uiNode.type == ElementType.None)
@@ -51,6 +52,7 @@ public class SpellCasterButton : MonoBehaviour
                     ? $"{uiNode.id}_{targetId}" 
                     : $"{targetId}_{uiNode.id}";
 
+     
                 if (!processedConnections.Contains(connectionKey))
                 {
                     if (map.ContainsKey(uiNode.id) && map.ContainsKey(targetId))

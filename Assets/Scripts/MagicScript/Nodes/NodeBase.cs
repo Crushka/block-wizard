@@ -3,6 +3,7 @@ using System.Collections.Generic;
 public abstract class NodeBase
 {
     public abstract ElementType NodeType { get; }
+    public ElementType GetElementType() { return NodeType; }
 
     public virtual float Damage { get; set; }
     public virtual float Range { get; set; } 

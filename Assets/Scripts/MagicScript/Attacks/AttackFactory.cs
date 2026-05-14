@@ -29,7 +29,7 @@ public class AttackFactory : MonoBehaviour
 
     private IAttack ParseNode(NodeBase node)
     {
-        Debug.Log($"[AttackFactory] dominant attack: {node.GetDominantAttack()}");
+        Debug.Log($"[AttackFactory] dominant attack: {node.GetDominantAttack()}, node type: {node.GetElementType()}");
         switch (node.GetDominantAttack())
         {
             case AttackType.Spray:

@@ -1,14 +1,16 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Управляет открытием/закрытием панели редактора заклинаний.
-/// Вызывается из BookInteraction — сам Tab не слушает.
+/// Управляет открытием/закрытием редактора и запуском визуализации.
 /// </summary>
 public class SpellEditorUI : MonoBehaviour
 {
     [Header("Панели UI")]
-    [Tooltip("Корневой объект всего окна редактора (canvas или panel)")]
     public GameObject editorPanel;
+
+    [Header("Визуализация")]
+    public GraphVisualizer graphVisualizer;   // ← новая панель визуализации
 
     [Header("Связи")]
     public BookInteraction bookInteraction;
@@ -20,125 +22,145 @@ public class SpellEditorUI : MonoBehaviour
 
     // ── Init ──────────────────────────────────────────────────────────────
 
-    void Start()
-    {
-        SetEditorOpen(false);
-    }
+    void Start() => SetEditorOpen(false);
 
     // ── Toggle ────────────────────────────────────────────────────────────
 
     public void Toggle() => SetEditorOpen(!_isOpen);
 
-    /// <summary>Открыть/закрыть редактор. Можно вызвать из кнопки UI.</summary>
     public void SetEditorOpen(bool open)
     {
         _isOpen = open;
 
-
         if (editorPanel != null)
-        {
             editorPanel.SetActive(open);
-            Debug.Log($"[SpellEditorUI] editorPanel.activeSelf={editorPanel.activeSelf}");
-        }
         else
-            Debug.LogError("[SpellEditorUI] editorPanel == NULL! Назначь BookUI из Hierarchy в инспекторе GameManager.");
+            Debug.LogError("[SpellEditorUI] editorPanel == null");
 
         Cursor.lockState = open ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = open;
 
-        if (playerController != null)
-            playerController.isMovementEnabled = !open;
-
-        if (cameraController != null)
-            cameraController.isControlEnabled = !open;
+        if (playerController != null) playerController.isMovementEnabled = !open;
+        if (cameraController != null) cameraController.isControlEnabled = !open;
     }
 
-    // ── Cast (вызывается кнопкой внутри редактора) ────────────────────────
+    // ── Кнопка «Показать алгоритм» ────────────────────────────────────────
 
     /// <summary>
-    /// Собирает граф из NodeEditorManager, передаёт в SpellCaster и закрывает редактор.
-    /// Привяжи к кнопке «Cast» на панели.
+    /// Привяжи к кнопке «Compile» / «Показать» в редакторе.
+    /// Запускает Solve, прячет редактор, показывает визуализатор.
+    /// Когда игрок нажмёт «Применить» внутри визуализатора — редактор закроется.
     /// </summary>
+    public void ShowVisualization()
+    {
+        if (graphVisualizer == null)
+        {
+            Debug.LogError("[SpellEditorUI] GraphVisualizer не назначен!");
+            // Фолбэк: просто применить без визуализации
+            BuildAndApplySpell();
+            SetEditorOpen(false);
+            return;
+        }
+
+        SpellGraph calculationGraph = BuildCalculationGraph(NodeEditorManager.Instance?.Graph);
+        if (calculationGraph == null) return;
+
+        calculationGraph.CalculateWeight();
+
+        var (result, steps) = SpellSolverDebug.Solve(calculationGraph);
+
+        // Прячем редактор, показываем визуализатор
+        editorPanel.SetActive(false);
+
+        graphVisualizer.Show(steps, () =>
+        {
+            // Игрок нажал «Применить» — передаём результат в SpellCaster
+            ApplyResult(result);
+            SetEditorOpen(false);
+        });
+    }
+
+    // ── Кнопка «Применить без визуализации» (оставлена для совместимости) ─
+
     public void CastAndClose()
     {
         BuildAndApplySpell();
         SetEditorOpen(false);
     }
 
-    /// <summary>
-    /// Только применить заклинание без закрытия (если нужно).
-    /// </summary>
     public void BuildAndApplySpell()
     {
-        if (NodeEditorManager.Instance == null)
-        {
-            Debug.LogError("[SpellEditorUI] NodeEditorManager не найден!");
-            return;
-        }
-
-        var uiGraph = NodeEditorManager.Instance.Graph;
-
-        if (uiGraph == null || uiGraph.Nodes.Count == 0)
-        {
-            Debug.LogWarning("[SpellEditorUI] Граф пуст.");
-            return;
-        }
-
-        // Строим расчётный граф (повторяет логику SpellLauncher)
-        SpellGraph calculationGraph = BuildCalculationGraph(uiGraph);
-
+        SpellGraph calculationGraph = BuildCalculationGraph(NodeEditorManager.Instance?.Graph);
         if (calculationGraph == null) return;
 
         calculationGraph.CalculateWeight();
-        NodeBase result = SpellGraphSolver.SlowGraph(calculationGraph);
 
-        Debug.Log($"[SpellEditorUI] Заклинание: dmg={result.Damage:F1} " +
-                  $"range={result.Range:F1} speed={result.Speed:F1} " +
-                  $"attack={result.GetDominantAttack()}");
+        // Используем Solve вместо SlowGraph — результат идентичен
+        var (result, _) = SpellSolverDebug.Solve(calculationGraph);
 
-        // Передаём в SpellCaster
-        if (spellCaster != null)
-        {
-            var tempGraph = new SpellGraph();
-            tempGraph.StartNode = new GraphNode { Data = result };
-            spellCaster.PrepareSpell(calculationGraph);
-        }
-        else
-        {
-            Debug.LogWarning("[SpellEditorUI] SpellCaster не назначен — заклинание рассчитано, но не применено.");
-        }
+        ApplyResult(result);
     }
 
-    // ── Private helpers ───────────────────────────────────────────────────
+    // ── Применить результат в SpellCaster ─────────────────────────────────
+
+    private void ApplyResult(NodeBase result)
+    {
+        if (spellCaster == null)
+        {
+            Debug.LogWarning("[SpellEditorUI] SpellCaster не назначен.");
+            return;
+        }
+
+        // SpellCaster.PrepareSpell ждёт SpellGraph —
+        // передаём минимальный граф из одного узла с готовым результатом.
+        // Внутри PrepareSpell вызывается SpellGraphSolver.SlowGraph,
+        // поэтому оборачиваем result в граф который он пройдёт без изменений.
+        var wrapGraph = WrapResultInGraph(result);
+        spellCaster.PrepareSpell(wrapGraph);
+
+        Debug.Log($"[SpellEditorUI] Применено: dmg={result.Damage:F1} " +
+                  $"range={result.Range:F1} attack={result.GetDominantAttack()}");
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────
 
     private SpellGraph BuildCalculationGraph(GraphModel uiGraph)
     {
+        if (uiGraph == null || uiGraph.Nodes.Count == 0)
+        {
+            Debug.LogWarning("[SpellEditorUI] Граф пуст.");
+            return null;
+        }
+
         var graph = new SpellGraph();
-        var map = new System.Collections.Generic.Dictionary<string, GraphNode>();
-        var processed = new System.Collections.Generic.HashSet<string>();
+        var map = new Dictionary<string, GraphNode>();
+        var processed = new HashSet<string>();
 
         foreach (var uiNode in uiGraph.Nodes)
         {
             NodeBase data = uiGraph.GetElementData(uiNode.type);
             if (data == null) continue;
 
-            float w = (uiNode.weight == int.MaxValue) ? 1f : uiNode.weight;
-            GraphNode gNode = graph.CreateNode(data, 0, w);
-            map[uiNode.id] = gNode;
+            int num = uiNode.weight == int.MaxValue ? 0 : uiNode.weight;
+            float baseW = data.Weight > 0 ? data.Weight : 1f;
+            GraphNode gn = graph.CreateNode(data, num, baseW);
+            map[uiNode.id] = gn;
 
             if (uiNode.type == ElementType.None)
-                graph.StartNode = gNode;
+                graph.StartNode = gn;
         }
 
         foreach (var uiNode in uiGraph.Nodes)
         {
-            foreach (string targetId in uiNode.connectedIds)
+            foreach (var targetId in uiNode.connectedIds)
             {
                 string key = string.Compare(uiNode.id, targetId) < 0
                     ? uiNode.id + "_" + targetId
                     : targetId + "_" + uiNode.id;
 
-                if (!processed.Contains(key) && map.ContainsKey(uiNode.id) && map.ContainsKey(targetId))
+                if (!processed.Contains(key)
+                    && map.ContainsKey(uiNode.id)
+                    && map.ContainsKey(targetId))
                 {
                     graph.Connect(map[uiNode.id], map[targetId]);
                     processed.Add(key);
@@ -148,10 +170,26 @@ public class SpellEditorUI : MonoBehaviour
 
         if (graph.StartNode == null)
         {
-            Debug.LogError("[SpellEditorUI] Нет стартового узла (ElementType.None) в графе!");
+            Debug.LogError("[SpellEditorUI] Нет стартового узла (ElementType.None)!");
             return null;
         }
 
+        return graph;
+    }
+
+    /// <summary>
+    /// Оборачивает готовый NodeBase в минимальный SpellGraph:
+    /// StartNode (None) → resultNode.
+    /// SpellGraphSolver.SlowGraph пройдёт его без изменений.
+    /// </summary>
+    private SpellGraph WrapResultInGraph(NodeBase result)
+    {
+        var graph = new SpellGraph();
+        var startNode = graph.CreateNode(new NoneElement(), 0, 1f);
+        var resultNode = graph.CreateNode(result, 1, result.Weight);
+        graph.StartNode = startNode;
+        graph.Connect(startNode, resultNode);
+        graph.CalculateWeight();
         return graph;
     }
 }

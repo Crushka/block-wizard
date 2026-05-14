@@ -9,7 +9,11 @@ public class SpellProjectile : MonoBehaviour
 {
     private float _damage, _range, _speed;
     private Vector3 _startPos;
+    private Vector3 _flyDirection;
     private bool _isDestroyed = false;
+
+    private Vector3 _rotationAxis;
+    private float _rotationSpeed;
 
     public void Setup(float damage, float range, float speed)
     {
@@ -17,11 +21,18 @@ public class SpellProjectile : MonoBehaviour
         _range = range;
         _speed = speed;
         _startPos = transform.position;
+
+        _flyDirection = transform.forward;
+        _rotationAxis = UnityEngine.Random.onUnitSphere;
+        _rotationSpeed = UnityEngine.Random.Range(100f, 500f);
+        transform.rotation = UnityEngine.Random.rotation;
     }
 
     void Update()
     {
-        transform.Translate(Vector3.forward * _speed * Time.deltaTime, Space.Self);
+        transform.position += _flyDirection * _speed * Time.deltaTime;
+
+        transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
 
         if (Vector3.Distance(_startPos, transform.position) >= _range)
             Destroy(gameObject);
