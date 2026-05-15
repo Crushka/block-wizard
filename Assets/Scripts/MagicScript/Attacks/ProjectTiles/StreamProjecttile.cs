@@ -27,11 +27,46 @@ public class StreamProjecttile : MonoBehaviour
         dir += transform.up * 0.15f;
         dir.Normalize();
 
+        transform.rotation = Quaternion.LookRotation(dir);
+
         _rb.linearVelocity = dir * speed;
 
         _rb.useGravity = false;
 
         Destroy(gameObject, lifetime);
+    }
+
+    public void SetupVisual(NodeBase node)
+    {
+        var renderers = GetComponentsInChildren<Renderer>();
+        foreach (var rend in renderers)
+        {
+            foreach (var mat in rend.materials)
+            {
+                if (mat.HasProperty("_BaseColor"))
+                {
+                   
+                    Color c = node.PrimaryColor;
+        
+                    mat.SetColor("_BaseColor", c);
+                }
+
+                if (mat.HasProperty("_Color"))
+                {
+                    float originalAlpha = mat.GetColor("_Color").a;
+                    Color c = node.PrimaryColor;
+                    c.a = originalAlpha;
+                    mat.SetColor("_Color", c);
+                }
+
+                if (mat.HasProperty("_EmissionColor"))
+                {
+                    mat.EnableKeyword("_EMISSION");
+                    mat.SetColor("_EmissionColor", node.PrimaryColor * node.EmissionIntensity);
+                }
+            }
+        }
+
     }
 
 

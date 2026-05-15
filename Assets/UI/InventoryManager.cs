@@ -23,6 +23,17 @@ public class InventoryManager : MonoBehaviour
         CreateNode(ElementType.Lightning);
         CreateNode(ElementType.Water); 
         CreateNode(ElementType.Cold);
+        CreateNode(ElementType.Water);
+
+        CreateNode(ElementType.Water);
+        CreateNode(ElementType.Water);
+        CreateNode(ElementType.Water);
+        CreateNode(ElementType.Water);
+        CreateNode(ElementType.Earth);
+        CreateNode(ElementType.Earth);
+
+
+
     }
 
     public void CreateNode(ElementType type)

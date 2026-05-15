@@ -45,6 +45,25 @@ public class BeamProjectile : MonoBehaviour
         }
     }
 
+    public void SetupVisual(NodeBase node)
+    {
+        BeamColor = node.PrimaryColor;
+        StartWidth = 0.03f + 0.03f * node.EmissionIntensity;
+        EndWidth = 0.01f + 0.01f * node.EmissionIntensity;
+
+        // Материал обязателен для LineRenderer чтобы цвет применился
+        _line.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
+
+        SetupLine();
+
+        var light = GetComponent<Light>();
+        if (light != null)
+        {
+            light.color = node.PrimaryColor;
+            light.intensity = node.EmissionIntensity * 2f;
+        }
+    }
+
     private void SetupLine()
     {
         _line.positionCount = 2;

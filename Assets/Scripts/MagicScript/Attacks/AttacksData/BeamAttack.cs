@@ -74,5 +74,7 @@ public class BeamAttack : IAttack
             Object.Destroy(_activeBeam);
             _activeBeam = null;
         }
+
+        _beamScript.SetupVisual(_nodeData);
     }
 }

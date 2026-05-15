@@ -173,6 +173,7 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
                 RefreshGraph();
             }
         }
+       
     }
 
     public void OnScroll(PointerEventData data)

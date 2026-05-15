@@ -72,6 +72,8 @@ public class ThunderAttack : IAttack
             return;
         }
 
+        _boltScript.SetupVisual(_nodeData);
+
         _isCasting = true;
         _damageTimer = 0f;
     }

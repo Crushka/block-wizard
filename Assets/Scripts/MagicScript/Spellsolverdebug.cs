@@ -2,29 +2,14 @@
 using System.Linq;
 using UnityEngine;
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Типы шагов визуализации
-// ──────────────────────────────────────────────────────────────────────────────
-
 public enum VizStepType
-{
-    SubgraphSplit,   // Шаг 2: BFS нашёл узлы подграфа
-    CycleFound,      // Шаг 3: найден цикл
-    CycleCollapsed,  // Шаг 5: цикл схлопнут в один узел
-    TreeCollapsed,   // Шаг 6: дерево свёрнуто
-    FinalResult,     // Шаг 8: финальный результат
+{ 
+    SubgraphSplit,  
+    CycleFound,     
+    CycleCollapsed,  
+    TreeCollapsed, 
+    FinalResult, 
 }
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Шаг визуализации.
-//
-// Nodes — полный снимок графа на этот момент в виде List<NodeModel>.
-// NodeModel.id совпадает со стабильным id узла на всё время Solve,
-// поэтому NodeView.Initialize(model) / UpdateVisuals() работают напрямую.
-//
-// HighlightIds   — подмножество NodeModel.id узлов которые надо выделить.
-// HighlightEdges — пары (idA, idB) рёбер которые надо выделить.
-// ──────────────────────────────────────────────────────────────────────────────
 
 public class VizStep
 {
@@ -34,10 +19,6 @@ public class VizStep
     public List<string> HighlightIds;
     public List<(string, string)> HighlightEdges;
 }
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Главный класс — полная замена SpellGraphSolver.SlowGraph()
-// ──────────────────────────────────────────────────────────────────────────────
 
 public static class SpellSolverDebug
 {
@@ -58,13 +39,6 @@ public static class SpellSolverDebug
         return id;
     }
 
-    // ── Публичный метод ────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Полная замена SpellGraphSolver.SlowGraph().
-    /// Возвращает (финальный NodeBase, список шагов).
-    /// Каждый шаг содержит List&lt;NodeModel&gt; готовый для NodeView.Initialize().
-    /// </summary>
     public static (NodeBase result, List<VizStep> steps) Solve(SpellGraph graph)
     {
         _nodeIds = new Dictionary<GraphNode, string>();

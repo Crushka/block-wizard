@@ -46,6 +46,7 @@ public class Stream : IAttack
         {
             float dmg = _nodeData != null ? _nodeData.Damage : 10f;
             stream.Setup(dmg, ProjectileSpeed, ProjectileLifetime, SpreadAngle);
+            stream.SetupVisual(_nodeData);
         }
         else
         {

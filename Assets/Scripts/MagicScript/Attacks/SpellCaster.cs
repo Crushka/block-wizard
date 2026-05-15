@@ -17,6 +17,7 @@ public class SpellCaster : MonoBehaviour
     public void PrepareSpellFromNode(NodeBase result)
     {
         Debug.Log($"dmg : {result.Damage} | speed : {result.Speed} | range : {result.Range}");
+        
         _currentAttack = attackFactory.GetAttack(result);
     }
 
@@ -37,6 +38,7 @@ public class SpellCaster : MonoBehaviour
         }
 
         Debug.Log($"dmg : {result.Damage} | speed : {result.Speed} | range : {result.Range}");
+        Debug.Log($"color : {result.PrimaryColor} | emi : {result.EmissionIntensity} | size : {result.ParticleSize}");
         _currentAttack = attackFactory.GetAttack(result);
     }
 

@@ -27,6 +27,7 @@ public class SpikeAttack : IAttack
         var go = new GameObject("SpikeAttackRunner");
         _runner = go.AddComponent<SpikeAttackRunner>();
         _runner.Run(spawnPoint, _nodeData, _prefab, Spacing, SpawnDelay, RaycastHeightOffset, GroundMask);
+
     }
 
     public void Stop()

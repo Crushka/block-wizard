@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using UnityEngine;
 public abstract class ElementNode : NodeBase { }
 
 
@@ -38,6 +38,10 @@ public class FireNode : ElementNode // 1
         Range = 10f;
         Speed = 1.2f;
         Weight = 1.23f;
+        PrimaryColor = new Color(0.98f, 0.39f, 0.0f);
+        EmissionIntensity = 1.4f;
+        TrailLength = 1.3f;
+        ParticleSize = 1.2f;
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -66,6 +70,10 @@ public class WaterNode : ElementNode // 2
         Range = 8f;
         Speed = 1.6f;
         Weight = 1.3f;
+        PrimaryColor = new Color(0.35f, 0.82f, 0.95f);  // ярко-синий
+        EmissionIntensity = 0.8f;
+        TrailLength = 1.1f;
+        ParticleSize = 0.9f;
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -94,6 +102,10 @@ public class EartNode : ElementNode // 3
         Range = 25f;
         Speed = 1.2f;
         Weight = 1.2f;
+        PrimaryColor = new Color(0.71f, 0.38f, 0.13f); // коричневый
+        EmissionIntensity = 0.6f;
+        TrailLength = 0.7f;
+        ParticleSize = 1.5f;   // крупные обломки
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -122,6 +134,10 @@ public class AirNode : ElementNode // 4
         Range = 30f;
         Speed = 2f;
         Weight = 1.3f;
+        PrimaryColor = new Color(0.94f, 1.0f, 1.0f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -150,6 +166,10 @@ public class ColdNode : ElementNode // 4
         Range = 8f;
         Speed = 1.2f;
         Weight = 1.4f;
+        PrimaryColor = new Color(0.31f, 0.85f, 0.89f);   // бледно-голубой
+        EmissionIntensity = 0.7f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.8f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -178,6 +198,10 @@ public class LightningNode : ElementNode // 5
         Range = 8f;
         Speed = 1.2f;
         Weight = 1.2f;
+        PrimaryColor      = new Color(0.93f, 0.91f, 0.27f);    // электрический бело-голубой
+        EmissionIntensity = 1.8f;   // самый яркий
+        TrailLength       = 1.6f;
+        ParticleSize      = 0.7f;
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -210,6 +234,10 @@ public class SteamNode : ElementNode
         Range = 8f;
         Speed = 1.2f;
         Weight = 1.3f;
+        PrimaryColor = new Color(0.95f, 0.95f, 0.95f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
@@ -237,6 +265,10 @@ public class IceNode : ElementNode
         Range = 8f;
         Speed = 1.2f;
         Weight = 1.5f;
+        PrimaryColor = new Color(0.36f, 0.45f, 0.90f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
@@ -264,6 +296,10 @@ public class MudNode : ElementNode
         Range = 8f;
         Speed = 1.2f;
         Weight = 1.5f;
+        PrimaryColor = new Color(0.51f, 0.45f, 0.05f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
@@ -291,6 +327,10 @@ public class PlasmaNode : ElementNode
         Range = 8f;
         Speed = 1.2f;
         Weight = 0.5f;
+        PrimaryColor = new Color(1.0f, 0.68f, 0.02f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };

@@ -37,6 +37,7 @@ public class SpikeAttackRunner : MonoBehaviour
                 GameObject spike = Instantiate(prefab, groundPos.Value, Quaternion.identity);
                 var proj = spike.GetComponent<SpikeProjectile>();
                 proj?.Setup(damage, speed);
+                proj?.SetupVisual(nodeData);
             }
 
             distance += spacing;
@@ -54,6 +55,8 @@ public class SpikeAttackRunner : MonoBehaviour
             return hit.point;
         return null;
     }
+
+
 }
 
 public class SpikeProjectile : MonoBehaviour
@@ -76,6 +79,38 @@ public class SpikeProjectile : MonoBehaviour
     {
         _damage = damage;
         _speed  = speed;
+    }
+
+    public void SetupVisual(NodeBase node)
+    {
+        var renderers = GetComponentsInChildren<Renderer>();
+        foreach (var rend in renderers)
+        {
+            foreach (var mat in rend.materials)
+            {
+                if (mat.HasProperty("_BaseColor"))
+                {
+                    float originalAlpha = mat.GetColor("_BaseColor").a;
+                    Color c = node.PrimaryColor;
+                    c.a = originalAlpha;
+                    mat.SetColor("_BaseColor", c);
+                }
+
+                if (mat.HasProperty("_Color"))
+                {
+                    float originalAlpha = mat.GetColor("_Color").a;
+                    Color c = node.PrimaryColor;
+                    c.a = originalAlpha;
+                    mat.SetColor("_Color", c);
+                }
+
+                if (mat.HasProperty("_EmissionColor"))
+                {
+                    mat.EnableKeyword("_EMISSION");
+                    mat.SetColor("_EmissionColor", node.PrimaryColor * node.EmissionIntensity);
+                }
+            }
+        }
     }
 
     private void Start()
