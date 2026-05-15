@@ -378,9 +378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnEnemies
   enemies:
-  - {fileID: 8234226200916244401, guid: 4ebb5c485dcb75846a40a76192eaeaaf, type: 3}
-  - {fileID: 6517052385958834344, guid: 6756aa98df139ae428ddc830132be8b8, type: 3}
-  - {fileID: 2698602749529630488, guid: 4084f1e2913711343abf20f15b30472e, type: 3}
+  - {fileID: 6955141721753780560, guid: 989e2f34efbb68643aa297786654a622, type: 3}
 --- !u!1 &344236050
 GameObject:
   m_ObjectHideFlags: 0

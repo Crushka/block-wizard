@@ -9,7 +9,7 @@ public class SpawnEnemies : MonoBehaviour
     {  
         for(int i = 0; i < enemies.Length; i++)
         {
-            for(int j = 0; j < 1; j++)
+            for(int j = 0; j < 10; j++)
             {
                 if(enemies[i].name == "Slime")
                 {
