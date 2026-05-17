@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 2b984243444041b49bd8047c41ff0925
+guid: 74342bf7d98a36443935fc0886c9da10
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,18 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Magic
-    second: {fileID: 2100000, guid: c66f4a9bb0a13ea4e993883130add6fe, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
       name: Material.001
-    second: {fileID: 2100000, guid: 680e8fa2b80fa064689679e15d39f324, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Material.002
-    second: {fileID: 2100000, guid: 3c5148d2eab43a3409d357196c6102e7, type: 2}
+    second: {fileID: 2100000, guid: 7282dd85ff9ad3742abbac9c9e410dd9, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
