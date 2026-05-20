@@ -4,13 +4,13 @@ public class BatAI : MonoBehaviour, IDamageable
 {
     [Header("Ссылки")]
     [SerializeField] private Transform player;
-    [SerializeField] private LayerMask groundMask; // Должен включать ТОЛЬКО уровень (Ground/Default)
+    [SerializeField] private LayerMask groundMask;
 
     [Header("Настройки стрельбы")]
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float fireRate = 1.5f;
-    [SerializeField] private LayerMask obstacleMask; // Должен включать стены, но НЕ саму мышь и НЕ игрока
+    [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private float arcHeight = 2f;
     [SerializeField] private float speedMultiplier = 3f;
     [Range(0f, 1f)]
@@ -18,7 +18,7 @@ public class BatAI : MonoBehaviour, IDamageable
 
     [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float heightAdjustSpeed = 2f; // Немного уменьшим для плавности
+    [SerializeField] private float heightAdjustSpeed = 2f;
     [SerializeField] private float stopDistance = 4f;
     [SerializeField] private float reengageDistance = 6f;
     [SerializeField] private float hoverHeight = 3f;
@@ -37,17 +37,16 @@ public class BatAI : MonoBehaviour, IDamageable
     {
         if (player == null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            GameObject playerObj = GameObject.FindGameObjectWithTag("PlayerBody");
             if (playerObj != null) player = playerObj.transform;
         }
 
-        // ВАЖНО: Если маски не настроены в инспекторе, код ниже может привести к ошибкам
         if (groundMask == 0) Debug.LogWarning("BatAI: Ground Mask не установлена!");
     }
 
     void Update()
     {
-        if (isDead || player == null) return; // Проверка на смерть
+        if (isDead || player == null) return;
 
         CalculatePlayerVelocity();
 
@@ -55,7 +54,6 @@ public class BatAI : MonoBehaviour, IDamageable
 
         LookAtPlayer();
 
-        // Логика переключения состояний
         if (distance >= reengageDistance) isInAttackRange = false;
 
         if (!isInAttackRange && distance > stopDistance)
@@ -65,7 +63,6 @@ public class BatAI : MonoBehaviour, IDamageable
         else
         {
             isInAttackRange = true;
-            // Когда стоим, просто парим
             MaintainHeight();
             TryShoot();
         }
@@ -74,12 +71,10 @@ public class BatAI : MonoBehaviour, IDamageable
     void CalculatePlayerVelocity()
     {
         Vector3 currentPlayerPos = player.position;
-        // Защита от деления на 0 в первом кадре или при паузе
         float dt = Time.deltaTime > 0 ? Time.deltaTime : 0.01f;
         playerVelocity = (currentPlayerPos - lastPlayerPosition) / dt;
         lastPlayerPosition = currentPlayerPos;
 
-        // Ограничиваем безумную скорость, если игрок телепортировался
         if (playerVelocity.magnitude > 50f) playerVelocity = Vector3.zero;
     }
 
@@ -87,10 +82,8 @@ public class BatAI : MonoBehaviour, IDamageable
     {
         if (Time.time >= nextFireTime)
         {
-            // ИСПРАВЛЕНИЕ: Проверяем линию видимости не в ноги, а в центр игрока
             Vector3 playerCenter = player.position + Vector3.up * 1.0f;
 
-            // Рисуем линию в окне Scene (красная - заблокировано, зеленая - чисто)
             bool blocked = Physics.Linecast(firePoint.position, playerCenter, obstacleMask);
             Debug.DrawLine(firePoint.position, playerCenter, blocked ? Color.red : Color.green);
 
@@ -173,8 +166,6 @@ public class BatAI : MonoBehaviour, IDamageable
     void MaintainHeight()
     {
         RaycastHit hit;
-        // Пускаем луч вниз. 
-        // ВАЖНО: Мышь должна игнорировать свой слой и слой игрока!
         if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out hit, 20f, groundMask))
         {
             float targetY = hit.point.y + hoverHeight;
@@ -208,7 +199,6 @@ public class BatAI : MonoBehaviour, IDamageable
         isDead = true;
         Debug.Log("Мышь погибла!");
 
-        // Включаем гравитацию, чтобы тушка упала
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null) rb.useGravity = true;
 

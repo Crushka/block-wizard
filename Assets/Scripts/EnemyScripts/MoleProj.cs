@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MoleProj : MonoBehaviour
 {
-    public float gravityScale = 3f;
+    public float gravityScale = 1.2f;
     public float damage = 5f;
 
     private void OnCollisionEnter(Collision collision)
@@ -11,7 +11,7 @@ public class MoleProj : MonoBehaviour
 
         if (damageable != null)
         {
-            if (collision.gameObject.CompareTag("Player"))
+            if (collision.gameObject.CompareTag("PlayerBody"))
             {
                 damageable.takeDamage(damage);
             }

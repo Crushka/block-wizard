@@ -292,7 +292,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.17737745, y: -0, z: -0, w: 0.98414296}
-  m_LocalPosition: {x: 0, y: 3.91, z: -15.76}
+  m_LocalPosition: {x: 0, y: 3.09, z: -13.57}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -378,9 +378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpawnEnemies
   enemies:
-  - {fileID: 2970653034135132446, guid: d23408deb56183d4f986901066883bdc, type: 3}
-  cell: {fileID: 0}
-  cellQuantity: 0
+  - {fileID: 3602737079790508653, guid: adcaaeb02f3cf8540b2de3e98c9bea8f, type: 3}
 --- !u!1 &344236050
 GameObject:
   m_ObjectHideFlags: 0
@@ -759,13 +757,9 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 321731911433362708, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 601766822806711376, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
       propertyPath: m_TagString
-      value: PlayerBody
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2538559597644866719, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
       propertyPath: aimMarker
@@ -838,10 +832,6 @@ PrefabInstance:
     - target: {fileID: 3561589929134258788, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7242795535153054943, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
-      propertyPath: m_TagString
-      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 8365344179072560971, guid: 1e8b502893460b0409e0ef66c8e9b6c8, type: 3}
       propertyPath: playerCamera

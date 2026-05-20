@@ -240,13 +240,14 @@ MonoBehaviour:
   projectilePrefab: {fileID: 2341596430171252547, guid: 6ac3ef060dd550241a589bbbc2a177e4, type: 3}
   firePoint: {fileID: 7789715790287270517}
   visuals: {fileID: 2682134308477542763}
+  burrowEffect: {fileID: 0}
   triggerDistance: 12
-  ambushRadius: 5
+  ambushRadius: 9
   burrowSpeed: 5
   minBurrowTime: 3
   attackDuration: 3
   fireRate: 1
-  spitSpeed: 15
+  spitSpeed: 10
   rotationSpeed: 10
   emergeTime: 1
   submergeTime: 1

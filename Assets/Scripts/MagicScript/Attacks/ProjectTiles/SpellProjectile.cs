@@ -30,6 +30,7 @@ public class SpellProjectile : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         IDamageable damageable = other.GetComponent<IDamageable>();
+        Debug.Log("Попа");
         if(damageable != null && !other.CompareTag("Player"))
         {
             damageable.takeDamage(_damage);

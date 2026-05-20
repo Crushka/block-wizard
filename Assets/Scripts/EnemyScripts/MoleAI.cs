@@ -58,10 +58,9 @@ public class MoleAI : MonoBehaviour, IDamageable
 
     private void FindTarget()
     {
-        // Ищем игрока, только если цель не задана или это префаб
         if (target == null || target.gameObject.scene.name == null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            GameObject playerObj = GameObject.FindGameObjectWithTag("PlayerBody");
             if (playerObj != null) target = playerObj.transform;
         }
     }
@@ -70,7 +69,6 @@ public class MoleAI : MonoBehaviour, IDamageable
     {
         if (isDead) return;
 
-        // Если игрок пропал (например, убит), ищем его снова
         if (target == null)
         {
             FindTarget();
@@ -134,7 +132,6 @@ public class MoleAI : MonoBehaviour, IDamageable
         Vector3 desiredPoint = target.position + randomOffset;
 
         NavMeshHit hit;
-        // Расширяем поиск точки на NavMesh
         if (NavMesh.SamplePosition(desiredPoint, out hit, ambushRadius * 2, NavMesh.AllAreas))
         {
             ambushPoint = hit.position;
@@ -143,14 +140,12 @@ public class MoleAI : MonoBehaviour, IDamageable
         }
         else
         {
-            // Если точку не нашли, попробуем еще раз в следующем кадре
             Debug.LogWarning($"{gameObject.name}: Не удалось найти точку на NavMesh!");
         }
     }
 
     private void UpdatePositioning()
     {
-        // Если крот "застрял" или дошел до точки
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.1f)
         {
             StartCoroutine(EmergeRoutine());
@@ -159,7 +154,6 @@ public class MoleAI : MonoBehaviour, IDamageable
 
     private IEnumerator EmergeRoutine()
     {
-        // Защита от двойного запуска
         if (currentState == MoleState.Emerging) yield break;
         currentState = MoleState.Emerging;
 
@@ -196,7 +190,6 @@ public class MoleAI : MonoBehaviour, IDamageable
 
         if (moleCollider) moleCollider.enabled = false;
 
-        // Анимация ухода под землю здесь
         yield return new WaitForSeconds(submergeTime);
 
         if (!isDead) EnterBurrowing();
@@ -216,21 +209,31 @@ public class MoleAI : MonoBehaviour, IDamageable
     private void Spit()
     {
         if (projectilePrefab == null || firePoint == null) return;
+
+        float currentSpitSpeed = 28f;
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, transform.rotation);
         Rigidbody rbProj = proj.GetComponent<Rigidbody>();
+
         if (rbProj != null)
         {
-            Vector3 targetPos = target.position + Vector3.up * 1.2f;
-            Vector3 spitDir = (targetPos - firePoint.position).normalized;
-            rbProj.linearVelocity = spitDir * spitSpeed;
+            float dist = Vector3.Distance(firePoint.position, target.position);
+            float travelTime = dist / currentSpitSpeed;
+
+            Vector3 playerVelocity = Vector3.zero;
+            CharacterController cc = target.GetComponent<CharacterController>();
+            if (cc != null) playerVelocity = cc.velocity;
+
+            float gravityCompensation = dist * 0.12f;
+            Vector3 predictedPos = target.position + (playerVelocity * travelTime) + Vector3.up * (1.2f + gravityCompensation);
+
+            Vector3 spitDir = (predictedPos - firePoint.position).normalized;
+            rbProj.linearVelocity = spitDir * currentSpitSpeed;
         }
         Destroy(proj, 5f);
     }
-
     public void takeDamage(float amount)
     {
         if (isDead) return;
-        // Можно получать урон только когда не под землей
         if (currentState == MoleState.Burrowing || currentState == MoleState.Positioning || currentState == MoleState.Submerging) return;
 
         health -= amount;
@@ -251,8 +254,6 @@ public class MoleAI : MonoBehaviour, IDamageable
             agent.isStopped = true;
             agent.enabled = false;
         }
-
-        // Показываем визуал, чтобы тело было видно при смерти
         if (visuals) visuals.SetActive(true);
         if (burrowEffect) burrowEffect.SetActive(false);
 

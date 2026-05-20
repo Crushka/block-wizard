@@ -10,6 +10,7 @@ TagManager:
   - SprayProjectile
   - StreamProjectile
   - Mole
+  - PlayerBody
   layers:
   - Default
   - TransparentFX

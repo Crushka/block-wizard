@@ -129,7 +129,7 @@ public class AirNode : ElementNode // 4
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Earth, ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Thunder;
+    public override AttackType GetDominantAttack() => AttackType.Spray;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
@@ -185,7 +185,7 @@ public class SteamNode : ElementNode
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
     public override List<ElementType> IncompatibleWith { get; } = new() { ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Stream;
 
     public override NodeComposition GetBaseComposition()
     {
@@ -212,7 +212,7 @@ public class MudNode : ElementNode
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
     public override List<ElementType> IncompatibleWith { get; } = new() { ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
 
     public override NodeComposition GetBaseComposition()
     {

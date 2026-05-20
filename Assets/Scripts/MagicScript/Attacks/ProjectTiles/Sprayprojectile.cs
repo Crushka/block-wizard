@@ -43,15 +43,17 @@ public class SprayProjectile : MonoBehaviour
         if (damageable != null)
         {
             damageable.takeDamage(_damage);
+            Debug.Log("Попа");
+
         }
         Die();
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("SprayProjectile")) return;
-        Die();
-    }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("SprayProjectile")) return;
+    //    Die();
+    //}
 
     private void Die()
     {
