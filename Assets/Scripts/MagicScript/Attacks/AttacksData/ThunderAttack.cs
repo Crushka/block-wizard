@@ -86,9 +86,4 @@ public class ThunderAttack : IAttack
         _isCasting = true;
         _damageTimer = 0f;
     }
-
-    float IAttack.getDamage()
-    {
-        return _nodeData?.Damage ?? 10f;
-    }
 }

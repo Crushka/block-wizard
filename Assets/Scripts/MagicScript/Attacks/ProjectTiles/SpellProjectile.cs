@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -96,6 +97,8 @@ public class SpellProjectile : MonoBehaviour
 
         if (Vector3.Distance(_startPos, transform.position) >= _range)
             Destroy(gameObject);
+    }
+    private void OnTriggerEnter(Collider other) { 
         IDamageable damageable = other.GetComponent<IDamageable>();
         Debug.Log("Попа");
         if(damageable != null && !other.CompareTag("Player"))

@@ -5116,7 +5116,7 @@ MonoBehaviour:
   player: {fileID: 0}
   groundMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 0
   moveSpeed: 4
   hoverHeight: 2.5
   heightAdjustSpeed: 3

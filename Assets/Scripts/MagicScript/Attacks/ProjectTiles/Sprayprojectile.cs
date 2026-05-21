@@ -103,7 +103,9 @@ public class SprayProjectile : MonoBehaviour
     {
         transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
     }
-        if (other.CompareTag("SprayProjectile") || other.CompareTag("StreamProjectile") || other.CompareTag("Player")) return;
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("SprayProjectile") || other.CompareTag("Player")) return;
 
         IDamageable damageable = other.GetComponent<IDamageable>();
         if (damageable != null)

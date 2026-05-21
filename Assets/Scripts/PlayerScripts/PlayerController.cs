@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Настройки движения")]
     public float speed = 6.0f;
+    public float aimSpeed = 3.0f;
     public float jumpForce = 8.0f;
     public float gravity = 20.0f;
 
@@ -29,8 +30,17 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController controller;
 
+    private float animInputX = 0f;
+    private float animInputY = 0f;
+
     private InputAction moveAction;
     private InputAction jumpAction;
+    private InputAction dashAction;
+
+    private bool isDashing = false;
+    private float dashTimer = 0f;
+    private float dashCooldownTimer = 0f;
+    private Vector3 dashDirection = Vector3.zero;
 
     void Awake()
     {
@@ -49,18 +59,24 @@ public class PlayerController : MonoBehaviour
         jumpAction = new InputAction("Jump", InputActionType.Button);
         jumpAction.AddBinding("<Keyboard>/space");
         jumpAction.AddBinding("<Gamepad>/buttonSouth");
+
+        dashAction = new InputAction("Dash", InputActionType.Button);
+        dashAction.AddBinding("<Keyboard>/shift");
+        dashAction.AddBinding("<Gamepad>/buttonEast");
     }
 
     void OnEnable()
     {
         moveAction.Enable();
         jumpAction.Enable();
+        dashAction.Enable();
     }
 
     void OnDisable()
     {
         moveAction.Disable();
         jumpAction.Disable();
+        dashAction.Disable();
     }
 
     void Start()

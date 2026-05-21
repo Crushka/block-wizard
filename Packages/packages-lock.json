@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.placement-tool": {
+      "version": "https://github.com/alexandregaudencio/PlacementTool.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "2f083401d1b44f01b161215402b0e8bb7938034b"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 1,

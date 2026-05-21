@@ -58,9 +58,4 @@ public class SprayAttack : IAttack
             //spray.SetupVisual(_nodeData);
         }
     }
-
-    float IAttack.getDamage()
-    {
-        return _nodeData?.Damage ?? 10f;
-    }
 }
