@@ -22,9 +22,12 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         Data = data;
         _rt = GetComponent<RectTransform>();
-        _canvas = GetComponentInParent<Canvas>();
+        _canvas = GetComponentInParent<Canvas>(true);
         _cg = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
         _initialSize = _rt.sizeDelta;
+
+        Debug.Log($"[NodeView.Init] {data.type} | canvas={(_canvas != null ? _canvas.name : "NULL")} | scaleFactor={(_canvas != null ? _canvas.scaleFactor : 0)}");
+
         UpdateVisuals();
     }
 
@@ -54,7 +57,11 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         if (Data.type == ElementType.None) { eventData.pointerDrag = null; return; }
 
         if (_canvas == null) _canvas = GetComponentInParent<Canvas>();
+
+        Debug.Log($"[NodeView.BeginDrag] canvas={(_canvas != null ? _canvas.name : "NULL")} | parent before={transform.parent?.name}");
         transform.SetParent(_canvas.transform, true);
+
+        Debug.Log($"[NodeView.BeginDrag] parent after={transform.parent?.name}");
         if (_cg != null) { _cg.blocksRaycasts = false; _cg.alpha = 0.6f; }
     }
 

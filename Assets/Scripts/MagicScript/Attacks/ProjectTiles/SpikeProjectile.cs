@@ -12,24 +12,29 @@ public class SpikeAttackRunner : MonoBehaviour
     }
 
     private IEnumerator SpawnSpikes(Transform spawnPoint, NodeBase nodeData, GameObject prefab,
-                                     float spacing, float spawnDelay,
-                                     float raycastHeightOffset, LayerMask groundMask)
+                                 float spacing, float spawnDelay,
+                                 float raycastHeightOffset, LayerMask groundMask)
     {
-        float range = nodeData?.Range  ?? 12f;
+        float range = nodeData?.Range ?? 12f;
         float damage = nodeData?.Damage ?? 15f;
-        float speed = nodeData?.Speed  ?? 6f;
+        float speed = nodeData?.Speed ?? 6f;
 
+        // 1. Фиксируем направление в момент каста
         Vector3 dir = spawnPoint.forward;
         dir.y = 0f;
         dir.Normalize();
 
-        Vector3 origin = spawnPoint.position;
-        origin = GetGroundPoint(origin, dir, 0f, raycastHeightOffset, groundMask) ?? origin;
+        // 2. КРИТИЧЕСКИЙ ШАГ: Фиксируем стартовую позицию игрока в переменную!
+        Vector3 startingOrigin = spawnPoint.position;
+
+        // Корректируем стартовую точку по земле (если нужно)
+        Vector3 origin = GetGroundPoint(startingOrigin, dir, 0f, raycastHeightOffset, groundMask) ?? startingOrigin;
 
         float distance = spacing;
         while (distance <= range)
         {
-            Vector3 worldPos = spawnPoint.position + dir * distance;
+            // 3. Считаем позицию от ЗАФИКСИРОВАННОЙ стартовой точки, а не от живого spawnPoint
+            Vector3 worldPos = startingOrigin + dir * distance;
             Vector3? groundPos = GetGroundPoint(worldPos, dir, distance, raycastHeightOffset, groundMask);
 
             if (groundPos.HasValue)

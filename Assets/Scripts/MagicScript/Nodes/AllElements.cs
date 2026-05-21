@@ -79,7 +79,7 @@ public class WaterNode : ElementNode // 2
     public override List<ElementType> SynergyWith { get; } = new()
         { ElementType.Ice, ElementType.Poison, ElementType.Lightning, ElementType.Earth };
     public override List<ElementType> IncompatibleWith { get; } = new()
-        { ElementType.Ice };
+        {  };
 
     public override AttackType GetDominantAttack() => AttackType.Spray;
     public override NodeComposition GetBaseComposition()
@@ -175,7 +175,7 @@ public class ColdNode : ElementNode // 4
     public override List<ElementType> SynergyWith { get; } = new()
         { ElementType.Fire, ElementType.Lightning };
     public override List<ElementType> IncompatibleWith { get; } = new()
-        { ElementType.Earth, ElementType.Ice };
+        { ElementType.Earth };
 
     public override AttackType GetDominantAttack() => AttackType.Spray;
     public override NodeComposition GetBaseComposition()
