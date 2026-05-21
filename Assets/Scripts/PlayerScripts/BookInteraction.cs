@@ -64,6 +64,7 @@ public class BookInteraction : MonoBehaviour
         }
 
         isReading = !isReading;
+        if (isReading && SpellSlotManager.Instance != null) SpellSlotManager.Instance.OnBookOpened();
         Debug.Log($"[BookInteraction] isReading={isReading}, spellEditorUI={spellEditorUI}");
 
         if (spellEditorUI != null)

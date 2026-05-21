@@ -12,7 +12,9 @@ public class SlimeAI : MonoBehaviour, IDamageable
     [Header("Движение")]
     public Transform target;
     public float lookRadius = 15f;
+
     public float stopDistance = 2.5f;
+
     public float moveSpeed = 3.5f;
 
     [Header("Атака")]
@@ -74,7 +76,6 @@ public class SlimeAI : MonoBehaviour, IDamageable
         }
         else
         {
-            // Преследуем игрока
             agent.isStopped = false;
             agent.SetDestination(target.position);
         }
@@ -91,7 +92,9 @@ public class SlimeAI : MonoBehaviour, IDamageable
         if (target != null)
         {
             Vector3 attackDir = (target.position - transform.position).normalized;
-            attackDir.y = 0.2f;
+
+            attackDir.y = 0.2f; 
+
 
             rb.AddForce(attackDir * lungeForce, ForceMode.Impulse);
         }
@@ -109,7 +112,9 @@ public class SlimeAI : MonoBehaviour, IDamageable
             }
         }
 
-        yield return new WaitForSeconds(0.5f);
+
+        yield return new WaitForSeconds(0.5f); 
+
 
         agent.enabled = true;
         isAttacking = false;

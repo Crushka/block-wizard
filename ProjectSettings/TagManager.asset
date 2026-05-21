@@ -9,6 +9,8 @@ TagManager:
   - Golem
   - SprayProjectile
   - StreamProjectile
+  - Con
+  - NonePlayebleObject
   - Mole
   - PlayerBody
   layers:
@@ -18,8 +20,10 @@ TagManager:
   - Enemy
   - Water
   - UI
-  - Enemy
-  - Ground
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

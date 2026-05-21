@@ -25,7 +25,6 @@ public static class SpellSolverDebug
     private static readonly System.Random Rng = new System.Random();
     private const int MaxCollapseIterations = 250;
 
-    // Стабильный string-id для каждого GraphNode в рамках одного вызова Solve.
     private static Dictionary<GraphNode, string> _nodeIds;
     private static int _nextId;
 
@@ -48,11 +47,9 @@ public static class SpellSolverDebug
 
         graph.PrepareGraph();
 
-        // Раздаём id заранее, чтобы они не прыгали при добавлении новых узлов
         foreach (var node in CollectAllNodes(graph))
             GetId(node);
 
-        // ── Шаг 2: BFS-разбивка ───────────────────────────────────────────────
         var separateGraphs = SeparateGraph(graph);
 
         foreach (var subgraph in separateGraphs)
@@ -66,14 +63,11 @@ public static class SpellSolverDebug
                 HighlightEdges = EdgesOf(subgraph),
             });
 
-            // ── Шаги 3 + 5: циклы ─────────────────────────────────────────────
             CollapseCyclesWithSteps(subgraph, steps);
 
-            // ── Шаг 6: свёртка дерева ─────────────────────────────────────────
             CollapseTreeWithStep(subgraph, steps);
         }
 
-        // Финальный merge нескольких подграфов
         var collapsedNodes = separateGraphs
             .Where(sg => sg.Count > 0)
             .Select(sg => sg[0])
@@ -86,7 +80,6 @@ public static class SpellSolverDebug
         MixAlgorithms.IncreaseValue(finalNode.Data, null, graph.Weight);
         MixAlgorithms.IncreaseValue(finalNode.Data, null, finalNode.Data.Weight);
 
-        // ── Шаг 8: результат ──────────────────────────────────────────────────
         steps.Add(new VizStep
         {
             Type = VizStepType.FinalResult,
@@ -99,7 +92,6 @@ public static class SpellSolverDebug
         return (finalNode.Data, steps);
     }
 
-    // ── Шаги 3 + 5 ────────────────────────────────────────────────────────────
 
     private static void CollapseCyclesWithSteps(List<GraphNode> graphList, List<VizStep> steps)
     {
@@ -124,7 +116,6 @@ public static class SpellSolverDebug
             var smallest = allCycles.Where(c => c.Count == minSize).ToList();
             List<GraphNode> cycle = smallest[Rng.Next(smallest.Count)];
 
-            // Шаг 3: снимок ДО схлопывания
             steps.Add(new VizStep
             {
                 Type = VizStepType.CycleFound,
@@ -134,7 +125,6 @@ public static class SpellSolverDebug
                 HighlightEdges = EdgesOf(cycle),
             });
 
-            // Схлопываем
             var cycleSet = new HashSet<GraphNode>(cycle);
             GraphNode newNode = ProcessCycle(cycle);
             if (newNode == null) break;
@@ -177,7 +167,6 @@ public static class SpellSolverDebug
                 sortedNodes.Add(newNode);
             }
 
-            // Шаг 5: снимок ПОСЛЕ схлопывания
             steps.Add(new VizStep
             {
                 Type = VizStepType.CycleCollapsed,
@@ -194,7 +183,6 @@ public static class SpellSolverDebug
         graphList.AddRange(graph);
     }
 
-    // ── Шаг 6 ─────────────────────────────────────────────────────────────────
 
     private static void CollapseTreeWithStep(List<GraphNode> graphList, List<VizStep> steps)
     {
@@ -231,12 +219,6 @@ public static class SpellSolverDebug
         graphList.Add(result);
     }
 
-    // ── Snapshot: List<GraphNode> → List<NodeModel> ───────────────────────────
-    //
-    // NodeModel.id = GetId(node) — стабилен на всё время Solve.
-    // NodeModel.type = node.Data.NodeType — актуален на момент снимка.
-    // NodeModel.weight = округлённый node.Data.Weight.
-    // NodeModel.connectedIds — только рёбра внутри снимка (не за его пределы).
 
     private static List<NodeModel> Snapshot(List<GraphNode> nodes)
     {
@@ -262,7 +244,6 @@ public static class SpellSolverDebug
         return result;
     }
 
-    // ── Вспомогательные ───────────────────────────────────────────────────────
 
     private static List<GraphNode> CollectAllNodes(SpellGraph graph)
     {

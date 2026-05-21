@@ -7,6 +7,8 @@ public class SpellCaster : MonoBehaviour
 
     private IAttack _currentAttack;
 
+    public NodeBase CurrentSpellNode { get; private set; }
+
     public void PrepareSpell(SpellGraph graph)
     {
         NodeBase result = SpellGraphSolver.SlowGraph(graph);
@@ -17,7 +19,7 @@ public class SpellCaster : MonoBehaviour
     public void PrepareSpellFromNode(NodeBase result)
     {
         Debug.Log($"dmg : {result.Damage} | speed : {result.Speed} | range : {result.Range}");
-        
+        CurrentSpellNode = result;
         _currentAttack = attackFactory.GetAttack(result);
     }
 
@@ -45,7 +47,7 @@ public class SpellCaster : MonoBehaviour
     public void Cast() => _currentAttack?.Cast(spawnPoint);
     public void StopCast() => _currentAttack?.Stop();
 
-    
 
-   
+
+
 }
