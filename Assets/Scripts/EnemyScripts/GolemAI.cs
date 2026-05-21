@@ -72,7 +72,7 @@ public class GolemAI : MonoBehaviour, IDamageable
         enemyLayerMask = ~(1 << LayerMask.NameToLayer("Enemy"));
 
         if (target == null)
-            target = GameObject.FindGameObjectWithTag("Player")?.transform;
+            target = GameObject.FindGameObjectWithTag("PlayerBody")?.transform;
         if (target != null)
         {
             targetController = target.GetComponent<CharacterController>();
@@ -302,10 +302,8 @@ public class GolemAI : MonoBehaviour, IDamageable
         float dist = Vector3.Distance(throwPoint.position, target.position);
         float travelTime = dist / stoneSpeed;
 
-        // Считаем позицию игрока + упреждение
         Vector3 predictedTarget = target.position + (playerVelocity * travelTime * leadAccuracy);
 
-        // ИСПРАВЛЕНИЕ: Целимся в живот (чуть ниже центра), чтобы не попадать в шляпу
         float yOffset = (targetController != null) ? (targetController.height * 0.3f) : 0.8f;
         predictedTarget += Vector3.up * yOffset;
 

@@ -103,12 +103,23 @@ public class SprayProjectile : MonoBehaviour
     {
         transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
     }
+        if (other.CompareTag("SprayProjectile") || other.CompareTag("StreamProjectile") || other.CompareTag("Player")) return;
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("SprayProjectile")) return;
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.takeDamage(_damage);
+            Debug.Log("Попа");
+
+        }
         Die();
     }
+
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("SprayProjectile")) return;
+    //    Die();
+    //}
 
     private void Die()
     {

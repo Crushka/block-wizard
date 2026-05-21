@@ -209,14 +209,13 @@ public class LightningNode : ElementNode // 5
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Earth, ElementType.Ice };
 
-
     public override AttackType GetDominantAttack() => AttackType.Thunder;
-
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Lightning, 1.0f);
         comp.Add(AttackType.Thunder, 1.0f);
+        comp.Add(AttackType.Spray, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
@@ -305,7 +304,7 @@ public class MudNode : ElementNode
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
     public override List<ElementType> IncompatibleWith { get; } = new() { ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Thunder;
 
     public override NodeComposition GetBaseComposition()
     {

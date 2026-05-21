@@ -12,12 +12,12 @@ public class SlimeAI : MonoBehaviour, IDamageable
     [Header("Движение")]
     public Transform target;
     public float lookRadius = 15f;
-    public float stopDistance = 2.5f; // Дистанция, на которой он останавливается для атаки
+    public float stopDistance = 2.5f;
     public float moveSpeed = 3.5f;
 
     [Header("Атака")]
-    public float attackRate = 2f; // Раз в сколько секунд атакует
-    public float lungeForce = 10f; // Сила прыжка вперед при атаке
+    public float attackRate = 2f;
+    public float lungeForce = 10f;
     private float nextAttackTime = 0f;
     private bool isAttacking = false;
 
@@ -37,7 +37,7 @@ public class SlimeAI : MonoBehaviour, IDamageable
         enemyLayerMask = ~(1 << LayerMask.NameToLayer("Enemy"));
 
         if (target == null)
-            target = GameObject.FindGameObjectWithTag("Player")?.transform;
+            target = GameObject.FindGameObjectWithTag("PlayerBody")?.transform;
     }
 
     private void Update()
@@ -63,7 +63,6 @@ public class SlimeAI : MonoBehaviour, IDamageable
     {
         if (distance <= stopDistance + 0.5f)
         {
-            // Мы достаточно близко для атаки
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
 
@@ -84,25 +83,21 @@ public class SlimeAI : MonoBehaviour, IDamageable
     private IEnumerator SlimeAttackRoutine()
     {
         isAttacking = true;
-        agent.enabled = false; // Отключаем NavMesh, чтобы использовать физику прыжка
+        agent.enabled = false;
 
         Debug.Log("СЛИЗЕНЬ: Подготовка к прыжку!");
-        yield return new WaitForSeconds(0.5f); // Небольшая задержка перед прыжком
+        yield return new WaitForSeconds(0.5f);
 
         if (target != null)
         {
-            // Вычисляем направление прыжка
             Vector3 attackDir = (target.position - transform.position).normalized;
-            attackDir.y = 0.2f; // Немного вверх
+            attackDir.y = 0.2f;
 
-            // Делаем рывок вперед
             rb.AddForce(attackDir * lungeForce, ForceMode.Impulse);
         }
 
-        // Ждем время "полета"
         yield return new WaitForSeconds(0.8f);
 
-        // Проверяем урон в небольшой сфере перед собой
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward, 1.5f);
         foreach (var col in hitColliders)
         {
@@ -114,7 +109,7 @@ public class SlimeAI : MonoBehaviour, IDamageable
             }
         }
 
-        yield return new WaitForSeconds(0.5f); // Задержка после приземления
+        yield return new WaitForSeconds(0.5f);
 
         agent.enabled = true;
         isAttacking = false;
@@ -159,7 +154,6 @@ public class SlimeAI : MonoBehaviour, IDamageable
         agent.enabled = false;
         StopAllCoroutines();
 
-        // Можно добавить эффект распада или просто удалить
         Destroy(gameObject, 0.5f);
     }
 }
