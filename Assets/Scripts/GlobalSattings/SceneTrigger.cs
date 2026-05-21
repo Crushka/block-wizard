@@ -4,23 +4,25 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Collider))]
 public class SceneTrigger : MonoBehaviour
 {
-    [Tooltip("Имя сцены для загрузки (должна быть добавлена в Build Settings)")]
+    [Header("Переход")]
+    [Tooltip("Имя сцены (должна быть в Build Settings)")]
     [SerializeField] private string targetScene;
 
-    [Tooltip("Метка игрока для фильтрации")]
+    [Tooltip("ID точки спавна в целевой сцене")]
+    [SerializeField] private string spawnPointId = "default";
+
+    [Header("Фильтр")]
     [SerializeField] private string playerTag = "Player";
 
-    [Tooltip("Сохранять граф заклинания при переходе?")]
-    [SerializeField] private bool saveSpellGraph = true;
-
-    [Tooltip("Имя спавна")]
-    [SerializeField] private string spawnPointId = "default";
+    [Header("Что сохранять")]
+    [SerializeField] private bool saveInventory = true;
+    [SerializeField] private bool saveGraph = true;
+    [SerializeField] private bool saveHP = true;
 
     private bool _triggered = false;
 
     void Awake()
     {
-        // Триггер должен быть IsTrigger = true
         GetComponent<Collider>().isTrigger = true;
     }
 
@@ -30,41 +32,51 @@ public class SceneTrigger : MonoBehaviour
         if (!other.CompareTag(playerTag)) return;
 
         _triggered = true;
-        Transition(other);
+        DoTransition(other.gameObject);
     }
 
-    private void Transition(Collider playerCollider)
+    private void DoTransition(GameObject playerObject)
     {
         var gsm = GameStateManager.Instance;
         if (gsm == null)
         {
-            Debug.LogError("[SceneTrigger] GameStateManager не найден на сцене!");
-            // Создаём на лету как запасной вариант:
+            Debug.LogWarning("[SceneTrigger] GameStateManager не найден, создаём");
             var go = new GameObject("GameStateManager");
             go.AddComponent<GameStateManager>();
             gsm = GameStateManager.Instance;
         }
 
-
-        // 1. Сохраняем позицию игрока
-        gsm.PlayerPosition = playerCollider.transform.position;
-
+        Debug.Log("[ScenceTrigger] spawn id: " + spawnPointId);
         gsm.LastSpawnPointId = spawnPointId;
 
-        // 2. Сохраняем инвентарь
-        var inv = FindAnyObjectByType<InventoryManager>();
-        if (inv != null) gsm.SaveInventory(inv);
+        Debug.Log("[ScenceTrigger] last id: " + gsm.LastSpawnPointId);
 
-        // 3. Сохраняем граф (опционально)
-        if (saveSpellGraph) gsm.SaveGraph();
+        if (saveHP)
+        {
+            Debug.Log($"[SceneTrigger] HP сохранён: {gsm.PlayerHP}");
+        }
 
-        // 4. Сохраняем скомпилированное заклинание
-        var caster = FindAnyObjectByType<SpellCaster>();
-        // SpellCaster не хранит NodeBase публично — добавь свойство или
-        // получи его через AttackFactory если нужно
-        if (caster != null) gsm.SaveSpell(caster.CurrentSpellNode);
+        if (saveInventory)
+        {
+            var inv = Object.FindAnyObjectByType<InventoryManager>();
+            if (inv != null)
+                gsm.SaveInventory(inv);
+            else
+                Debug.LogWarning("[SceneTrigger] InventoryManager не найден");
+        }
 
-        Debug.Log($"[SceneTrigger] → {targetScene}");
+        if (saveGraph)
+        {
+            gsm.SaveGraph();
+        }
+
+        var caster = Object.FindAnyObjectByType<SpellCaster>();
+        if (caster != null && caster.CurrentSpellNode != null)
+            gsm.SaveSpell(caster.CurrentSpellNode);
+
+        Debug.Log($"[SceneTrigger] Переход в '{targetScene}', спавн: '{spawnPointId}'");
         SceneManager.LoadScene(targetScene);
+       
+        
     }
 }

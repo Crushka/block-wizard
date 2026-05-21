@@ -1,68 +1,101 @@
-//using UnityEngine;
-
-//public class Bootstrap : MonoBehaviour
-//{
-//    public InventoryManager inventory;
-//    public NodeEditorManager editor;
-
-//    void Start()
-//    {
-//        if (inventory != null) inventory.InitInventory();
-//        if (editor != null) editor.InitEditor();
-//    }
-//}
-
+п»їusing System.Collections;
 using UnityEngine;
 
 public class SceneBootstrap : MonoBehaviour
 {
-    [Header("Ссылки")]
+    [Header("РЎСЃС‹Р»РєРё СЃС†РµРЅС‹")]
     [SerializeField] private InventoryManager inventoryManager;
     [SerializeField] private NodeEditorManager nodeEditorManager;
     [SerializeField] private SpellCaster spellCaster;
 
-    [Header("Настройки")]
-    [Tooltip("Восстанавливать граф заклинания из прошлой сцены?")]
-    [SerializeField] private bool restoreGraph = true;
-
-    [Tooltip("Восстанавливать заклинание в SpellCaster?")]
+    [Header("Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ Р·Р°РєР»РёРЅР°РЅРёРµ?")]
     [SerializeField] private bool restoreSpell = true;
 
-    [System.Obsolete]
     void Start()
     {
         var gsm = GameStateManager.Instance;
 
-        if (gsm == null || gsm.SavedGraph == null)
+        if (gsm == null)
         {
-            // Первый запуск — инициализируем как раньше
-            inventoryManager?.InitInventory();
-            nodeEditorManager?.InitEditor();
-            return;
+            Debug.Log("[SceneBootstrap] GameStateManager РЅРµ РЅР°Р№РґРµРЅ. РЎРѕР·РґР°РµРј РІСЂРµРјРµРЅРЅС‹Р№ РґР»СЏ СЌС‚РѕР№ СЃС†РµРЅС‹.");
+            var go = new GameObject("GameStateManager_AutoCreated");
+            gsm = go.AddComponent<GameStateManager>();
+
+            gsm.LastSpawnPointId = "default";
         }
 
-        // Есть сохранённый граф — НЕ вызываем InitEditor()
-        // чтобы не создавать лишний None-узел
-        inventoryManager?.InitInventory();
-        gsm.RestoreGraph();
+        if (inventoryManager != null)
+            gsm.RestoreInventory(inventoryManager);
+
+        if (nodeEditorManager != null)
+            gsm.RestoreGraph();
 
         if (restoreSpell && spellCaster != null)
-            gsm.RestoreSpell(spellCaster);
-
-        // Спавн игрока у нужной точки
-        if (gsm != null)
         {
-            var spawnPoints = FindObjectsByType<SpawnPoint>(FindObjectsSortMode.None);
-            foreach (var sp in spawnPoints)
+            try
             {
-                if (sp.spawnId == gsm.LastSpawnPointId)
+                gsm.RestoreSpell(spellCaster);
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogWarning($"[SceneBootstrap] РћС€РёР±РєР° СЃР±РѕСЂРєРё Р·Р°РєР»РёРЅР°РЅРёСЏ: {ex.Message}");
+            }
+        }
+
+        StartCoroutine(SpawnPlayer());
+    }
+
+    private IEnumerator SpawnPlayer()
+    {
+        yield return new WaitForEndOfFrame();
+
+        var gsm = GameStateManager.Instance;
+        if (gsm == null) yield break;
+
+        var player = PlayerPersistence.Instance;
+        if (player == null)
+        {
+            Debug.LogError("[SceneBootstrap] РљР РРўРР§Р•РЎРљРђРЇ РћРЁРР‘РљРђ: РРіСЂРѕРє СЃ РєРѕРјРїРѕРЅРµРЅС‚РѕРј PlayerPersistence РЅРµ РЅР°Р№РґРµРЅ РІ DontDestroyOnLoad!");
+            yield break;
+        }
+
+        var allSpawnPoints = Object.FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude);
+
+        SpawnPoint target = null;
+
+        Debug.Log($"[SceneBootstrap] РќР°С‡РёРЅР°РµРј РїРѕРёСЃРє С‚РѕС‡РєРё СЃРїР°РІРЅР°. РС‰РµРј С†РµР»РµРІРѕР№ ID: '{gsm.LastSpawnPointId}'");
+
+        foreach (var sp in allSpawnPoints)
+        {
+            if (sp.spawnId == gsm.LastSpawnPointId)
+            {
+                target = sp;
+                break;
+            }
+        }
+
+        if (target == null)
+        {
+            Debug.LogWarning($"[SceneBootstrap] РўРѕС‡РєР° '{gsm.LastSpawnPointId}' РЅРµ РЅР°Р№РґРµРЅР° РЅР° СЃС†РµРЅРµ. РџСЂРѕР±СѓРµРј РЅР°Р№С‚Рё С‚РѕС‡РєСѓ 'default'...");
+            foreach (var sp in allSpawnPoints)
+            {
+                if (sp.spawnId == "default")
                 {
-                    var player = FindAnyObjectByType<PlayerController>();
-                    if (player != null)
-                        player.transform.position = sp.transform.position;
+                    target = sp;
                     break;
                 }
             }
         }
+
+        if (target == null)
+        {
+            Debug.LogError("[SceneBootstrap] РќР° СЃС†РµРЅРµ РЅРµС‚ РЅРё РЅСѓР¶РЅРѕР№ С‚РѕС‡РєРё СЃРїР°РІРЅР°, РЅРё С‚РѕС‡РєРё 'default'! РРіСЂРѕРє РѕСЃС‚Р°Р»СЃСЏ РЅР° СЃС‚Р°СЂРѕРј РјРµСЃС‚Рµ.");
+            yield break;
+        }
+
+        Debug.Log($"[SceneBootstrap] РўРћР§РљРђ РќРђР™Р”Р•РќРђ! РўРµР»РµРїРѕСЂС‚РёСЂСѓРµРј РёРіСЂРѕРєР° РЅР° СЃРїР°РІРЅРїРѕРёРЅС‚: '{target.spawnId}' (РџРѕР·РёС†РёСЏ: {target.transform.position})");
+        player.TeleportTo(target.transform);
+
+        Debug.Log("[SceneBootstrap] РўРµР»РµРїРѕСЂС‚Р°С†РёСЏ РёРіСЂРѕРєР° СѓСЃРїРµС€РЅРѕ Р·Р°РІРµСЂС€РµРЅР°!");
     }
 }

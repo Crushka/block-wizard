@@ -374,8 +374,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c863b8992f1e4241af713b6ed2bbb0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bootstrap
-  inventory: {fileID: 3360691131471504136}
-  editor: {fileID: 5358556047106071057}
+  inventoryManager: {fileID: 3360691131471504136}
+  nodeEditorManager: {fileID: 5358556047106071057}
+  spellCaster: {fileID: 5217194277721744187}
+  restoreSpell: 1
+  playerPrefab: {fileID: 0}
 --- !u!114 &503699585425960811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1964,6 +1967,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2448301887123315775}
+  - component: {fileID: -6056955638783568919}
   m_Layer: 0
   m_Name: FullPlayer 1
   m_TagString: Untagged
@@ -1993,6 +1997,18 @@ Transform:
   - {fileID: 7179436708402481019}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6056955638783568919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3515511506769366432}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb9b18359ec9c3948a2bff3e1122064f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerPersistence
 --- !u!1 &3639204173225779462
 GameObject:
   m_ObjectHideFlags: 0
@@ -2023,8 +2039,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1580642395297799728}
-  - {fileID: 232047607426839141}
   - {fileID: 8846317701079800494}
+  - {fileID: 232047607426839141}
   m_Father: {fileID: 2448301887123315775}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3667426862830698483
@@ -5522,7 +5538,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641e1cf27d03a1a44a5a445d9d14b610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  speed: 6
+  speed: 50
   aimSpeed: 3
   jumpForce: 8
   gravity: 20

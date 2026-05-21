@@ -7,6 +7,8 @@ public class SpawnPointFollower : MonoBehaviour
 
     void LateUpdate()
     {
+        if (wandTip == null || aimCamera == null) return;
+
         transform.position = wandTip.position;
         transform.rotation = aimCamera.transform.rotation;
     }

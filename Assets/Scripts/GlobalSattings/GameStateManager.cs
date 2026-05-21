@@ -1,109 +1,107 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
 public class GameStateManager : MonoBehaviour
 {
     public static GameStateManager Instance { get; private set; }
 
-    // ── Состояние игрока ──────────────────────────────────────────────────
     public float PlayerHP = 100f;
-    public Vector3 PlayerPosition;     // опционально — часто сбрасывается на spawn
+    public float PlayerMaxHP = 100f;
+    public string LastSpawnPointId { get; set; } = "default";
 
-    // ── Инвентарь (ноды) ─────────────────────────────────────────────────
-    // Сохраняем как список ElementType, потому что NodeModel не сериализуем
-    public List<ElementType> InventoryNodes = new();
+    public List<ElementType> SavedInventory = new();
 
-    // ── Заклинание (граф) ─────────────────────────────────────────────────
-    // GraphModel уже помечен [Serializable] — сохраняем напрямую
-    public GraphModel SavedGraph;
-    public NodeBase ResolvedSpell;    // итог последнего компила
+    public List<SpellSlot> SpellSlots = new();
+    public int ActiveSpellSlotIndex { get; set; } = 0;
 
-    public string LastSpawnPointId = "default";
+    public GraphModel SavedGraph
+    {
+        get => SpellSlots.Count > ActiveSpellSlotIndex ? SpellSlots[ActiveSpellSlotIndex].graph : null;
+        set { EnsureSlot(ActiveSpellSlotIndex); SpellSlots[ActiveSpellSlotIndex].graph = value; }
+    }
+
+    [System.NonSerialized]
+    private NodeBase _legacySpell;
+    public NodeBase ResolvedSpell
+    {
+        get => SpellSlots.Count > ActiveSpellSlotIndex ? SpellSlots[ActiveSpellSlotIndex].compiledNode : _legacySpell;
+        set { EnsureSlot(ActiveSpellSlotIndex); SpellSlots[ActiveSpellSlotIndex].compiledNode = value; _legacySpell = value; }
+    }
+
+    public bool HasSavedState => SpellSlots.Count > 0 && !SpellSlots[0].IsEmpty;
+
 
     void Awake()
     {
-        if (Instance != null) { Destroy(gameObject); return; }
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
-    // ── Сохранение ────────────────────────────────────────────────────────
+    private void EnsureSlot(int idx)
+    {
+        while (SpellSlots.Count <= idx) SpellSlots.Add(new SpellSlot(SpellSlots.Count));
+    }
 
     public void SaveInventory(InventoryManager inv)
     {
-        InventoryNodes.Clear();
+        if (inv == null) return;
+        SavedInventory.Clear();
         foreach (Transform child in inv.inventoryContainer)
         {
             var view = child.GetComponent<NodeView>();
-            if (view != null && view.Data.type != ElementType.None)
-                InventoryNodes.Add(view.Data.type);
+            if (view?.Data != null && view.Data.type != ElementType.None)
+                SavedInventory.Add(view.Data.type);
         }
+        Debug.Log($"[GSM] Инвентарь сохранён: {SavedInventory.Count}");
     }
 
     public void SaveGraph()
     {
-        var mgr = NodeEditorManager.Instance;
-        if (mgr == null) return;
-
-        // Глубокое копирование, чтобы не терять данные при уничтожении сцены
-        SavedGraph = new GraphModel();
-        foreach (var node in mgr.Graph.Nodes)
-        {
-            var copy = new NodeModel(node.type) { id = node.id, weight = node.weight };
-            foreach (var id in node.connectedIds) copy.AddLink(id);
-            SavedGraph.Nodes.Add(copy);
-        }
+        EnsureSlot(ActiveSpellSlotIndex);
+        SpellSlots[ActiveSpellSlotIndex].SnapshotFromEditor(NodeEditorManager.Instance);
     }
 
-    public void SaveSpell(NodeBase spell) => ResolvedSpell = spell;
+    public void SaveSpell(NodeBase spell)
+    {
+        EnsureSlot(ActiveSpellSlotIndex);
+        SpellSlots[ActiveSpellSlotIndex].compiledNode = spell;
+    }
 
-    // ── Восстановление ────────────────────────────────────────────────────
+    public void SaveHP(float hp) => PlayerHP = hp;
 
     public void RestoreInventory(InventoryManager inv)
     {
-        inv.InitInventory();   // очищает и создаёт новые ноды — можно заменить
-        // Или так (если хочешь точное восстановление):
-        // foreach (Transform child in inv.inventoryContainer) Destroy(child.gameObject);
-        // foreach (var type in InventoryNodes) inv.CreateNode(type);
+        if (inv == null) return;
+        foreach (Transform child in inv.inventoryContainer) Object.Destroy(child.gameObject);
+
+        if (SavedInventory.Count > 0)
+        {
+            foreach (var type in SavedInventory) inv.CreateNode(type);
+            Debug.Log($"[GSM] Инвентарь восстановлен: {SavedInventory.Count}");
+        }
+        else
+        {
+            inv.InitInventory();
+            Debug.Log("[GSM] Инвентарь: стандартный набор");
+        }
     }
 
     public void RestoreGraph()
     {
-        var mgr = NodeEditorManager.Instance;
-        if (mgr == null || SavedGraph == null) return;
-
-        // Сначала создаём стартовый узел (он всегда нужен визуально)
-        mgr.InitEditor();   // создаёт None-нод
-
-        // Заменяем None-узел из InitEditor на тот что был сохранён
-        var savedNone = SavedGraph.Nodes.Find(n => n.type == ElementType.None);
-        if (savedNone != null)
-        {
-            // Обновляем id в менеджере чтобы связи работали
-            var liveNone = mgr.Graph.Nodes.Find(n => n.type == ElementType.None);
-            if (liveNone != null)
-                liveNone.id = savedNone.id;
-        }
-
-        // Добавляем остальные ноды
-        foreach (var node in SavedGraph.Nodes)
-        {
-            if (node.type == ElementType.None) continue;
-            mgr.Graph.Nodes.Add(node);
-
-            // Создаём NodeView для каждой ноды
-            var obj = Object.Instantiate(mgr.nodePrefab, mgr.graphContainer);
-            var view = obj.GetComponent<NodeView>();
-            view.Initialize(node);
-            view.SetVisualState(true);
-        }
-
-        mgr.RefreshGraph();
+        if (SpellSlots.Count == 0 || ActiveSpellSlotIndex >= SpellSlots.Count) return;
+        SpellSlots[ActiveSpellSlotIndex].RestoreToEditor(NodeEditorManager.Instance);
     }
 
     public void RestoreSpell(SpellCaster caster)
     {
-        if (caster == null || ResolvedSpell == null) return;
-        caster.PrepareSpellFromNode(ResolvedSpell);
+        if (caster == null || SpellSlots.Count == 0) return;
+
+        var slot = SpellSlots[ActiveSpellSlotIndex];
+
+        if (slot.compiledNode == null && !slot.IsEmpty)
+            slot.Compile();
+
+        if (slot.compiledNode != null)
+            caster.PrepareSpellFromNode(slot.compiledNode);
     }
 }
