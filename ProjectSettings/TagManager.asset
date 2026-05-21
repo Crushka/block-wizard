@@ -4,10 +4,15 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - CinemachineTarget
+  - Bat
+  - Golem
   - SprayProjectile
   - StreamProjectile
   - Con
   - NonePlayebleObject
+  - Mole
+  - PlayerBody
   layers:
   - Default
   - TransparentFX
@@ -15,7 +20,9 @@ TagManager:
   - Enemy
   - Water
   - UI
-  - Grounde
+  - 
+  - 
+  - 
   - 
   - 
   - 

@@ -138,4 +138,6 @@ public class ThunderProjectile : MonoBehaviour
         lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         lr.receiveShadows = false;
     }
+
+
 }

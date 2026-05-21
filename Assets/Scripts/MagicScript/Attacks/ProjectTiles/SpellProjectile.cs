@@ -96,6 +96,13 @@ public class SpellProjectile : MonoBehaviour
 
         if (Vector3.Distance(_startPos, transform.position) >= _range)
             Destroy(gameObject);
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        Debug.Log("Попа");
+        if(damageable != null && !other.CompareTag("Player"))
+        {
+            damageable.takeDamage(_damage);
+        }
+        Die();
     }
 
     private void OnCollisionEnter(Collision collision)
