@@ -11,7 +11,8 @@ internal class MixAlgorithms
     {
         { Order(ElementType.Fire, ElementType.Water), () => new SteamNode() },
         { Order(ElementType.Water, ElementType.Earth), () => new MudNode() },
-        { Order(ElementType.Fire, ElementType.Air), () => new PlasmaNode() }
+        { Order(ElementType.Fire, ElementType.Air), () => new PlasmaNode() },
+        { Order(ElementType.Water, ElementType.Cold), () => new IceNode() }
     };
 
     private static (ElementType, ElementType) Order(ElementType a, ElementType b)
@@ -60,10 +61,15 @@ internal class MixAlgorithms
 
     private static NodeBase MergeStats(NodeBase n1, NodeBase n2, NodeBase target)
     {
-        target.Weight = (n1.Weight + n2.Weight) * 0.4f;
+        target.Weight = (n1.Weight + n2.Weight) * 0.3f;
         target.Damage = (n1.Damage + n2.Damage) * target.Weight;
         target.Range = (n1.Range + n2.Range) * target.Weight;
         target.Speed = (n1.Speed + n2.Speed) * target.Weight;
+
+        if (n1.NodeType == n2.NodeType)
+        {
+            NodeVisualMixer.MixVisuals(target, n1, n2, n1.Weight, n2.Weight);
+        }
         return target;
     }
 
@@ -86,10 +92,7 @@ internal class MixAlgorithms
             IncreaseValue(node1, null, 1.5f);
             IncreaseValue(null, node2, 2f);
         }
-        else
-        {
-            IncreaseValue(node1, node2, 0.4f);
-        }
+
     }
 
     static private bool ChekSig(GraphNode node1, GraphNode node2)

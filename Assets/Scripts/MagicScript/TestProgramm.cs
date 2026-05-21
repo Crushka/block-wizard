@@ -13,10 +13,10 @@ public class SpellGraphTester : MonoBehaviour
             var hub = graph.CreateNode(new WaterNode() { Weight = 2.3f },  1, 2.3f);
 
             var branchA = graph.CreateNode(new WaterNode() { Weight = 1.8f }, 2, 1.8f);
-            var branchB = graph.CreateNode(new WaterNode() { Weight = 1.8f }, 2, 1.8f);
-            var branchC = graph.CreateNode(new WaterNode() { Weight = 1.4f }, 3, 1.4f);
+            var branchB = graph.CreateNode(new EartNode() { Weight = 1.8f }, 2, 1.8f);
+            var branchC = graph.CreateNode(new EartNode() { Weight = 1.4f }, 3, 1.4f);
 
-            var nodeD = graph.CreateNode(new WaterNode() { Weight = 2f }, 4, 2f);
+            //var nodeD = graph.CreateNode(new WaterNode() { Weight = 2f }, 4, 2f);
             //var nodeE = graph.CreateNode(new WaterNode() { Weight = 0.4f });
             //var nodeF = graph.CreateNode(new AirNode() { Weight = 0.4f });
             //var nodeG = graph.CreateNode(new EartNode() { Weight = 0.6f });
@@ -24,14 +24,14 @@ public class SpellGraphTester : MonoBehaviour
             //var nodeI = graph.CreateNode(new FireNode() { Weight = 0.5f });
 
             graph.Connect(graph.StartNode, hub);
+            graph.Connect(graph.StartNode, branchA);
 
-            graph.Connect(hub, branchA);
             graph.Connect(hub, branchB);
 
             graph.Connect(branchA, branchC);
-            graph.Connect(branchB, branchC);
+            //graph.Connect(branchB, branchC);
             //graph.Connect(branchA, nodeD);
-            graph.Connect(branchC, nodeD);
+            //graph.Connect(branchC, nodeD);
 
             //graph.Connect(branchA, nodeD);
             //graph.Connect(branchA, nodeE);

@@ -11,6 +11,12 @@ public class PlayerController : MonoBehaviour
     [Header("Настройки поворота")]
     public float rotationSpeed = 10.0f;
 
+    [Header("Настройки рывка (Dash)")]
+    public float dashSpeed = 10.0f;
+    public float dashDuration = 1.0f;
+    public float dashCooldown = 1.0f;
+    public bool allowAirDash = false;
+
     [Header("Компоненты")]
     public Camera playerCamera;
     public Animator playerAnimator;
@@ -65,36 +71,99 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        bool isMoving = false;
+        if (dashCooldownTimer > 0) dashCooldownTimer -= Time.deltaTime;
 
-
-        if (controller.isGrounded)
+        if (isDashing)
         {
-            if (isMovementEnabled)
+            dashTimer -= Time.deltaTime;
+            if (dashTimer <= 0)
             {
-                Vector2 input = moveAction.ReadValue<Vector2>();
-                float h = input.x;
-                float v = input.y;
+                isDashing = false;
+            }
+        }
+
+        bool isMoving = false;
+        float h = 0f;
+        float v = 0f;
+
+        if (isMovementEnabled)
+        {
+            Vector2 input = moveAction.ReadValue<Vector2>();
+            h = input.x;
+            v = input.y;
+
+            bool canDash = allowAirDash || controller.isGrounded;
+
+            if (dashAction.WasPressedThisFrame() && !isAiming && !isDashing && dashCooldownTimer <= 0 && canDash)
+            {
+                isDashing = true;
+                dashTimer = dashDuration;
+                dashCooldownTimer = dashCooldown;
 
                 if (playerCamera != null)
                 {
                     Vector3 camForward = playerCamera.transform.forward;
                     Vector3 camRight = playerCamera.transform.right;
-                    camForward.y = 0;
-                    camRight.y = 0;
-                    camForward.Normalize();
-                    camRight.Normalize();
+                    camForward.y = 0; camRight.y = 0;
+                    camForward.Normalize(); camRight.Normalize();
 
-                    moveDirection = (camForward * v + camRight * h).normalized;
-                    moveDirection *= speed;
+                    if (input.magnitude > 0.1f)
+                        dashDirection = (camForward * v + camRight * h).normalized;
+                    else
+                        dashDirection = transform.forward;
                 }
                 else
                 {
-                    moveDirection = new Vector3(h, 0, v).normalized * speed;
+                    if (input.magnitude > 0.1f)
+                        dashDirection = new Vector3(h, 0, v).normalized;
+                    else
+                        dashDirection = transform.forward;
                 }
 
-                isMoving = moveDirection.magnitude > 0.1f;
+                if (dashDirection.sqrMagnitude > 0.001f)
+                {
+                    transform.rotation = Quaternion.LookRotation(dashDirection);
+                }
 
+                if (playerAnimator != null)
+                {
+                    playerAnimator.SetTrigger("Dash");
+                }
+            }
+
+            Vector3 horizontalMove = Vector3.zero;
+
+            if (isDashing)
+            {
+                horizontalMove = dashDirection * dashSpeed;
+                isMoving = false;
+            }
+            else
+            {
+                float currentSpeed = isAiming ? aimSpeed : speed;
+
+                if (playerCamera != null)
+                {
+                    Vector3 camForward = playerCamera.transform.forward;
+                    Vector3 camRight = playerCamera.transform.right;
+                    camForward.y = 0; camRight.y = 0;
+                    camForward.Normalize(); camRight.Normalize();
+
+                    horizontalMove = (camForward * v + camRight * h).normalized * currentSpeed;
+                }
+                else
+                {
+                    horizontalMove = new Vector3(h, 0, v).normalized * currentSpeed;
+                }
+
+                isMoving = horizontalMove.magnitude > 0.1f;
+            }
+
+            moveDirection.x = horizontalMove.x;
+            moveDirection.z = horizontalMove.z;
+
+            if (!isDashing)
+            {
                 if (isAiming)
                 {
                     if (playerCamera != null)
@@ -107,35 +176,54 @@ public class PlayerController : MonoBehaviour
                         }
                     }
                 }
-                else if (moveDirection.magnitude > 0.1f)
+                else if (horizontalMove.magnitude > 0.1f)
                 {
-                    Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+                    Quaternion targetRotation = Quaternion.LookRotation(horizontalMove);
                     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
                 }
-            }
-            else
-            {
-                moveDirection.x = 0;
-                moveDirection.z = 0;
-            }
-
-            if (jumpAction.WasPressedThisFrame() && isMovementEnabled)
-            {
-                moveDirection.y = jumpForce;
             }
         }
         else
         {
-            Vector3 horizontalMove = new Vector3(moveDirection.x, 0, moveDirection.z);
-            isMoving = horizontalMove.magnitude > 0.1f && isMovementEnabled;
+            moveDirection.x = 0;
+            moveDirection.z = 0;
+            isDashing = false;
         }
+
+        if (controller.isGrounded)
+        {
+            if (moveDirection.y < 0.0f)
+            {
+                moveDirection.y = -2f;
+            }
+
+            if (jumpAction.WasPressedThisFrame() && isMovementEnabled && !isAiming && !isDashing)
+            {
+                moveDirection.y = jumpForce;
+
+                if (playerAnimator != null)
+                {
+                    playerAnimator.SetTrigger("Jump");
+                }
+            }
+        }
+
+        moveDirection.y -= gravity * Time.deltaTime;
+
+        controller.Move(moveDirection * Time.deltaTime);
 
         if (playerAnimator != null)
         {
             playerAnimator.SetBool("IsMoving", isMoving);
-        }
+            playerAnimator.SetBool("IsGrounded", controller.isGrounded);
 
-        moveDirection.y -= gravity * Time.deltaTime;
-        controller.Move(moveDirection * Time.deltaTime);
+            playerAnimator.SetBool("IsDashing", isDashing);
+
+            animInputX = Mathf.Lerp(animInputX, h, Time.deltaTime * 10f);
+            animInputY = Mathf.Lerp(animInputY, v, Time.deltaTime * 10f);
+
+            playerAnimator.SetFloat("InputX", animInputX);
+            playerAnimator.SetFloat("InputY", animInputY);
+        }
     }
 }

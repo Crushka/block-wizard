@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using UnityEngine;
 public abstract class ElementNode : NodeBase { }
 
 
@@ -34,23 +34,27 @@ public class FireNode : ElementNode // 1
 
     public FireNode()
     {
-        Damage = 20f;
-        Range = 8f;
+        Damage = 23f;
+        Range = 10f;
         Speed = 1.2f;
-        Weight = 0.3f;
+        Weight = 1.23f;
+        PrimaryColor = new Color(0.98f, 0.39f, 0.0f);
+        EmissionIntensity = 1.4f;
+        TrailLength = 1.3f;
+        ParticleSize = 1.2f;
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
         { ElementType.Air, ElementType.Lightning };
     public override List<ElementType> IncompatibleWith { get; } = new()
-        { ElementType.Ice };
+        { ElementType.Ice, ElementType.Earth };
 
-    public override AttackType GetDominantAttack() => AttackType.Thunder;
+    public override AttackType GetDominantAttack() => AttackType.Stream;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Fire, 1.0f);
-        comp.Add(AttackType.Thunder, 1.0f);
+        comp.Add(AttackType.Stream, 1.0f);
         comp.Add(EffectType.Burn, 0.8f);
         return comp;
     }
@@ -62,18 +66,22 @@ public class WaterNode : ElementNode // 2
 
     public WaterNode()
     {
-        Damage = 15f;
+        Damage = 17f;
         Range = 8f;
-        Speed = 1.2f;
-        Weight = 0.5f;
+        Speed = 1.6f;
+        Weight = 1.3f;
+        PrimaryColor = new Color(0.35f, 0.82f, 0.95f);  // ярко-синий
+        EmissionIntensity = 0.8f;
+        TrailLength = 1.1f;
+        ParticleSize = 0.9f;
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
-        { ElementType.Ice, ElementType.Poison, ElementType.Lightning };
+        { ElementType.Ice, ElementType.Poison, ElementType.Lightning, ElementType.Earth };
     public override List<ElementType> IncompatibleWith { get; } = new()
-        {  };
+        { ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Thunder;
+    public override AttackType GetDominantAttack() => AttackType.Spray;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
@@ -90,23 +98,27 @@ public class EartNode : ElementNode // 3
 
     public EartNode()
     {
-        Damage = 15f;
-        Range = 8f;
+        Damage = 30f;
+        Range = 25f;
         Speed = 1.2f;
-        Weight = 0.5f;
+        Weight = 1.2f;
+        PrimaryColor = new Color(0.71f, 0.38f, 0.13f); // коричневый
+        EmissionIntensity = 0.6f;
+        TrailLength = 0.7f;
+        ParticleSize = 1.5f;   // крупные обломки
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
-        { ElementType.Poison, ElementType.Fire };
+        { ElementType.Poison, ElementType.Air, ElementType.Cold };
     public override List<ElementType> IncompatibleWith { get; } = new()
         { ElementType.Air, ElementType.Lightning };
 
-    public override AttackType GetDominantAttack() => AttackType.Thunder;
+    public override AttackType GetDominantAttack() => AttackType.Ball;
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
-        comp.Add(AttackType.Spray, 1.0f);
+        comp.Add(AttackType.Ball, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
@@ -118,10 +130,46 @@ public class AirNode : ElementNode // 4
 
     public AirNode()
     {
+        Damage = 10f;
+        Range = 30f;
+        Speed = 2f;
+        Weight = 1.3f;
+        PrimaryColor = new Color(0.94f, 1.0f, 1.0f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
+    }
+
+    public override List<ElementType> SynergyWith { get; } = new()
+        { ElementType.Fire, ElementType.Lightning, ElementType.Water };
+    public override List<ElementType> IncompatibleWith { get; } = new()
+        { ElementType.Earth, ElementType.Ice };
+
+    public override AttackType GetDominantAttack() => AttackType.Stream;
+    public override NodeComposition GetBaseComposition()
+    {
+        var comp = new NodeComposition();
+        comp.Add(ElementType.Air, 1.0f);
+        comp.Add(AttackType.Stream, 1.0f);
+        comp.Add(EffectType.Slow, 0.6f);
+        return comp;
+    }
+}
+
+public class ColdNode : ElementNode // 4
+{
+    public override ElementType NodeType => ElementType.Cold;
+
+    public ColdNode()
+    {
         Damage = 15f;
         Range = 8f;
         Speed = 1.2f;
-        Weight = 0.5f;
+        Weight = 1.4f;
+        PrimaryColor = new Color(0.31f, 0.85f, 0.89f);   // бледно-голубой
+        EmissionIntensity = 0.7f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.8f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -149,7 +197,11 @@ public class LightningNode : ElementNode // 5
         Damage = 15f;
         Range = 8f;
         Speed = 1.2f;
-        Weight = 0.5f;
+        Weight = 1.2f;
+        PrimaryColor      = new Color(0.93f, 0.91f, 0.27f);    // электрический бело-голубой
+        EmissionIntensity = 1.8f;   // самый яркий
+        TrailLength       = 1.6f;
+        ParticleSize      = 0.7f;
     }
 
     public override List<ElementType> SynergyWith { get; } = new()
@@ -162,6 +214,7 @@ public class LightningNode : ElementNode // 5
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Lightning, 1.0f);
+        comp.Add(AttackType.Thunder, 1.0f);
         comp.Add(AttackType.Spray, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
@@ -179,7 +232,11 @@ public class SteamNode : ElementNode
         Damage = 15f;
         Range = 8f;
         Speed = 1.2f;
-        Weight = 1.5f;
+        Weight = 1.3f;
+        PrimaryColor = new Color(0.95f, 0.95f, 0.95f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
@@ -191,7 +248,38 @@ public class SteamNode : ElementNode
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(AttackType.Stream, 1.0f);
+        comp.Add(EffectType.Slow, 0.6f);
+        return comp;
+    }
+}
+
+public class IceNode : ElementNode
+{
+    public override ElementType NodeType => ElementType.Ice;
+
+    public IceNode()
+    {
+        Damage = 15f;
+        Range = 8f;
+        Speed = 1.2f;
+        Weight = 1.5f;
+        PrimaryColor = new Color(0.36f, 0.45f, 0.90f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
+    }
+
+    public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
+    public override List<ElementType> IncompatibleWith { get; } = new() { ElementType.Ice };
+
+    public override AttackType GetDominantAttack() => AttackType.Spike;
+
+    public override NodeComposition GetBaseComposition()
+    {
+        var comp = new NodeComposition();
+        comp.Add(ElementType.Water, 1.0f);
+        comp.Add(AttackType.Spike, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
@@ -207,6 +295,10 @@ public class MudNode : ElementNode
         Range = 8f;
         Speed = 1.2f;
         Weight = 1.5f;
+        PrimaryColor = new Color(0.51f, 0.45f, 0.05f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
@@ -218,7 +310,7 @@ public class MudNode : ElementNode
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(AttackType.Spray, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
@@ -234,24 +326,25 @@ public class PlasmaNode : ElementNode
         Range = 8f;
         Speed = 1.2f;
         Weight = 0.5f;
+        PrimaryColor = new Color(1.0f, 0.68f, 0.02f);   // бледно-голубой
+        EmissionIntensity = 0.9f;
+        TrailLength = 1.5f;   // длинный след у воздуха
+        ParticleSize = 0.6f;   // мелкие частицы
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
     public override List<ElementType> IncompatibleWith { get; } = new() { ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Spray;
+    public override AttackType GetDominantAttack() => AttackType.Beam;
 
     public override NodeComposition GetBaseComposition()
     {
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
-        comp.Add(AttackType.Ball, 1.0f);
+        comp.Add(AttackType.Beam, 1.0f);
         comp.Add(EffectType.Slow, 0.6f);
         return comp;
     }
 }
-
-
-
 
 //элемнты 3 уровня 

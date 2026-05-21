@@ -8,16 +8,20 @@ public class PlayerComboAttack : MonoBehaviour
     public BookInteraction bookInteraction;
 
     [Header("Настройки комбо-атак")]
-    [Tooltip("Минимальное время между кликами (кулдаун)")]
     public float attackCooldown = 0.5f;
+    public float comboWindow = 2.0f;
+    public float holdThreshold = 0.35f;
 
-    [Tooltip("Максимальное время между кликами для продолжения серии")]
-    public float comboWindow = 2.0f; [Tooltip("Названия триггеров в Animator для каждой из атак")]
     public string[] attackTriggers = { "Attack1", "Attack2", "Attack3" };
+    public string[] holdAttackBools = { "Attack1Hold", "Attack2Hold", "Attack3Hold" };
 
     private InputAction attackAction;
     private int currentComboIndex = 0;
     private float lastAttackTime = -Mathf.Infinity;
+
+    private bool holdActivated = false;
+    private float holdStartTime = 0f;
+    private int holdComboIndex = -1;
 
     void Awake()
     {
@@ -30,11 +34,13 @@ public class PlayerComboAttack : MonoBehaviour
     {
         attackAction.Enable();
         attackAction.performed += OnAttack;
+        attackAction.canceled += OnAttackReleased;
     }
 
     void OnDisable()
     {
         attackAction.performed -= OnAttack;
+        attackAction.canceled -= OnAttackReleased;
         attackAction.Disable();
     }
 
@@ -49,9 +55,7 @@ public class PlayerComboAttack : MonoBehaviour
             return;
 
         if (currentTime - lastAttackTime > comboWindow)
-        {
             currentComboIndex = 0;
-        }
 
         if (playerAnimator != null && attackTriggers.Length > 0)
         {
@@ -61,14 +65,47 @@ public class PlayerComboAttack : MonoBehaviour
 
         lastAttackTime = currentTime;
 
+        holdComboIndex = currentComboIndex;
+        holdStartTime = currentTime;
+        holdActivated = false;
+
         currentComboIndex = (currentComboIndex + 1) % attackTriggers.Length;
+    }
+
+    private void OnAttackReleased(InputAction.CallbackContext ctx)
+    {
+        if (holdActivated && holdComboIndex >= 0 && holdComboIndex < holdAttackBools.Length)
+        {
+            playerAnimator.SetBool(holdAttackBools[holdComboIndex], false);
+        }
+
+        holdActivated = false;
+        holdComboIndex = -1;
+    }
+
+    void Update()
+    {
+        if (holdComboIndex < 0 || holdActivated)
+            return;
+
+        if (!attackAction.IsPressed())
+        {
+            holdComboIndex = -1;
+            return;
+        }
+
+        if (Time.time - holdStartTime >= holdThreshold)
+        {
+            holdActivated = true;
+
+            if (playerAnimator != null && holdComboIndex < holdAttackBools.Length)
+                playerAnimator.SetBool(holdAttackBools[holdComboIndex], true);
+        }
     }
 
     private void ResetAllAttackTriggers()
     {
         foreach (string trigger in attackTriggers)
-        {
             playerAnimator.ResetTrigger(trigger);
-        }
     }
 }

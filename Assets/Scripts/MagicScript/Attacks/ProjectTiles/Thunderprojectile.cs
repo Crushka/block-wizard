@@ -43,6 +43,27 @@ public class ThunderProjectile : MonoBehaviour
         }
     }
 
+    public void SetupVisual(NodeBase node)
+    {
+        BoltColor = node.PrimaryColor;
+        StartWidth = 0.05f + 0.04f * node.EmissionIntensity;
+        EndWidth = 0.01f + 0.01f * node.EmissionIntensity;
+        JitterRadius = 0.2f + 0.15f * node.ParticleSize;
+
+        if (_mainLine != null)
+            SetupLineRenderer(_mainLine, StartWidth, EndWidth, BoltColor);
+
+        foreach (var branch in _branches)
+            SetupLineRenderer(branch, StartWidth * 0.4f, 0f, BoltColor * 0.7f);
+
+        var light = GetComponent<Light>();
+        if (light != null)
+        {
+            light.color = node.PrimaryColor;
+            light.intensity = node.EmissionIntensity * 2f;
+        }
+    }
+
     public void UpdateBolt(Vector3 origin, Vector3 target)
     {
         _origin = origin;
@@ -104,6 +125,9 @@ public class ThunderProjectile : MonoBehaviour
 
     private static void SetupLineRenderer(LineRenderer lr, float startW, float endW, Color color)
     {
+        if (lr.material == null || lr.material.shader.name != "Sprites/Default")
+            lr.material = new Material(Shader.Find("Sprites/Default"));
+
         lr.startColor = color;
         lr.endColor = new Color(color.r, color.g, color.b, 0f);
         lr.startWidth = startW;

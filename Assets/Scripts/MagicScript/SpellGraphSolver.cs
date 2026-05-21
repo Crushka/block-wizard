@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+
 
 internal class SpellGraphSolver
 {
@@ -226,8 +228,13 @@ internal class SpellGraphSolver
 
     private static GraphNode CollapseTree(List<GraphNode> graph)
     {
+        foreach (var n in graph)
+            UnityEngine.Debug.Log($"[CollapseTree nodes============] {n.Data.NodeType} num={n.num}");
+
         if (graph.Count == 0) return null;
         if (graph.Count == 1) return graph[0];
+
+        var nodeSet = new HashSet<GraphNode>(graph);
 
         GraphNode start = graph
             .OrderByDescending(n => n.num)
@@ -242,12 +249,19 @@ internal class SpellGraphSolver
         while (queue.Count > 0)
         {
             GraphNode current = queue.Dequeue();
+            UnityEngine.Debug.Log($"[SpellSlower] res: {result.Data.NodeType}, cur: {current.Data.NodeType}");
+
             if (current != start)
                 result.Data = MixAlgorithms.MixNodes(result.Data, current.Data);
 
-            foreach (GraphNode neighbor in current.GetNeighbours())
+            // Сортируем соседей по num убыванию — дальние раньше
+            foreach (GraphNode neighbor in current.GetNeighbours()
+                         .Where(n => nodeSet.Contains(n))
+                         .OrderByDescending(n => n.num))
+            {
                 if (visited.Add(neighbor))
                     queue.Enqueue(neighbor);
+            }
         }
 
         return result;
@@ -266,15 +280,35 @@ internal class SpellGraphSolver
     public static NodeBase SlowGraph(SpellGraph graph)
     {
         graph.PrepareGraph();
+
+        foreach (GraphNode node in graph.AllNodes()) // нужен метод AllNodes (см. ниже)
+        {
+            if (node == graph.StartNode) continue; // StartNode не трогаем
+            int nodeNum = node.num > 0 ? node.num : 1; // защита от деления на 0
+            node.Data.Weight = Mathf.Max(0.75f + 1 / Mathf.Sqrt(nodeNum), 1f);
+            UnityEngine.Debug.Log($"[547263487562395] num: {node.num}, weight: {node.Data.Weight}");
+        }
+
         GraphNode finalSpell;
         List<List<GraphNode>> separateGraphs = SeparateGraph(graph);
+
+        //foreach (var i in separateGraphs)
+        //{
+        //    UnityEngine.Debug.Log($"[SpellGraphSlover]{i.Count}");
+        //    foreach( var j in i)
+        //    {
+        //        UnityEngine.Debug.Log($"[SpellSlower] {j.Data.NodeType}");
+        //    }
+        //}
+
         var collapsedNodes = new List<GraphNode>(separateGraphs.Count);
 
         foreach (List<GraphNode> subgraph in separateGraphs)
         {
             CollapseCycles(subgraph);
+            
             GraphNode collapsed = CollapseTree(subgraph);
-            UnityEngine.Debug.Log($"dmg: {collapsed.Data.Damage}");
+            UnityEngine.Debug.Log($"dmg: {collapsed.Data.Damage}, {collapsed.Data.NodeType}");
             if (collapsed != null)
                 collapsedNodes.Add(collapsed);
         }

@@ -10,15 +10,10 @@ public class PlayerAttack : MonoBehaviour
     public BookInteraction bookInteraction;
     public Animator playerAnimator;
     public RawImage aimMarker;
-    private InputAction aimAction;
-    private bool isAiming = false;
-    private float originalDistance;
-    public SpellCaster spellCaster;
-
-    [Header("Aim settings")]
-    public float aimDistance = 2.0f;
-    public Vector3 aimCameraOffset = new Vector3(0.5f, 1.5f, 0f);
-    public float transitionSpeed = 8.0f;
+    public SpellCaster spellCaster; [Header("Настройки прицеливания (Атаки)")]
+    public float aimDistance = 1.5f;
+    public Vector3 aimCameraOffset = new Vector3(0.5f, 0.5f, 0f);
+    public float transitionSpeed = 9.5f;
 
     private InputAction _aimAction;
     private InputAction _fireAction;
@@ -64,8 +59,11 @@ public class PlayerAttack : MonoBehaviour
     {
         if (cameraController != null)
         {
-            originalDistance = cameraController.distance;
+            _originalDistance = cameraController.distance;
         }
+
+        if (aimMarker != null)
+            aimMarker.enabled = false;
     }
 
     void Update()
@@ -75,11 +73,25 @@ public class PlayerAttack : MonoBehaviour
 
         if (cameraController == null) return;
 
-        float targetDist = _isAiming ? aimDistance : _originalDistance;
-        Vector3 targetOffset = _isAiming ? aimCameraOffset : Vector3.zero;
+        if (_isAiming)
+        {
+            cameraController.distance = Mathf.Lerp(cameraController.distance, aimDistance, Time.deltaTime * transitionSpeed);
+            cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, aimCameraOffset, Time.deltaTime * transitionSpeed);
+        }
+        else
+        {
+            if (Mathf.Abs(cameraController.distance - _originalDistance) > 0.01f)
+            {
+                cameraController.distance = Mathf.Lerp(cameraController.distance, _originalDistance, Time.deltaTime * transitionSpeed);
+            }
+            else
+            {
+                _originalDistance = cameraController.distance;
+            }
 
-        cameraController.distance = Mathf.Lerp(cameraController.distance, targetDist, Time.deltaTime * transitionSpeed);
-        cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, targetOffset, Time.deltaTime * transitionSpeed);
+            cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, Vector3.zero, Time.deltaTime * transitionSpeed);
+        }
+
     }
 
     private void OnFireStart(InputAction.CallbackContext ctx)
@@ -97,8 +109,8 @@ public class PlayerAttack : MonoBehaviour
     {
         if (bookInteraction != null && bookInteraction.IsReading) return;
 
-        aimMarker.enabled = true;
         _isAiming = true;
+        if (aimMarker != null) aimMarker.enabled = true;
 
         if (bookInteraction != null) bookInteraction.canRead = false;
         if (playerController != null) playerController.isAiming = true;
@@ -116,15 +128,15 @@ public class PlayerAttack : MonoBehaviour
     private void OnAimCancel(InputAction.CallbackContext ctx)
     {
         if (!_isAiming) return;
+
         _isAiming = false;
+        if (aimMarker != null) aimMarker.enabled = false;
 
         if (bookInteraction != null) bookInteraction.canRead = true;
         if (playerController != null) playerController.isAiming = false;
         if (cameraController != null) cameraController.isAiming = false;
 
         if (playerAnimator != null)
-        {
             playerAnimator.SetBool("IsAiming", false);
-        }
     }
 }

@@ -5,5 +5,8 @@ public enum AttackType
     Spray,
     Ball,
     Thunder,
-    Stream
+    Stream,
+    CircularWave,
+    Spike,
+    Beam
 }

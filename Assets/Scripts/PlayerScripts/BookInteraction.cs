@@ -9,6 +9,7 @@ public class BookInteraction : MonoBehaviour
     public Transform bookViewPoint;
     public PlayerController playerController;
     public Animator playerAnimator;
+    public SpellEditorUI spellEditorUI;
 
     [Header("Настройки перехода")]
     public float transitionDuration = 1.0f;
@@ -44,11 +45,31 @@ public class BookInteraction : MonoBehaviour
 
     private void OnToggleRead(InputAction.CallbackContext ctx)
     {
-        if (!canRead) return;
-        if (bookViewPoint == null || cameraController == null || playerController == null) return;
-        if (isTransitioning) return;
+        Debug.Log($"[BookInteraction] Tab нажат. canRead={canRead} isTransitioning={isTransitioning}");
+
+        if (!canRead)
+        {
+            Debug.Log("[BookInteraction] СТОП: canRead=false");
+            return;
+        }
+        if (bookViewPoint == null || cameraController == null || playerController == null)
+        {
+            Debug.Log($"[BookInteraction] СТОП: bookViewPoint={bookViewPoint} cam={cameraController} player={playerController}");
+            return;
+        }
+        if (isTransitioning)
+        {
+            Debug.Log("[BookInteraction] СТОП: isTransitioning=true");
+            return;
+        }
 
         isReading = !isReading;
+        Debug.Log($"[BookInteraction] isReading={isReading}, spellEditorUI={spellEditorUI}");
+
+        if (spellEditorUI != null)
+            spellEditorUI.SetEditorOpen(isReading);
+        else
+            Debug.LogError("[BookInteraction] spellEditorUI == null! Назначь GameManager в инспекторе.");
 
         StartCoroutine(SyncAnimationAndMovement(isReading));
         StartCoroutine(TransitionCamera());
@@ -57,9 +78,7 @@ public class BookInteraction : MonoBehaviour
     private IEnumerator SyncAnimationAndMovement(bool reading)
     {
         if (playerAnimator != null)
-        {
             playerAnimator.SetBool("IsReading", reading);
-        }
 
         if (reading)
         {
@@ -100,9 +119,7 @@ public class BookInteraction : MonoBehaviour
         cameraController.transform.rotation = isReading ? bookViewPoint.rotation : cameraController.GetOrbitRotation();
 
         if (!isReading)
-        {
             cameraController.isControlEnabled = true;
-        }
 
         isTransitioning = false;
     }

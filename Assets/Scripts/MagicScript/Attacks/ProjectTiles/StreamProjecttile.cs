@@ -5,8 +5,7 @@
 [RequireComponent(typeof(Collider))]
 public class StreamProjecttile : MonoBehaviour
 {
-    private float _damage;
-    private float _lifetime;
+    private float _damage, _lifetime;
     private bool _isDead;
     private Rigidbody _rb;
 
@@ -20,13 +19,15 @@ public class StreamProjecttile : MonoBehaviour
 
         Vector3 dir = transform.forward;
         dir = Quaternion.Euler(
-            Random.Range(-spread, spread),
-            Random.Range(-spread, spread),
+            Random.Range(-speed, spread),
+            Random.Range(-speed, spread),
             0f
         ) * dir;
 
         dir += transform.up * 0.15f;
         dir.Normalize();
+
+        transform.rotation = Quaternion.LookRotation(dir);
 
         _rb.linearVelocity = dir * speed;
 
@@ -35,14 +36,43 @@ public class StreamProjecttile : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void SetupVisual(NodeBase node)
     {
-        if (other.CompareTag("StreamProjectile") || other.CompareTag("Player") || other.CompareTag("Untagged")) return;
-        Die();
+        var renderers = GetComponentsInChildren<Renderer>();
+        foreach (var rend in renderers)
+        {
+            foreach (var mat in rend.materials)
+            {
+                if (mat.HasProperty("_BaseColor"))
+                {
+                   
+                    Color c = node.PrimaryColor;
+        
+                    mat.SetColor("_BaseColor", c);
+                }
+
+                if (mat.HasProperty("_Color"))
+                {
+                    float originalAlpha = mat.GetColor("_Color").a;
+                    Color c = node.PrimaryColor;
+                    c.a = originalAlpha;
+                    mat.SetColor("_Color", c);
+                }
+
+                if (mat.HasProperty("_EmissionColor"))
+                {
+                    mat.EnableKeyword("_EMISSION");
+                    mat.SetColor("_EmissionColor", node.PrimaryColor * node.EmissionIntensity);
+                }
+            }
+        }
+
     }
+
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log($"trigger {collision.gameObject.tag}");
         if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("StreamProjectile") || collision.gameObject.CompareTag("Untagged")) return;
         Die();
     }

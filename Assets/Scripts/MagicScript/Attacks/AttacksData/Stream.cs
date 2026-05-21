@@ -41,13 +41,12 @@ public class Stream : IAttack
         GameObject proj = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
         proj.tag = "StreamProjectile";
 
-
-
-        var spray = proj.GetComponent<SprayProjectile>();
-        if (spray != null)
+        var stream = proj.GetComponent<StreamProjecttile>();
+        if (stream != null)
         {
             float dmg = _nodeData != null ? _nodeData.Damage : 10f;
-            spray.Setup(dmg, ProjectileSpeed, ProjectileLifetime, SpreadAngle);
+            stream.Setup(dmg, ProjectileSpeed, ProjectileLifetime, SpreadAngle);
+            stream.SetupVisual(_nodeData);
         }
         else
         {

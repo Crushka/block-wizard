@@ -14,12 +14,14 @@ public class CompositeNode : NodeBase
     {
         _composition = composition;
 
-        Weight = (node1.Weight + node2.Weight) * 0.5f;
+        Weight = (node1.Weight + node2.Weight) * 0.3f;
         Damage = (node1.Damage + node2.Damage) * Weight;
         Range = (node1.Range + node2.Range) * Weight;
         Speed = (node1.Speed + node2.Speed) * Weight;
         // UnityEngine.Debug.Log($"dma1: {node1.Damage} dmg2: {node2.Damage}");
-        
+
+        NodeVisualMixer.MixVisuals(this, node1, node2, node1.Weight, node2.Weight);
+
     }
 
     public override AttackType GetDominantAttack() => _composition.GetDominantAttack();
