@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -9,7 +10,7 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
 {
     public static NodeEditorManager Instance;
     public GraphModel Graph = new GraphModel();
-    
+
     public RectTransform graphContainer;
     public RectTransform lineContainer;
     public RectTransform plateTransform;
@@ -23,21 +24,16 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
 
     private List<ConnectionView> activeLines = new List<ConnectionView>();
 
-    private NodeView currentSource;
-    private ConnectionView tempLine;
+    private NodeView _connectionSource;
+    private ConnectionView _tempLine;
+
 
     private void Awake()
     {
         if (Instance == null)
-        {
             Instance = this;
-            Debug.Log("<color=green>NodeEditorManager успешно инициализирован!</color>");
-        }
         else if (Instance != this)
-        {
-            Debug.LogWarning("Обнаружен дубликат NodeEditorManager! Удаляю лишний.");
             Destroy(gameObject);
-        }
     }
 
     public void InitEditor() => SpawnStartNode();
@@ -46,237 +42,352 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
     {
         if (graphContainer == null || Mouse.current == null) return;
 
-        if (currentSource != null && tempLine != null)
+        if (_connectionSource != null && _tempLine != null)
         {
-            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            if (!_connectionSource)
+            {
+                CancelTempLine();
+                return;
+            }
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(lineContainer, mousePosition, null, out var mousePos);
+            Vector2 mouseScreen = Mouse.current.position.ReadValue();
 
-            Vector2 startScreenPos = RectTransformUtility.WorldToScreenPoint(null, currentSource.transform.position);
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(lineContainer, startScreenPos, null, out var startPos);
-            
-            tempLine.UpdatePoints(startPos, mousePos);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                lineContainer, mouseScreen, null, out var localMouse);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                lineContainer,
+                RectTransformUtility.WorldToScreenPoint(null, _connectionSource.transform.position),
+                null, out var localSrc);
+
+            _tempLine.UpdatePoints(localSrc, localMouse);
 
             if (Mouse.current.rightButton.wasReleasedThisFrame)
-            {
-                FinishConnection(mousePosition);
-            }
+                FinishConnection(mouseScreen);
         }
 
         if (Mouse.current.middleButton.isPressed)
         {
-            Vector2 delta = Mouse.current.delta.ReadValue();
-            graphContainer.anchoredPosition += delta;
-            if (lineContainer != null) lineContainer.anchoredPosition += delta;
+            Vector2 d = Mouse.current.delta.ReadValue();
+            graphContainer.anchoredPosition += d;
+            if (lineContainer != null) lineContainer.anchoredPosition += d;
         }
     }
+
 
     private void SpawnStartNode()
     {
         if (graphContainer == null) return;
 
-        GameObject startObj = Instantiate(nodePrefab, graphContainer);
-        NodeView view = startObj.GetComponent<NodeView>();
-        view.Initialize(new NodeModel(ElementType.None)); 
-        
-        startObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-        view.SetVisualState(true); 
+        var obj = Instantiate(nodePrefab, graphContainer);
+        var view = obj.GetComponent<NodeView>();
+        view.Initialize(new NodeModel(ElementType.None));
+        obj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+        view.SetVisualState(true);
 
-        if (!Graph.Nodes.Contains(view.Data)) Graph.Nodes.Add(view.Data);
+        if (!Graph.Nodes.Contains(view.Data))
+            Graph.Nodes.Add(view.Data);
+
         RefreshGraph();
     }
+
 
     public void RefreshGraph()
     {
         Graph.RecalculateWeights();
+        RebuildLines();
+    }
 
-        for (int i = activeLines.Count - 1; i >= 0; i--)
+    private void RebuildLines()
+    {
+        GameObject tempGO = _tempLine != null ? _tempLine.gameObject : null;
+
+        for (int i = lineContainer.childCount - 1; i >= 0; i--)
         {
-            if (activeLines[i] != null) Destroy(activeLines[i].gameObject);
+            GameObject child = lineContainer.GetChild(i).gameObject;
+            if (child == tempGO) continue;
+            DestroyImmediate(child);
         }
         activeLines.Clear();
 
         var views = graphContainer.GetComponentsInChildren<NodeView>().ToList();
-        HashSet<string> drawn = new HashSet<string>();
+        var drawn = new HashSet<string>();
 
         foreach (var nv in views)
         {
             nv.UpdateVisuals();
             foreach (var tId in nv.Data.connectedIds)
             {
-                string key = string.Compare(nv.Data.id, tId) < 0 ? nv.Data.id + tId : tId + nv.Data.id;
-                
-                if (!drawn.Contains(key))
-                {
-                    var targetView = views.FirstOrDefault(v => v.Data.id == tId);
-                    if (targetView != null)
-                    {
-                        var lineObj = Instantiate(connectionPrefab, lineContainer);
-                        var line = lineObj.GetComponent<ConnectionView>();
-                        line.Initialize(nv, targetView, nv.Data.id, tId);
-                        activeLines.Add(line);
-                        drawn.Add(key);
-                    }
-                }
+                string key = EdgeKey(nv.Data.id, tId);
+                if (drawn.Contains(key)) continue;
+
+                var target = views.FirstOrDefault(v => v.Data.id == tId);
+                if (target == null) continue;
+
+                var lineObj = Instantiate(connectionPrefab, lineContainer);
+                var conn = lineObj.GetComponent<ConnectionView>();
+                conn.Initialize(nv, target, nv.Data.id, tId);
+                activeLines.Add(conn);
+                drawn.Add(key);
             }
         }
     }
 
-    public void RefreshLines() => activeLines.ForEach(l => { if(l) l.UpdateLine(); });
+    public void RefreshLines()
+    {
+        foreach (var l in activeLines)
+            if (l != null) l.UpdateLine();
+    }
+
+    public void RemoveEdge(string idA, string idB)
+    {
+        var nodeA = Graph.Nodes.Find(n => n.id == idA);
+        var nodeB = Graph.Nodes.Find(n => n.id == idB);
+
+        if (nodeA != null) nodeA.connectedIds.Remove(idB);
+        if (nodeB != null) nodeB.connectedIds.Remove(idA);
+
+        RefreshGraph();
+    }
 
     public void RemoveNodeFromGraph(NodeView nv)
     {
         if (nv == null || nv.Data == null) return;
 
-        string targetId = nv.Data.id;
+        CancelTempLine();
 
-        var neighbors = Graph.Nodes.Where(n => n.connectedIds.Contains(targetId)).ToList();
+        string removedId = nv.Data.id;
 
-        foreach (var neighbor in neighbors)
-        {
-            neighbor.connectedIds.Remove(targetId);
-
-            neighbor.weight = 1 + neighbor.connectedIds.Count;
-        }
+        foreach (var node in Graph.Nodes)
+            node.connectedIds.Remove(removedId);
 
         nv.Data.connectedIds.Clear();
-        nv.Data.weight = 2147483647;
-
-        if (Graph.Nodes.Contains(nv.Data))
-        {
-            Graph.Nodes.Remove(nv.Data);
-        }
-
-        RefreshGraph();
-        nv.UpdateVisuals();
+        Graph.Nodes.Remove(nv.Data);
+        Graph.RecalculateWeights();
+        RebuildLines();
     }
 
-    private void UpdateNodeWeight(NodeModel node)
-    {
-        if (node == null) return;
-
-        node.weight = 1 + node.connectedIds.Count;
-        
-        Debug.Log($"Вес ноды {node.id} пересчитан: {node.weight}");
-    }
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (eventData.pointerDrag != null)
-        {
-            NodeView nv = eventData.pointerDrag.GetComponent<NodeView>();
-            if (nv != null && nv.transform.parent != graphContainer)
-            {
-                nv.transform.SetParent(graphContainer);
-                nv.SetVisualState(true);
-                if (!Graph.Nodes.Contains(nv.Data)) Graph.Nodes.Add(nv.Data);
-                RefreshGraph();
-            }
-        }
-       
+        if (eventData.pointerDrag == null) return;
+
+        var nv = eventData.pointerDrag.GetComponent<NodeView>();
+        if (nv == null) return;
+
+        if (!Graph.Nodes.Contains(nv.Data))
+            Graph.Nodes.Add(nv.Data);
+
+        nv.transform.SetParent(graphContainer, true);
+        nv.SetVisualState(true);
+
+        RefreshGraph();
     }
 
     public void OnScroll(PointerEventData data)
     {
         if (graphContainer == null) return;
 
-        float scrollDelta = data.scrollDelta.y * zoomSensitivity;
-        Vector3 newScale = graphContainer.localScale + new Vector3(scrollDelta, scrollDelta, 0);
-
-        newScale.x = Mathf.Clamp(newScale.x, minZoom, maxZoom);
-        newScale.y = Mathf.Clamp(newScale.y, minZoom, maxZoom);
-        newScale.z = 1f;
-
-        graphContainer.localScale = newScale;
+        float delta = data.scrollDelta.y * zoomSensitivity;
+        var scale = graphContainer.localScale + new Vector3(delta, delta, 0);
+        scale.x = Mathf.Clamp(scale.x, minZoom, maxZoom);
+        scale.y = Mathf.Clamp(scale.y, minZoom, maxZoom);
+        scale.z = 1f;
+        graphContainer.localScale = scale;
 
         RefreshLines();
     }
 
     public void OnNodeRightClick(NodeView source)
     {
-        currentSource = source;
-        GameObject lineObj = Instantiate(connectionPrefab, lineContainer);
-        tempLine = lineObj.GetComponent<ConnectionView>();
-        tempLine.transform.SetAsFirstSibling();
+        CancelTempLine();
+
+        _connectionSource = source;
+        var obj = Instantiate(connectionPrefab, lineContainer);
+        _tempLine = obj.GetComponent<ConnectionView>();
+        _tempLine.transform.SetAsFirstSibling();
     }
 
-    private string GetRootBranchId(NodeView node)
+    private void CancelTempLine()
     {
-        if (node.Data.type == ElementType.None) return "START";
-
-        HashSet<string> visited = new HashSet<string>();
-        List<string> toCheck = new List<string> { node.Data.id };
-
-        while (toCheck.Count > 0)
+        if (_tempLine != null)
         {
-            string currentId = toCheck[0];
-            toCheck.RemoveAt(0);
-            visited.Add(currentId);
+            Destroy(_tempLine.gameObject);
+            _tempLine = null;
+        }
+        _connectionSource = null;
+    }
 
-            NodeModel currentModel = Graph.Nodes.Find(n => n.id == currentId);
-            
-            foreach (string neighborId in currentModel.connectedIds)
+    private void FinishConnection(Vector2 screenPos)
+    {
+        NodeView source = _connectionSource;
+        CancelTempLine();
+
+        if (source == null || !source) return;
+
+        var evData = new PointerEventData(EventSystem.current) { position = screenPos };
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(evData, results);
+
+        NodeView target = null;
+        foreach (var r in results)
+        {
+            if (r.gameObject.transform.IsChildOf(lineContainer)) continue;
+            var candidate = r.gameObject.GetComponentInParent<NodeView>();
+            if (candidate != null && candidate != source)
             {
-                NodeModel neighbor = Graph.Nodes.Find(n => n.id == neighborId);
-
-                if (neighbor.type == ElementType.None) return currentId;
-
-                if (!visited.Contains(neighborId))
-                {
-                    toCheck.Add(neighborId);
-                }
+                target = candidate;
+                break;
             }
         }
+
+        if (target == null || target.Data == null) return;
+
+        if (source.Data.connectedIds.Contains(target.Data.id)) return;
+
+        string noneId = GetNoneNodeId();
+
+        if (noneId != null)
+        {
+            string branchSource = GetDirectBranchOfNone(noneId, source.Data.id);
+            string branchTarget = GetDirectBranchOfNone(noneId, target.Data.id);
+
+            if (branchSource != null && branchTarget != null && branchSource != branchTarget)
+            {
+                Debug.LogWarning("[Logic] Нельзя соединять узлы из разных веток START NODE.");
+                return;
+            }
+        }
+
+        string rootSource = GetConnectedStartId(source.Data);
+        string rootTarget = GetConnectedStartId(target.Data);
+
+        if (rootSource != null && rootTarget != null && rootSource != rootTarget)
+        {
+            Debug.LogWarning("[Logic] Нельзя соединять ноды из разных подграфов с None.");
+            return;
+        }
+
+        source.Data.AddLink(target.Data.id);
+        target.Data.AddLink(source.Data.id);
+        RefreshGraph();
+    }
+
+    public void PruneIsolatedSubgraphs()
+    {
+        var reachable = new HashSet<string>();
+
+        foreach (var node in Graph.Nodes)
+        {
+            if (node.type != ElementType.None) continue;
+
+            var queue = new Queue<string>();
+            queue.Enqueue(node.id);
+
+            while (queue.Count > 0)
+            {
+                string id = queue.Dequeue();
+                if (reachable.Contains(id)) continue;
+                reachable.Add(id);
+
+                var current = Graph.Nodes.Find(n => n.id == id);
+                if (current == null) continue;
+
+                foreach (var neighborId in current.connectedIds)
+                    if (!reachable.Contains(neighborId))
+                        queue.Enqueue(neighborId);
+            }
+        }
+
+        var toRemove = Graph.Nodes.Where(n => !reachable.Contains(n.id)).ToList();
+        if (toRemove.Count == 0) return;
+
+        foreach (var node in Graph.Nodes)
+            node.connectedIds.RemoveAll(id => toRemove.Any(r => r.id == id));
+
+        foreach (var node in toRemove)
+            Graph.Nodes.Remove(node);
+
+        var views = graphContainer.GetComponentsInChildren<NodeView>().ToList();
+        foreach (var view in views)
+        {
+            if (view.Data == null) continue;
+            if (!reachable.Contains(view.Data.id))
+                Destroy(view.gameObject);
+        }
+
+        RefreshGraph();
+    }
+
+    private string GetConnectedStartId(NodeModel startSearch)
+    {
+        if (startSearch == null) return null;
+        if (startSearch.type == ElementType.None) return startSearch.id;
+
+        var visited = new HashSet<string>();
+        var queue = new Queue<string>();
+        queue.Enqueue(startSearch.id);
+
+        while (queue.Count > 0)
+        {
+            string id = queue.Dequeue();
+            if (visited.Contains(id)) continue;
+            visited.Add(id);
+
+            NodeModel node = Graph.Nodes.Find(n => n.id == id);
+            if (node == null) continue;
+            if (node.type == ElementType.None) return node.id;
+
+            foreach (var neighborId in node.connectedIds)
+                if (!visited.Contains(neighborId))
+                    queue.Enqueue(neighborId);
+        }
+
         return null;
     }
 
-    private void FinishConnection(Vector2 screenMousePos)
+    private string GetNoneNodeId()
     {
-        PointerEventData eventData = new PointerEventData(EventSystem.current);
-        eventData.position = screenMousePos;
-
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventData, results);
-
-        NodeView targetNode = null;
-
-        foreach (var result in results)
-        {
-            if (result.gameObject.transform.IsChildOf(lineContainer)) continue;
-            targetNode = result.gameObject.GetComponentInParent<NodeView>();
-
-            if (targetNode != null && targetNode != currentSource) break; 
-        }
-
-        if (targetNode != null)
-        {
-            string rootSource = GetRootBranchId(currentSource);
-            string rootTarget = GetRootBranchId(targetNode);
-
-            bool isDifferentBranches = rootSource != null && rootTarget != null && 
-                                       rootSource != "START_NODE" && rootTarget != "START_NODE" && 
-                                       rootSource != rootTarget;
-
-            if (isDifferentBranches)
-            {
-                Debug.LogError("[Logic Error] Нельзя соединять разные подграфы!");
-                return;
-            }
-            else if (!currentSource.Data.connectedIds.Contains(targetNode.Data.id))
-            {
-                currentSource.Data.AddLink(targetNode.Data.id);
-                targetNode.Data.AddLink(currentSource.Data.id);
-                RefreshGraph(); 
-            }
-        }
-
-        if (tempLine != null) Destroy(tempLine.gameObject);
-        currentSource = null;
-        tempLine = null;
+        var none = Graph.Nodes.Find(n => n.type == ElementType.None);
+        return none?.id;
     }
+
+    private string GetDirectBranchOfNone(string noneId, string targetId)
+    {
+        if (targetId == noneId) return null;
+        NodeModel noneNode = Graph.Nodes.Find(n => n.id == noneId);
+        if (noneNode == null) return null;
+
+        var branchLabel = new Dictionary<string, string>();
+        var queue = new Queue<string>();
+
+        foreach (var neighborId in noneNode.connectedIds)
+        {
+            if (branchLabel.ContainsKey(neighborId)) continue;
+            branchLabel[neighborId] = neighborId;
+            queue.Enqueue(neighborId);
+        }
+
+        while (queue.Count > 0)
+        {
+            string id = queue.Dequeue();
+            NodeModel node = Graph.Nodes.Find(n => n.id == id);
+            if (node == null) continue;
+
+            foreach (var neighborId in node.connectedIds)
+            {
+                if (neighborId == noneId) continue;
+                if (branchLabel.ContainsKey(neighborId)) continue;
+                branchLabel[neighborId] = branchLabel[id];
+                queue.Enqueue(neighborId);
+            }
+        }
+
+        branchLabel.TryGetValue(targetId, out string branch);
+        return branch;
+    }
+
     public void ClearEditor()
     {
-        // 1. Удаляем все UI-объекты нод из контейнера
         if (graphContainer != null)
         {
             foreach (Transform child in graphContainer)
@@ -285,7 +396,6 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
             }
         }
 
-        // 2. Удаляем все UI-линии связей
         if (lineContainer != null)
         {
             foreach (Transform line in lineContainer)
@@ -295,10 +405,13 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
         }
         activeLines.Clear();
 
-        // 3. Полностью очищаем логическую модель графа
         if (Graph != null && Graph.Nodes != null)
         {
             Graph.Nodes.Clear();
         }
     }
+    private static string EdgeKey(string a, string b) =>
+        string.Compare(a, b, System.StringComparison.Ordinal) < 0
+            ? a + "_" + b
+            : b + "_" + a;
 }

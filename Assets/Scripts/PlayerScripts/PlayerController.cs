@@ -87,6 +87,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (controller == null || !controller.enabled)
+        {
+            return;
+        }
+
         if (dashCooldownTimer > 0) dashCooldownTimer -= Time.deltaTime;
 
         if (isDashing)

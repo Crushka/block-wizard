@@ -2,28 +2,21 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Контейнер сохранения — всё что нужно пережить между сессиями
-// ─────────────────────────────────────────────────────────────────────────────
+
 [System.Serializable]
 public class SaveData
 {
-    // ── Позиция / сцена ──────────────────────────────────────────────────────
     public string sceneName;
     public string spawnPointId;
 
-    // ── Здоровье ─────────────────────────────────────────────────────────────
     public float playerHP;
     public float playerMaxHP;
 
-    // ── Инвентарь нод ────────────────────────────────────────────────────────
-    public List<int> inventoryElementTypes = new();   // ElementType as int
+    public List<int> inventoryElementTypes = new();
 
-    // ── Слоты заклинаний ─────────────────────────────────────────────────────
     public List<SpellSlotData> spellSlots = new();
     public int activeSpellSlotIndex;
 
-    // ── Мёртвые боссы ────────────────────────────────────────────────────────
     public List<string> deadBossIds = new();
 }
 
@@ -38,21 +31,17 @@ public class SpellSlotData
 public class NodeModelData
 {
     public string id;
-    public int elementType;   // ElementType as int
+    public int elementType;
     public int weight;
     public float posX;
     public float posY;
     public List<string> connectedIds = new();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SaveSystem — читает / пишет SaveData на диск (JSON)
-// ─────────────────────────────────────────────────────────────────────────────
 public static class SaveSystem
 {
     private static string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
 
-    // ── Сохранение ────────────────────────────────────────────────────────────
     public static void Save(GameStateManager gsm)
     {
         if (gsm == null) { Debug.LogWarning("[SaveSystem] GSM == null"); return; }
@@ -67,11 +56,9 @@ public static class SaveSystem
             deadBossIds = new List<string>(gsm.DeadBossIds),
         };
 
-        // Инвентарь
         foreach (var t in gsm.SavedInventory)
             data.inventoryElementTypes.Add((int)t);
 
-        // Слоты заклинаний
         foreach (var slot in gsm.SpellSlots)
         {
             var slotData = new SpellSlotData { index = slot.index };
@@ -101,7 +88,6 @@ public static class SaveSystem
         Debug.Log($"[SaveSystem] Сохранено → {SavePath}");
     }
 
-    // ── Загрузка ──────────────────────────────────────────────────────────────
     public static bool Load(GameStateManager gsm)
     {
         if (!File.Exists(SavePath))
@@ -120,22 +106,18 @@ public static class SaveSystem
             return false;
         }
 
-        // Позиция
         gsm.LastSpawnPointId     = data.spawnPointId;
         gsm.PlayerHP             = data.playerHP;
         gsm.PlayerMaxHP          = data.playerMaxHP;
         gsm.ActiveSpellSlotIndex = data.activeSpellSlotIndex;
 
-        // Мёртвые боссы
         gsm.DeadBossIds.Clear();
         gsm.DeadBossIds.AddRange(data.deadBossIds);
 
-        // Инвентарь
         gsm.SavedInventory.Clear();
         foreach (var t in data.inventoryElementTypes)
             gsm.SavedInventory.Add((ElementType)t);
 
-        // Слоты заклинаний
         gsm.SpellSlots.Clear();
         foreach (var slotData in data.spellSlots)
         {
@@ -164,7 +146,6 @@ public static class SaveSystem
         return true;
     }
 
-    // ── Утилиты ───────────────────────────────────────────────────────────────
     public static bool HasSave() => File.Exists(SavePath);
 
     public static void DeleteSave()
@@ -174,7 +155,6 @@ public static class SaveSystem
         Debug.Log("[SaveSystem] Сохранение удалено.");
     }
 
-    /// <summary>Возвращает имя сцены из сохранения без загрузки в GSM (для главного меню).</summary>
     public static string PeekSavedScene()
     {
         if (!File.Exists(SavePath)) return null;

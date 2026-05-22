@@ -74,9 +74,22 @@ public class SceneTrigger : MonoBehaviour
         if (caster != null && caster.CurrentSpellNode != null)
             gsm.SaveSpell(caster.CurrentSpellNode);
 
+        // Останавливаем все корутины анимации перед выгрузкой сцены,
+        // чтобы они не обращались к уже уничтоженным RectTransform'ам
+        var visualizer = Object.FindAnyObjectByType<GraphVisualizer>();
+        if (visualizer != null)
+        {
+            visualizer.StopAllCoroutines();
+            visualizer.gameObject.SetActive(false);
+        }
+
+        var nodeEditor = Object.FindAnyObjectByType<NodeEditorManager>();
+        if (nodeEditor != null)
+            nodeEditor.StopAllCoroutines();
+
         Debug.Log($"[SceneTrigger] Переход в '{targetScene}', спавн: '{spawnPointId}'");
         SceneManager.LoadScene(targetScene);
-       
-        
+
+
     }
 }

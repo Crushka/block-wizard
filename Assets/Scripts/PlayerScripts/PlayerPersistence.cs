@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerPersistence : MonoBehaviour
 {
@@ -7,38 +6,67 @@ public class PlayerPersistence : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null)
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
-    public void TeleportTo(Transform spawnPoint)
+    public void TeleportTo(Transform targetTransform)
     {
-        StartCoroutine(ExecuteTeleport(spawnPoint));
-    }
+        GameObject childPlayer = null;
+        foreach (Transform child in transform)
+        {
+            if (child.CompareTag("Player"))
+            {
+                childPlayer = child.gameObject;
+                break;
+            }
+        }
 
-    private IEnumerator ExecuteTeleport(Transform spawnPoint)
-    {
-        var cc = GetComponent<CharacterController>();
-        if (cc != null) cc.enabled = false;
+        CharacterController controller = null;
+        Rigidbody rb = null;
 
-        yield return new WaitForEndOfFrame();
+        if (childPlayer != null)
+        {
+            controller = childPlayer.GetComponent<CharacterController>();
+            rb = childPlayer.GetComponent<Rigidbody>();
+        }
 
-        Vector3 targetPos = spawnPoint.position;
-        Quaternion targetRot = spawnPoint.rotation;
+        if (controller != null)
+        {
+            controller.enabled = false;
+        }
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
 
-        transform.SetPositionAndRotation(targetPos, targetRot);
-        Physics.SyncTransforms();
+        transform.position = targetTransform.position;
+        transform.rotation = targetTransform.rotation;
 
-        yield return null;
+        if (childPlayer != null)
+        {
+            childPlayer.transform.localPosition = Vector3.zero;
+            childPlayer.transform.localRotation = Quaternion.identity;
+        }
 
-        transform.SetPositionAndRotation(targetPos, targetRot);
-        Physics.SyncTransforms();
+        if (controller != null)
+        {
+            controller.enabled = true;
+        }
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+        }
 
-        if (cc != null) cc.enabled = true;
+        Debug.Log($"[PlayerPersistence] Пустышка перемещена. Дочерний игрок '{childPlayer?.name}' выровнен по центру.");
     }
 }

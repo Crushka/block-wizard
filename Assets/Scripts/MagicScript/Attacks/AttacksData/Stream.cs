@@ -7,7 +7,7 @@ public class Stream : IAttack
     private NodeBase _nodeData;
     private GameObject _prefab;
 
-    private const float FireInterval = 0.005f;
+    private const float FireInterval = 0.05f;
     private const float ProjectileSpeed = 12f;
     private const float ProjectileLifetime = 1.8f;
     private const float SpreadAngle = 12f;

@@ -4,14 +4,14 @@ using UnityEngine.EventSystems;
 
 public class ConnectionView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    public NodeView sourceView; 
-    public NodeView targetView; 
-    public RectTransform rectTransform; 
-    public Image lineImage; 
-    public float lineWidth = 5f; 
+    public NodeView sourceView;
+    public NodeView targetView;
+    public RectTransform rectTransform;
+    public Image lineImage;
+    public float lineWidth = 5f;
 
-    [HideInInspector] public string idA; 
-    [HideInInspector] public string idB; 
+    [HideInInspector] public string idA;
+    [HideInInspector] public string idB;
 
     private Image _img;
     private Color _origColor;
@@ -23,7 +23,8 @@ public class ConnectionView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         if (_img != null) _origColor = _img.color;
     }
 
-    public void Initialize(NodeView start, NodeView end, string idA, string idB) {
+    public void Initialize(NodeView start, NodeView end, string idA, string idB)
+    {
         this.sourceView = start; this.targetView = end;
         this.idA = idA; this.idB = idB;
         if (rectTransform == null) rectTransform = GetComponent<RectTransform>();
@@ -31,8 +32,10 @@ public class ConnectionView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         UpdateLine();
     }
 
-    public void UpdateLine() {
+    public void UpdateLine()
+    {
         if (sourceView == null || targetView == null) return;
+        if (rectTransform == null) return;
         Vector2 start = sourceView.transform.position;
         Vector2 end = targetView.transform.position;
 
@@ -42,7 +45,8 @@ public class ConnectionView : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         UpdatePoints(localStart, localEnd);
     }
 
-    public void UpdatePoints(Vector2 startL, Vector2 endL) {
+    public void UpdatePoints(Vector2 startL, Vector2 endL)
+    {
         Vector2 dir = endL - startL;
         rectTransform.anchoredPosition = startL;
         rectTransform.sizeDelta = new Vector2(dir.magnitude, lineWidth);

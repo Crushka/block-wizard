@@ -5,20 +5,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public float health = 100f;
     public float maxHealth = 100f;
 
-    [Header("UI")]
-    [SerializeField] private GameObject deadScreen;
-
-    [Header("Камера на время экрана смерти")]
-    [SerializeField] private GameObject deadCamera;
-
-    public void SetDeadScreen(GameObject screen)
-    {
-        deadScreen = screen;
-    }
-    public float GetHealth() {  return health; }
+    public float GetHealth() { return health; }
 
     private void OnTriggerEnter(Collider other)
     {
+        // Маленькая опечатка в твоем коде: "DathTrigger" -> проверь, совпадает ли с Layer в Unity
         if (other.gameObject.layer == LayerMask.NameToLayer("DathTrigger"))
         {
             Die();
@@ -31,7 +22,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (health <= 0) Die();
     }
 
-
     public void Die()
     {
         Debug.Log("Игрок погиб");
@@ -39,14 +29,17 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         var gsm = GameStateManager.Instance;
         if (gsm != null) gsm.PlayerHP = 0;
 
-        if (deadCamera != null)
-            deadCamera.SetActive(true);
+        // ВМЕСТО deadScreen.SetActive(true) обращаемся к выжившему Синглтону:
+        if (DeadScreenUI.Instance != null)
+        {
+            DeadScreenUI.Instance.ShowDeadScreen();
+        }
+        else
+        {
+            Debug.LogError("[PlayerHealth] На сцене не найден DeadScreenUI.Instance!");
+        }
 
-        if (deadScreen != null)
-            deadScreen.SetActive(true);
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        // Логику курсора мы перенесли внутрь ShowDeadScreen(), здесь она больше не нужна
 
         Destroy(transform.root.gameObject);
     }

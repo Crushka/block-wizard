@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -42,6 +40,7 @@ public class GraphVisualizer : MonoBehaviour
     private List<VizStep> _steps;
     private int _currentIndex;
     private System.Action _onAccept;
+
     private Dictionary<string, NodeView> _nodeViews = new();
     private Dictionary<string, ConnectionView> _edgeViews = new();
 
@@ -205,7 +204,6 @@ public class GraphVisualizer : MonoBehaviour
                 StartCoroutine(AnimateColor(img, img.color, hl ? highlightEdge : normalEdge));
         }
     }
-
     private Vector2 ComputePosition(NodeModel model, List<NodeModel> allNodes)
     {
         var editorViews = NodeEditorManager.Instance != null

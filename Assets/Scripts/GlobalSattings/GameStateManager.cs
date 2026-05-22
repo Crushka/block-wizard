@@ -15,6 +15,7 @@ public class GameStateManager : MonoBehaviour
 
     public List<string> DeadBossIds = new();
 
+
     public GraphModel SavedGraph
     {
         get => SpellSlots.Count > ActiveSpellSlotIndex ? SpellSlots[ActiveSpellSlotIndex].graph : null;
@@ -73,7 +74,7 @@ public class GameStateManager : MonoBehaviour
     {
         if (SpellSlotManager.Instance != null)
         {
-            SpellSlotManager.Instance.SaveCurrentSlot();
+            SpellSlotManager.Instance.SaveAllSlots();
         }
         else if (NodeEditorManager.Instance != null)
         {

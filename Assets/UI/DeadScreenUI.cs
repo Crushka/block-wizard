@@ -1,14 +1,32 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class DeadScreenUI : MonoBehaviour
 {
+    public static DeadScreenUI Instance { get; private set; }
+
     [Header("Настройки 'Начать сначала'")]
     [SerializeField] private string firstScene = "Level1";
     [SerializeField] private string firstSpawnPointId = "default";
 
-    [Header("Префаб игрока (весь FullPlayer1)")]
-    [SerializeField] private GameObject playerPrefab;
+    [Header("Ссылки на UI элементы")]
+    [SerializeField] private GameObject visualPanel;
+    [SerializeField] private Camera deadCamera;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     public void StartFromBegin()
     {
@@ -57,69 +75,37 @@ public class DeadScreenUI : MonoBehaviour
 
     private void LoadScene(string sceneName)
     {
-        string currentScene = SceneManager.GetActiveScene().name;
 
-        if (currentScene == sceneName)
-        {
-            gameObject.SetActive(false);
-            SpawnPlayer();
-        }
-        else
-        {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.LoadScene(sceneName);
-        }
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.LoadScene(sceneName);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
-        SpawnPlayer();
+        HideDeadScreen();
     }
 
-    private void SpawnPlayer()
+    public void ShowDeadScreen()
     {
-        if (playerPrefab == null)
+        if (visualPanel != null) visualPanel.SetActive(true);
+        if (deadCamera != null) deadCamera.gameObject.SetActive(true);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+
+    private void HideDeadScreen()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+
+        foreach (Transform child in transform)
         {
-            Debug.LogError("[DeadScreenUI] playerPrefab не назначен!");
-            return;
+            child.gameObject.SetActive(false);
         }
 
-        var gsm = GameStateManager.Instance;
-        string targetId = gsm != null ? gsm.LastSpawnPointId : firstSpawnPointId;
-
-        SpawnPoint spawnPoint = FindSpawnPoint(targetId);
-        Vector3 pos = spawnPoint != null ? spawnPoint.transform.position : Vector3.zero;
-        Quaternion rot = spawnPoint != null ? spawnPoint.transform.rotation : Quaternion.identity;
-
-        GameObject player = Instantiate(playerPrefab, pos, rot);
-        Debug.Log($"[DeadScreenUI] Игрок заспавнен на '{targetId}' → {pos}");
-
-        var health = player.GetComponentInChildren<PlayerHealth>();
-        if (health != null && gsm != null)
-            health.health = gsm.PlayerMaxHP;
-
-        if (health != null)
-            health.SetDeadScreen(gameObject);
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
-        gameObject.SetActive(false);
-
-        var deadCam = GameObject.Find("DeadCamera");
-        if (deadCam != null) deadCam.SetActive(false);
+      
     }
 
-    private SpawnPoint FindSpawnPoint(string id)
-    {
-        var all = Object.FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude);
-        foreach (var sp in all)
-            if (sp.spawnId == id) return sp;
 
-        foreach (var sp in all)
-            if (sp.spawnId == "default") return sp;
-
-        return null;
-    }
 }
