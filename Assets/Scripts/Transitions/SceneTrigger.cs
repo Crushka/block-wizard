@@ -74,8 +74,6 @@ public class SceneTrigger : MonoBehaviour
         if (caster != null && caster.CurrentSpellNode != null)
             gsm.SaveSpell(caster.CurrentSpellNode);
 
-        // Останавливаем все корутины анимации перед выгрузкой сцены,
-        // чтобы они не обращались к уже уничтоженным RectTransform'ам
         var visualizer = Object.FindAnyObjectByType<GraphVisualizer>();
         if (visualizer != null)
         {

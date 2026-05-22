@@ -254,7 +254,6 @@ internal class SpellGraphSolver
             if (current != start)
                 result.Data = MixAlgorithms.MixNodes(result.Data, current.Data);
 
-            // Сортируем соседей по num убыванию — дальние раньше
             foreach (GraphNode neighbor in current.GetNeighbours()
                          .Where(n => nodeSet.Contains(n))
                          .OrderByDescending(n => n.num))
@@ -281,10 +280,10 @@ internal class SpellGraphSolver
     {
         graph.PrepareGraph();
 
-        foreach (GraphNode node in graph.AllNodes()) // нужен метод AllNodes (см. ниже)
+        foreach (GraphNode node in graph.AllNodes())
         {
-            if (node == graph.StartNode) continue; // StartNode не трогаем
-            int nodeNum = node.num > 0 ? node.num : 1; // защита от деления на 0
+            if (node == graph.StartNode) continue;
+            int nodeNum = node.num > 0 ? node.num : 1;
             node.Data.Weight = Mathf.Max(0.75f + 1 / Mathf.Sqrt(nodeNum), 1f);
             UnityEngine.Debug.Log($"[547263487562395] num: {node.num}, weight: {node.Data.Weight}");
         }
