@@ -4867,7 +4867,8 @@ Transform:
   m_LocalPosition: {x: -0.057, y: -0.654, z: 0}
   m_LocalScale: {x: 0.75, y: 0.19648248, z: 0.75}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8426838283027285204}
   m_Father: {fileID: 2565995627189038960}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3914009696826368910
@@ -5406,6 +5407,37 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5309397096346931837
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8426838283027285204}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8426838283027285204
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5309397096346931837}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0.29119658, w: 0.95666325}
+  m_LocalPosition: {x: 0.145, y: -1.111, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6590766030757809316}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -33.859}
 --- !u!1 &5558109367955504743
 GameObject:
   m_ObjectHideFlags: 0
@@ -5483,7 +5515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::QueenAI
   currentState: 0
   player: {fileID: 0}
-  stingerMuzzle: {fileID: 6590766030757809316}
+  stingerMuzzle: {fileID: 8426838283027285204}
   bulletPrefab: {fileID: 3910950108595853705, guid: a9ecb8f4748bfbd4eb31a573e47746ad, type: 3}
   minionPrefab: {fileID: 3602737079790508653, guid: adcaaeb02f3cf8540b2de3e98c9bea8f, type: 3}
   waypoints:

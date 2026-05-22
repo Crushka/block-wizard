@@ -5076,7 +5076,7 @@ GameObject:
   - component: {fileID: -684855827496146126}
   - component: {fileID: 5704539875307334410}
   m_Layer: 3
-  m_Name: Bee
+  m_Name: BeeJunior
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5092,7 +5092,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.80719, y: 3, z: -14.39929}
-  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 139193103207344331}
@@ -5119,14 +5119,14 @@ MonoBehaviour:
     m_Bits: 1
   detectionRange: 1000
   moveSpeed: 10
-  hoverHeight: 5
-  minHorizontalDistance: 5
-  heightAdjustSpeed: 5
+  hoverHeight: 2.5
+  minHorizontalDistance: 2.5
+  heightAdjustSpeed: 3
   rotationSpeed: 10
-  attackRange: 10
+  attackRange: 5
   attackCooldown: 2
   windUpTime: 0.6
-  dashSpeed: 20
+  dashSpeed: 15
   dashDamage: 20
   dashDuration: 1.5
   health: 100

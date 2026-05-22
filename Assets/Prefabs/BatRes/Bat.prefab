@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -1346787516539826273}
   - component: {fileID: 578664946612473146}
   - component: {fileID: 1736533646594214660}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Bat
   m_TagString: Bat
   m_Icon: {fileID: 0}
@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 3950355471357178078}
   - component: {fileID: 4604299650490699403}
   - component: {fileID: 1718548807606453292}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +296,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7429639808382235151}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
