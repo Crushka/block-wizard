@@ -70,11 +70,16 @@ public class StreamProjecttile : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter(Collision collision)
+    void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"trigger {collision.gameObject.tag}");
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("StreamProjectile") || collision.gameObject.CompareTag("Untagged")) return;
-        Die();
+        IDamageable damageable = other.GetComponentInParent<IDamageable>();
+
+        if (damageable != null && !other.CompareTag("Player"))
+        {
+            damageable.takeDamage(_damage);
+            Die();
+        }
+        
     }
 
     private void Die()

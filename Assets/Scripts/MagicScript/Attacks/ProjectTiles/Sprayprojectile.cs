@@ -95,17 +95,14 @@ public class SprayProjectile : MonoBehaviour
         transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
     }
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Тег этого : {other.tag}");
+        IDamageable damageable = other.GetComponentInParent<IDamageable>();
 
-        IDamageable damageable = other.GetComponent<IDamageable>();
         if (damageable != null && !other.CompareTag("Player"))
         {
             damageable.takeDamage(_damage);
-            Debug.Log($"нанесен урон: {other.gameObject.name}");
             Die();
-            return;
         }
     }
 

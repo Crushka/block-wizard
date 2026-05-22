@@ -173,6 +173,7 @@ public class BeeAI : MonoBehaviour, IDamageable
 
     public void takeDamage(float damage)
     {
+        Debug.Log($"Пчела получила урон! Текущее HP: {health}");
         if (isDead) return;
         health -= damage;
         if (health <= 0) Die();

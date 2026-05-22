@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2885752510228103034}
   - component: {fileID: -434791255494059720}
-  - component: {fileID: 7282046736869696642}
+  - component: {fileID: 3124998522611263360}
   m_Layer: 3
   m_Name: HiveCell
   m_TagString: Untagged
@@ -84,8 +84,8 @@ MonoBehaviour:
   beePrefab: {fileID: 3602737079790508653, guid: d9dc7a52ac3f5be43b2103608c9461e6, type: 3}
   beeCount: 1
   spawnRadius: 1.5
---- !u!135 &7282046736869696642
-SphereCollider:
+--- !u!136 &3124998522611263360
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,9 +102,11 @@ SphereCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  serializedVersion: 2
+  m_Radius: 1.0964763
+  m_Height: 2.727705
+  m_Direction: 1
+  m_Center: {x: -1.01853806e-16, y: 0.86385226, z: 0.05533266}
 --- !u!1001 &6818225900863907153
 PrefabInstance:
   m_ObjectHideFlags: 0

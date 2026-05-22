@@ -34,9 +34,4 @@ public class SpikeAttack : IAttack
     {
         _hasFired = false;
     }
-
-    float IAttack.getDamage()
-    {
-        return _nodeData?.Damage ?? 10f;
-    }
 }

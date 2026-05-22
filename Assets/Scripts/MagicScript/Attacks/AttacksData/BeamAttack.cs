@@ -77,9 +77,4 @@ public class BeamAttack : IAttack
 
         _beamScript.SetupVisual(_nodeData);
     }
-
-    float IAttack.getDamage()
-    {
-        return _nodeData?.Damage ?? 10f;
-    }
 }

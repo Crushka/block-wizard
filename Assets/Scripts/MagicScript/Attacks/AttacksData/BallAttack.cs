@@ -23,6 +23,8 @@ public class BallAttack : IAttack
         spellScript.SetupVisual(_nodeData);
     }
 
+
+
     public void Stop()
     {
         _hasFired = false;

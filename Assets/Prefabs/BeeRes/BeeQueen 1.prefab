@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8269060358530394106}
   - component: {fileID: 3071482539059305097}
   - component: {fileID: 8402287953952218430}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4848,7 +4848,7 @@ GameObject:
   - component: {fileID: 3914009696826368910}
   - component: {fileID: 1839666903409639989}
   - component: {fileID: 464776221616094609}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4963,7 +4963,7 @@ GameObject:
   - component: {fileID: 8022092616549398165}
   - component: {fileID: 6712861592976099526}
   - component: {fileID: 4412170707799733645}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5076,7 +5076,7 @@ GameObject:
   - component: {fileID: 1818715181994853830}
   - component: {fileID: 617255649860003832}
   - component: {fileID: 3616992848706639776}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5191,7 +5191,7 @@ GameObject:
   - component: {fileID: 1015128434490505989}
   - component: {fileID: 6868085926152497161}
   - component: {fileID: 7397531306557303812}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5306,7 +5306,7 @@ GameObject:
   - component: {fileID: 4602982074497719323}
   - component: {fileID: 3416913893831501175}
   - component: {fileID: 190408399826124453}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Sphere (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5416,7 +5416,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8426838283027285204}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5432,7 +5432,7 @@ Transform:
   m_GameObject: {fileID: 5309397096346931837}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.29119658, w: 0.95666325}
-  m_LocalPosition: {x: 0.145, y: -1.111, z: 0}
+  m_LocalPosition: {x: 0.224, y: -1.528, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5449,7 +5449,7 @@ GameObject:
   - component: {fileID: 7508422401156939413}
   - component: {fileID: 2526198842807676790}
   - component: {fileID: 6621427359279427901}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BeeQueen 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5464,7 +5464,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5558109367955504743}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0.16, z: 0}
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
@@ -5473,7 +5473,7 @@ Transform:
   - {fileID: 4155578716138850520}
   - {fileID: 2739615408808834083}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!54 &2526198842807676790
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5497,7 +5497,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
@@ -5516,7 +5516,7 @@ MonoBehaviour:
   currentState: 0
   player: {fileID: 0}
   stingerMuzzle: {fileID: 8426838283027285204}
-  bulletPrefab: {fileID: 3910950108595853705, guid: a9ecb8f4748bfbd4eb31a573e47746ad, type: 3}
+  bulletPrefab: {fileID: 5330108422660898962, guid: 02596779811105b4fb0c788401031a3f, type: 3}
   minionPrefab: {fileID: 3602737079790508653, guid: adcaaeb02f3cf8540b2de3e98c9bea8f, type: 3}
   waypoints:
   - {fileID: 0}
@@ -5530,6 +5530,8 @@ MonoBehaviour:
   bulletDamage: 5
   bulletSpeed: 20
   minionsToSummon: 3
+  phase2LandingSpot: {fileID: 0}
+  transitionMoveSpeed: 5
   health: 500
 --- !u!1 &5989317209372464014
 GameObject:
@@ -5542,7 +5544,7 @@ GameObject:
   - component: {fileID: 5457849854821836089}
   - component: {fileID: 796987926084829511}
   - component: {fileID: 7703148559782334405}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10379,7 +10381,7 @@ GameObject:
   - component: {fileID: 1988890812666231149}
   - component: {fileID: 8604754850287999823}
   - component: {fileID: 1359192656518203618}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Sphere (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10492,7 +10494,7 @@ GameObject:
   - component: {fileID: 3483715593463466835}
   - component: {fileID: 3225745794728192306}
   - component: {fileID: 6048580034865528256}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
