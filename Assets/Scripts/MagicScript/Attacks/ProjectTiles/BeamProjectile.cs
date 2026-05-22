@@ -51,7 +51,6 @@ public class BeamProjectile : MonoBehaviour
         StartWidth = 0.03f + 0.03f * node.EmissionIntensity;
         EndWidth = 0.01f + 0.01f * node.EmissionIntensity;
 
-        // Материал обязателен для LineRenderer чтобы цвет применился
         _line.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
 
         SetupLine();

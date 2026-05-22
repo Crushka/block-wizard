@@ -304,7 +304,7 @@ public class MudNode : ElementNode
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
     public override List<ElementType> IncompatibleWith { get; } = new() { ElementType.Ice };
 
-    public override AttackType GetDominantAttack() => AttackType.Thunder;
+    public override AttackType GetDominantAttack() => AttackType.Spray;
 
     public override NodeComposition GetBaseComposition()
     {

@@ -13,7 +13,7 @@ public class SprayAttack : IAttack
     private float _fireTimer;
 
     private float GetDamagePerProjectile() =>
-        (_nodeData?.Damage ?? 10f) * FireInterval;
+        (_nodeData?.Damage ?? 10f);
 
     public void Init(NodeBase node, GameObject prefab)
     {
@@ -40,7 +40,6 @@ public class SprayAttack : IAttack
         if (_prefab == null) return;
 
         GameObject proj = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
-        proj.tag = "SprayProjectile";
 
         float damagePerProjectile = GetDamagePerProjectile();
 

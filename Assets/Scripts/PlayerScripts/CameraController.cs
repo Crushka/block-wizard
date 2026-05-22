@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
     [Header("Настройки вращения")]
     public float sensitivity = 0.15f;
     public float yMinLimit = -20f;
-    public float yMaxLimit = 80f;
+    public float yMaxLimit = 180f;
 
     [HideInInspector]
     public bool isControlEnabled = true;

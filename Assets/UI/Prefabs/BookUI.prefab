@@ -838,8 +838,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c863b8992f1e4241af713b6ed2bbb0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bootstrap
-  inventory: {fileID: 8869737336469966929}
-  editor: {fileID: 2299469758055229768}
+  inventoryManager: {fileID: 0}
+  nodeEditorManager: {fileID: 0}
+  spellCaster: {fileID: 0}
+  restoreSpell: 1
 --- !u!114 &6001523420846005298
 MonoBehaviour:
   m_ObjectHideFlags: 0

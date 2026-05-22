@@ -18,46 +18,107 @@ public class SpellSlot
         if (mgr?.Graph == null) { graph = null; return; }
 
         graph = new GraphModel();
+
+        // Находим все NodeView на холсте, чтобы узнать их текущие позиции
+        var activeViews = mgr.graphContainer.GetComponentsInChildren<NodeView>();
+
         foreach (var src in mgr.Graph.Nodes)
         {
-            var copy = new NodeModel(src.type) { id = src.id, weight = src.weight };
+            Vector2 savedPos = Vector2.zero;
+
+            // Ищем UI-компонент, соответствующий этой data-модели
+            foreach (var view in activeViews)
+            {
+                if (view != null && view.Data == src)
+                {
+                    var rt = view.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        savedPos = rt.anchoredPosition;
+                    }
+                    break;
+                }
+            }
+
+            var copy = new NodeModel(src.type)
+            {
+                id = src.id,
+                weight = src.weight,
+                anchoredPosition = savedPos // Сохраняем позицию!
+            };
+
             foreach (var id in src.connectedIds) copy.AddLink(id);
             graph.Nodes.Add(copy);
         }
-        Debug.Log($"[SpellSlot {index}] снимок: {graph.Nodes.Count} узлов");
+        Debug.Log($"[SpellSlot {index}] Снимок сделан: {graph.Nodes.Count} узлов");
     }
 
     public void RestoreToEditor(NodeEditorManager mgr)
     {
         if (mgr == null) return;
 
-        mgr.InitEditor();
+        // 1. ПОЛНАЯ ОЧИСТКА: убираем старый хлам и дюпы
+        mgr.ClearEditor();
 
+        // Если слот пустой, просто инициализируем чистый редактор со стартовой нодой
         if (graph == null || graph.Nodes.Count == 0)
         {
-            Debug.Log($"[SpellSlot {index}] пустой слот → редактор сброшен");
+            mgr.InitEditor();
+            Debug.Log($"[SpellSlot {index}] Пустой слот → редактор сброшен к дефолту");
             return;
         }
 
+        // 2. ВОССТАНОВЛЕНИЕ: Сначала обрабатываем корневую ноду None
         var savedNone = graph.Nodes.Find(n => n.type == ElementType.None);
-        if (savedNone != null)
+
+        // Спавним дефолтную стартовую структуру через менеджер
+        mgr.InitEditor();
+
+        // Находим только что созданную None-ноду в менеджере и синхронизируем её данные
+        var liveNone = mgr.Graph.Nodes.Find(n => n.type == ElementType.None);
+        if (liveNone != null && savedNone != null)
         {
-            var liveNone = mgr.Graph.Nodes.Find(n => n.type == ElementType.None);
-            if (liveNone != null) liveNone.id = savedNone.id;
+            liveNone.id = savedNone.id;
+            liveNone.weight = savedNone.weight;
+            liveNone.anchoredPosition = savedNone.anchoredPosition;
+
+            // Находим её визуальный объект и двигаем на сохраненную позицию
+            var liveNoneView = mgr.graphContainer.GetComponentInChildren<NodeView>();
+            if (liveNoneView != null)
+            {
+                liveNoneView.GetComponent<RectTransform>().anchoredPosition = savedNone.anchoredPosition;
+            }
         }
 
+        // 3. Спавним все остальные сохраненные ноды (кроме None, её мы уже настроили)
         foreach (var node in graph.Nodes)
         {
             if (node.type == ElementType.None) continue;
+
+            // Добавляем в логический граф менеджера
             mgr.Graph.Nodes.Add(node);
+
+            // Создаем визуальный объект на холсте
             var obj = Object.Instantiate(mgr.nodePrefab, mgr.graphContainer);
+
+            // Сразу выставляем ей правильную сохраненную позицию на UI панели!
+            var rt = obj.GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                rt.anchoredPosition = node.anchoredPosition;
+            }
+
             var view = obj.GetComponent<NodeView>();
-            view.Initialize(node);
-            view.SetVisualState(true);
+            if (view != null)
+            {
+                view.Initialize(node);
+                view.SetVisualState(true);
+            }
         }
 
+        // 4. Обновляем связи и перерисовываем линии
         mgr.RefreshGraph();
-        Debug.Log($"[SpellSlot {index}] восстановлен в редактор: {graph.Nodes.Count} узлов");
+        Debug.Log($"[SpellSlot {index}] Граф успешно восстановлен: {graph.Nodes.Count} узлов");
     }
 
     public NodeBase Compile()

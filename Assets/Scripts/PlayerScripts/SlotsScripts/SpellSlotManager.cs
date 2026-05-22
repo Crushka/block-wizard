@@ -78,16 +78,29 @@ public class SpellSlotManager : MonoBehaviour
     public void SwitchToSlot(int newIndex)
     {
         if (newIndex < 0 || newIndex >= _slots.Count || newIndex == _activeIndex) return;
+        if (_slots.Count == 0) return;
 
-        Debug.Log($"[SpellSlotManager] Слот {_activeIndex + 1} → {newIndex + 1}");
+        Debug.Log($"[SpellSlotManager] Переключение слота: {_activeIndex + 1} → {newIndex + 1}");
+
+        // ВАЖНО: Перед уходом сохраняем состояние текущего графа в старый слот!
+        if (nodeEditorManager != null)
+        {
+            _slots[_activeIndex].SnapshotFromEditor(nodeEditorManager);
+            _slots[_activeIndex].Compile();
+        }
+
+        // Меняем активный индекс
         _activeIndex = newIndex;
 
-        if (bookInteraction != null && bookInteraction.IsReading)
+        // Загружаем граф из нового слота в редактор (с полной очисткой холста внутри RestoreToEditor)
+        if (nodeEditorManager != null)
+        {
             _slots[_activeIndex].RestoreToEditor(nodeEditorManager);
+        }
 
         ApplyToCaster();
-
         SyncGSM();
+
         OnSlotChanged?.Invoke(_activeIndex);
     }
     public void SaveCurrentSlot()

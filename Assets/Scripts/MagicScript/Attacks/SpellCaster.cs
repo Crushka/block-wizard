@@ -13,6 +13,7 @@ public class SpellCaster : MonoBehaviour
     {
         NodeBase result = SpellGraphSolver.SlowGraph(graph);
         Debug.Log($"dmg : {result.Damage} | speed : {result.Speed} | range :  {result.Range}");
+        CurrentSpellNode = result;
         _currentAttack = attackFactory.GetAttack(result);
     }
 

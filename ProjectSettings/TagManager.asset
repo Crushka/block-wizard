@@ -13,6 +13,7 @@ TagManager:
   - NonePlayebleObject
   - Mole
   - PlayerBody
+  - AttackPrefab
   layers:
   - Default
   - TransparentFX
@@ -20,10 +21,8 @@ TagManager:
   - Enemy
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - DathTrigger
   - 
   - 
   - 

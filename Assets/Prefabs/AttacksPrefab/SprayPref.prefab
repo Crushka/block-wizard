@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -5293521604360807478}
   m_Layer: 0
   m_Name: SprayPref
-  m_TagString: Untagged
+  m_TagString: AttackPrefab
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -146,6 +146,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 6823363d83689cd41b72d2ed8810c744, type: 3}
       propertyPath: m_Name
       value: Spray
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6823363d83689cd41b72d2ed8810c744, type: 3}
+      propertyPath: m_TagString
+      value: AttackPrefab
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
