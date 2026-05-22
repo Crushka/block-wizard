@@ -74,7 +74,7 @@ MonoBehaviour:
   damage: 15
   isDead: 0
   target: {fileID: 0}
-  lookRadius: 30
+  lookRadius: 50
   stopDistance: 2.5
   moveSpeed: 3.5
   attackRate: 2

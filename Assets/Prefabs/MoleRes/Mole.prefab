@@ -241,7 +241,7 @@ MonoBehaviour:
   firePoint: {fileID: 7789715790287270517}
   visuals: {fileID: 2682134308477542763}
   burrowEffect: {fileID: 0}
-  detectionRange: 30
+  detectionRange: 50
   triggerDistance: 20
   ambushRadius: 9
   burrowSpeed: 5

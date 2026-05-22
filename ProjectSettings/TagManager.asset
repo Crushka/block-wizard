@@ -14,6 +14,7 @@ TagManager:
   - Mole
   - PlayerBody
   - AttackPrefab
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - UI
   - Player
   - DathTrigger
-  - 
+  - GolemIgnore
   - 
   - 
   - 

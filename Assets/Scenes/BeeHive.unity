@@ -12106,6 +12106,10 @@ PrefabInstance:
       value: BeeQuuenRoot
       objectReference: {fileID: 0}
     - target: {fileID: 7244217926703120311, guid: 464c95528f71cb94bb53c36d66043480, type: 3}
+      propertyPath: phase2LandingSpot
+      value: 
+      objectReference: {fileID: 656850233}
+    - target: {fileID: 7244217926703120311, guid: 464c95528f71cb94bb53c36d66043480, type: 3}
       propertyPath: waypoints.Array.size
       value: 4
       objectReference: {fileID: 0}

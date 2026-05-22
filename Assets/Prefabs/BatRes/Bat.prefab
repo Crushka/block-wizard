@@ -75,7 +75,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 1
-  detectionRange: 30
+  detectionRange: 50
   projectilePrefab: {fileID: 3910950108595853705, guid: cf3a9e3edb4864c47a661e1fe8086287, type: 3}
   firePoint: {fileID: 4031466215430992976}
   fireRate: 1.5
