@@ -1,6 +1,14 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+
+[System.Serializable]
+public class AttackCooldownEntry
+{
+    public AttackType attackType;
+    public float cooldown = 0.5f;
+}
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -10,10 +18,16 @@ public class PlayerAttack : MonoBehaviour
     public BookInteraction bookInteraction;
     public Animator playerAnimator;
     public RawImage aimMarker;
-    public SpellCaster spellCaster; [Header("Настройки прицеливания (Атаки)")]
+    public SpellCaster spellCaster;
+
+    [Header("Настройки прицеливания (Атаки)")]
     public float aimDistance = 1.5f;
     public Vector3 aimCameraOffset = new Vector3(0.5f, 0.5f, 0f);
     public float transitionSpeed = 9.5f;
+
+    [Header("Задержка выстрела по типу атаки")]
+    [Tooltip("Задержка между выстрелами для каждого типа атаки. Если тип не указан — задержки нет.")]
+    public List<AttackCooldownEntry> attackCooldowns = new List<AttackCooldownEntry>();
 
     private InputAction _aimAction;
     private InputAction _fireAction;
@@ -21,6 +35,7 @@ public class PlayerAttack : MonoBehaviour
     private bool _isAiming;
     private bool _isFiring;
     private float _originalDistance;
+    private float _lastCastTime = -Mathf.Infinity;
 
     void Awake()
     {
@@ -58,9 +73,7 @@ public class PlayerAttack : MonoBehaviour
     void Start()
     {
         if (cameraController != null)
-        {
             _originalDistance = cameraController.distance;
-        }
 
         if (aimMarker != null)
             aimMarker.enabled = false;
@@ -69,7 +82,7 @@ public class PlayerAttack : MonoBehaviour
     void Update()
     {
         if (_isFiring && _isAiming)
-            spellCaster?.Cast();
+            Trycast();
 
         if (cameraController == null) return;
 
@@ -81,17 +94,40 @@ public class PlayerAttack : MonoBehaviour
         else
         {
             if (Mathf.Abs(cameraController.distance - _originalDistance) > 0.01f)
-            {
                 cameraController.distance = Mathf.Lerp(cameraController.distance, _originalDistance, Time.deltaTime * transitionSpeed);
-            }
             else
-            {
                 _originalDistance = cameraController.distance;
-            }
 
             cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, Vector3.zero, Time.deltaTime * transitionSpeed);
         }
+    }
 
+    private void Trycast()
+    {
+        if (spellCaster == null) return;
+
+        float cooldown = GetCurrentCooldown();
+
+        if (Time.time - _lastCastTime >= cooldown)
+        {
+            spellCaster.Cast();
+            _lastCastTime = Time.time;
+        }
+    }
+
+    // Ищет cooldown для текущего типа атаки в SpellCaster.
+    // Если запись не найдена — возвращает 0 (без задержки, старое поведение).
+    private float GetCurrentCooldown()
+    {
+        if (spellCaster?.CurrentSpellNode == null) return 0f;
+
+        AttackType currentType = spellCaster.CurrentSpellNode.GetDominantAttack();
+
+        foreach (var entry in attackCooldowns)
+            if (entry.attackType == currentType)
+                return entry.cooldown;
+
+        return 0f;
     }
 
     private void OnFireStart(InputAction.CallbackContext ctx)

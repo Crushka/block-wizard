@@ -20,12 +20,18 @@ public class SceneBootstrap : MonoBehaviour
             Debug.Log("[SceneBootstrap] GameStateManager не найден. Создаем временный для этой сцены.");
             var go = new GameObject("GameStateManager_AutoCreated");
             gsm = go.AddComponent<GameStateManager>();
-
             gsm.LastSpawnPointId = "default";
         }
 
         if (inventoryManager != null)
             gsm.RestoreInventory(inventoryManager);
+
+        var slotManager = FindAnyObjectByType<SpellSlotManager>();
+        if (slotManager != null)
+        {
+            var book = FindAnyObjectByType<BookInteraction>();
+            slotManager.LateInit(nodeEditorManager, spellCaster, book);
+        }
 
         if (nodeEditorManager != null)
             gsm.RestoreGraph();

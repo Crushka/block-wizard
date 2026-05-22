@@ -274,4 +274,31 @@ public class NodeEditorManager : MonoBehaviour, IDropHandler, IScrollHandler
         currentSource = null;
         tempLine = null;
     }
+    public void ClearEditor()
+    {
+        // 1. Удаляем все UI-объекты нод из контейнера
+        if (graphContainer != null)
+        {
+            foreach (Transform child in graphContainer)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        // 2. Удаляем все UI-линии связей
+        if (lineContainer != null)
+        {
+            foreach (Transform line in lineContainer)
+            {
+                Destroy(line.gameObject);
+            }
+        }
+        activeLines.Clear();
+
+        // 3. Полностью очищаем логическую модель графа
+        if (Graph != null && Graph.Nodes != null)
+        {
+            Graph.Nodes.Clear();
+        }
+    }
 }

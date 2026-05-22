@@ -9,6 +9,8 @@ public class NodeModel
     public int weight = int.MaxValue;
     public List<string> connectedIds = new List<string>();
 
+    public Vector2 anchoredPosition;
+
     public NodeModel(ElementType t) 
     {
         id = System.Guid.NewGuid().ToString();

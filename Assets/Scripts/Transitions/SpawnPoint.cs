@@ -4,7 +4,6 @@ public class SpawnPoint : MonoBehaviour
 {
     [SerializeField] public string spawnId = "default";
 
-    // Рисует иконку в редакторе чтобы видеть точку
     void OnDrawGizmos()
     {
         Gizmos.color = Color.green;

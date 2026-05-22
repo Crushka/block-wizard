@@ -67,7 +67,7 @@ public class SceneTrigger : MonoBehaviour
 
         if (saveGraph)
         {
-            gsm.SaveGraph();
+            gsm.SaveAllSpellSlotsState();
         }
 
         var caster = Object.FindAnyObjectByType<SpellCaster>();

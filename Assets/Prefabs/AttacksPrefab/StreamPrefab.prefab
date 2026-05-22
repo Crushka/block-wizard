@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -5207412976486528849}
   m_Layer: 0
   m_Name: StreamPrefab
-  m_TagString: Untagged
+  m_TagString: AttackPrefab
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,7 +119,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1125886638677026398}
+  m_GameObject: {fileID: 8301951489868899706}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.0000000074506, z: 0}
@@ -134,7 +134,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1125886638677026398}
+  m_GameObject: {fileID: 8301951489868899706}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1495092249681646853
 MeshRenderer:
@@ -142,7 +142,7 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1125886638677026398}
+  m_GameObject: {fileID: 8301951489868899706}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1

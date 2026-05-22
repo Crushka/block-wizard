@@ -1,16 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Управляет открытием/закрытием редактора и запуском визуализации.
-/// </summary>
 public class SpellEditorUI : MonoBehaviour
 {
     [Header("Панели UI")]
     public GameObject editorPanel;
 
     [Header("Визуализация")]
-    public GraphVisualizer graphVisualizer;   // ← новая панель визуализации
+    public GraphVisualizer graphVisualizer;
 
     [Header("Связи")]
     public BookInteraction bookInteraction;
@@ -20,11 +17,8 @@ public class SpellEditorUI : MonoBehaviour
 
     private bool _isOpen = false;
 
-    // ── Init ──────────────────────────────────────────────────────────────
 
     void Start() => SetEditorOpen(false);
-
-    // ── Toggle ────────────────────────────────────────────────────────────
 
     public void Toggle() => SetEditorOpen(!_isOpen);
 
@@ -44,19 +38,11 @@ public class SpellEditorUI : MonoBehaviour
         if (cameraController != null) cameraController.isControlEnabled = !open;
     }
 
-    // ── Кнопка «Показать алгоритм» ────────────────────────────────────────
-
-    /// <summary>
-    /// Привяжи к кнопке «Compile» / «Показать» в редакторе.
-    /// Запускает Solve, прячет редактор, показывает визуализатор.
-    /// Когда игрок нажмёт «Применить» внутри визуализатора — редактор закроется.
-    /// </summary>
     public void ShowVisualization()
     {
         if (graphVisualizer == null)
         {
             Debug.LogError("[SpellEditorUI] GraphVisualizer не назначен!");
-            // Фолбэк: просто применить без визуализации
             BuildAndApplySpell();
             SetEditorOpen(false);
             return;
@@ -68,19 +54,14 @@ public class SpellEditorUI : MonoBehaviour
         calculationGraph.CalculateWeight();
 
         var (result, steps) = SpellSolverDebug.Solve(calculationGraph);
-
-        // Прячем редактор, показываем визуализатор
         editorPanel.SetActive(false);
 
         graphVisualizer.Show(steps, () =>
         {
-            // Игрок нажал «Применить» — передаём результат в SpellCaster
             ApplyResult(result);
             SetEditorOpen(false);
         });
     }
-
-    // ── Кнопка «Применить без визуализации» (оставлена для совместимости) ─
 
     public void CastAndClose()
     {
@@ -95,13 +76,11 @@ public class SpellEditorUI : MonoBehaviour
 
         calculationGraph.CalculateWeight();
 
-        // Используем Solve вместо SlowGraph — результат идентичен
         var (result, _) = SpellSolverDebug.Solve(calculationGraph);
 
         ApplyResult(result);
     }
 
-    // ── Применить результат в SpellCaster ─────────────────────────────────
 
     private void ApplyResult(NodeBase result)
     {
@@ -111,10 +90,6 @@ public class SpellEditorUI : MonoBehaviour
             return;
         }
 
-        // SpellCaster.PrepareSpell ждёт SpellGraph —
-        // передаём минимальный граф из одного узла с готовым результатом.
-        // Внутри PrepareSpell вызывается SpellGraphSolver.SlowGraph,
-        // поэтому оборачиваем result в граф который он пройдёт без изменений.
         var wrapGraph = WrapResultInGraph(result);
         spellCaster.PrepareSpell(wrapGraph);
 
@@ -122,7 +97,6 @@ public class SpellEditorUI : MonoBehaviour
                   $"range={result.Range:F1} attack={result.GetDominantAttack()}");
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────
 
     private SpellGraph BuildCalculationGraph(GraphModel uiGraph)
     {
@@ -177,11 +151,6 @@ public class SpellEditorUI : MonoBehaviour
         return graph;
     }
 
-    /// <summary>
-    /// Оборачивает готовый NodeBase в минимальный SpellGraph:
-    /// StartNode (None) → resultNode.
-    /// SpellGraphSolver.SlowGraph пройдёт его без изменений.
-    /// </summary>
     private SpellGraph WrapResultInGraph(NodeBase result)
     {
         var graph = new SpellGraph();

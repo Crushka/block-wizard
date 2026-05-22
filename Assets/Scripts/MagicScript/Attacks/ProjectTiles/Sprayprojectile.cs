@@ -20,9 +20,6 @@ public class SprayProjectile : MonoBehaviour
         _lifetime = lifetime;
         _rb = GetComponent<Rigidbody>();
 
-      
-
-
         Vector3 dir = transform.forward;
         dir = Quaternion.Euler(
             Random.Range(-spread, spread),
@@ -43,7 +40,6 @@ public class SprayProjectile : MonoBehaviour
 
     public void SetupVisual(NodeBase node)
     {
-        // ── Все Mesh Renderer'ы (inside + outside) ───────────────────
         var renderers = GetComponentsInChildren<Renderer>();
         foreach (var rend in renderers)
         {
@@ -51,7 +47,6 @@ public class SprayProjectile : MonoBehaviour
             {
                 if (mat.HasProperty("_BaseColor"))
                 {
-                    // Сохраняем оригинальный альфа канал материала
                     float originalAlpha = mat.GetColor("_BaseColor").a;
                     Color c = node.PrimaryColor;
                     c.a = originalAlpha;
@@ -74,9 +69,6 @@ public class SprayProjectile : MonoBehaviour
             }
         }
 
-
-
-        // ── TrailRenderer ─────────────────────────────────────────────
         var trail = GetComponentInChildren<TrailRenderer>();
         if (trail != null)
         {
@@ -87,7 +79,6 @@ public class SprayProjectile : MonoBehaviour
             trail.time = 0.15f * node.TrailLength;
         }
 
-        // ── ParticleSystem ────────────────────────────────────────────
         var ps = GetComponentInChildren<ParticleSystem>();
         if (ps != null)
         {
@@ -103,25 +94,21 @@ public class SprayProjectile : MonoBehaviour
     {
         transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
     }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("SprayProjectile") || other.CompareTag("Player")) return;
+        Debug.Log($"Тег этого : {other.tag}");
 
         IDamageable damageable = other.GetComponent<IDamageable>();
-        if (damageable != null)
+        if (damageable != null && !other.CompareTag("Player"))
         {
             damageable.takeDamage(_damage);
-            Debug.Log("Попа");
-
+            Debug.Log($"нанесен урон: {other.gameObject.name}");
+            Die();
+            return;
         }
-        Die();
     }
 
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("SprayProjectile")) return;
-    //    Die();
-    //}
 
     private void Die()
     {

@@ -13,6 +13,8 @@ public class GameStateManager : MonoBehaviour
     public List<SpellSlot> SpellSlots = new();
     public int ActiveSpellSlotIndex { get; set; } = 0;
 
+    public List<string> DeadBossIds = new();
+
     public GraphModel SavedGraph
     {
         get => SpellSlots.Count > ActiveSpellSlotIndex ? SpellSlots[ActiveSpellSlotIndex].graph : null;
@@ -67,6 +69,22 @@ public class GameStateManager : MonoBehaviour
         SpellSlots[ActiveSpellSlotIndex].compiledNode = spell;
     }
 
+    public void SaveAllSpellSlotsState()
+    {
+        if (SpellSlotManager.Instance != null)
+        {
+            SpellSlotManager.Instance.SaveCurrentSlot();
+        }
+        else if (NodeEditorManager.Instance != null)
+        {
+            EnsureSlot(ActiveSpellSlotIndex);
+            SpellSlots[ActiveSpellSlotIndex].SnapshotFromEditor(NodeEditorManager.Instance);
+            SpellSlots[ActiveSpellSlotIndex].Compile();
+        }
+
+        Debug.Log($"[GSM] Все слоты заклинаний ({SpellSlots.Count}) успешно сохранены перед переходом сцены.");
+    }
+
     public void SaveHP(float hp) => PlayerHP = hp;
 
     public void RestoreInventory(InventoryManager inv)
@@ -103,5 +121,16 @@ public class GameStateManager : MonoBehaviour
 
         if (slot.compiledNode != null)
             caster.PrepareSpellFromNode(slot.compiledNode);
+    }
+
+    public bool IsBossDead(string bossId) => DeadBossIds.Contains(bossId);
+
+    public void RegisterBossDeath(string bossId)
+    {
+        if (!DeadBossIds.Contains(bossId))
+        {
+            DeadBossIds.Add(bossId);
+            Debug.Log($"[GSM] Босс '{bossId}' зарегистрирован как мёртвый.");
+        }
     }
 }

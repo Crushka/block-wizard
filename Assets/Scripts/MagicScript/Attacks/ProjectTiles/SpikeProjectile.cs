@@ -19,21 +19,17 @@ public class SpikeAttackRunner : MonoBehaviour
         float damage = nodeData?.Damage ?? 15f;
         float speed = nodeData?.Speed ?? 6f;
 
-        // 1. Фиксируем направление в момент каста
         Vector3 dir = spawnPoint.forward;
         dir.y = 0f;
         dir.Normalize();
 
-        // 2. КРИТИЧЕСКИЙ ШАГ: Фиксируем стартовую позицию игрока в переменную!
         Vector3 startingOrigin = spawnPoint.position;
 
-        // Корректируем стартовую точку по земле (если нужно)
         Vector3 origin = GetGroundPoint(startingOrigin, dir, 0f, raycastHeightOffset, groundMask) ?? startingOrigin;
 
         float distance = spacing;
         while (distance <= range)
         {
-            // 3. Считаем позицию от ЗАФИКСИРОВАННОЙ стартовой точки, а не от живого spawnPoint
             Vector3 worldPos = startingOrigin + dir * distance;
             Vector3? groundPos = GetGroundPoint(worldPos, dir, distance, raycastHeightOffset, groundMask);
 
@@ -153,9 +149,17 @@ public class SpikeProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (_isDead) return;
-        if (other.CompareTag("Player") || other.CompareTag("SprayProjectile")) return;
+        IDamageable damageable = other.GetComponent<IDamageable>();
+        Debug.Log($"нанесен урон: {other.gameObject.name}");
+        if (damageable != null && !other.CompareTag("Player"))
+        {
+            damageable.takeDamage(_damage);
+        }
+        Die();
+    }
 
-        
+    private void Die()
+    {
+        Destroy(gameObject);
     }
 }

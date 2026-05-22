@@ -242,4 +242,6 @@ public class PlayerController : MonoBehaviour
             playerAnimator.SetFloat("InputY", animInputY);
         }
     }
+
+    
 }

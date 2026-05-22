@@ -70,7 +70,7 @@ public class BookInteraction : MonoBehaviour
         if (spellEditorUI != null)
             spellEditorUI.SetEditorOpen(isReading);
         else
-            Debug.LogError("[BookInteraction] spellEditorUI == null! Назначь GameManager в инспекторе.");
+            Debug.LogError("[BookInteraction] spellEditorUI == null назначь GameManager в инспекторе.");
 
         StartCoroutine(SyncAnimationAndMovement(isReading));
         StartCoroutine(TransitionCamera());
