@@ -103,17 +103,15 @@ public class QueenAI : MonoBehaviour, IDamageable
     #region ИИ Второй Фазы
     IEnumerator BossBrain()
     {
-        while (currentState != QueenState.Phase1) // Пока жива
+        while (currentState != QueenState.Phase1)
         {
-            // Случайный выбор атаки
             float choice = Random.value;
 
-            if (choice < 0.6f) // 60% шанс на пулемет
+            if (choice < 0.6f)
                 yield return StartCoroutine(MachineGunAttack());
-            else // 40% шанс на призыв
+            else
                 yield return StartCoroutine(SummonAttack());
 
-            // Пауза между атаками (просто летаем за игроком)
             currentState = QueenState.Phase2_Moving;
             yield return new WaitForSeconds(Random.Range(2f, 4f));
         }
@@ -126,23 +124,19 @@ public class QueenAI : MonoBehaviour, IDamageable
 
         while (timer < shootingDuration)
         {
-            // 1. ПОВОРОТ КОРПУСА (Только по горизонтали)
             Vector3 dirToPlayer = (player.position - transform.position).normalized;
-            Vector3 flatDir = new Vector3(dirToPlayer.x, 0, dirToPlayer.z); // Обнуляем Y для горизонтального поворота
+            Vector3 flatDir = new Vector3(dirToPlayer.x, 0, dirToPlayer.z);
 
-            if (flatDir.sqrMagnitude > 0.001f) // Избегаем LookRotation от нулевого вектора
+            if (flatDir.sqrMagnitude > 0.001f)
             {
                 Quaternion lookRotation = Quaternion.LookRotation(flatDir);
-                Quaternion offset = Quaternion.Euler(0, -90, 0); // Ваш офсет
+                Quaternion offset = Quaternion.Euler(0, -90, 0);
                 transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation * offset, Time.deltaTime * rotationSpeed);
             }
 
-            // 2. ВЫСТРЕЛ (Направлен точно в игрока)
             if (bulletPrefab && stingerMuzzle)
             {
-                // Вычисляем направление от дула до ГРУДИ игрока
                 Vector3 fireDir = (player.position + Vector3.up * 1.0f - stingerMuzzle.position).normalized;
-                // Создаем пулю, которая смотрит ПРЯМО на игрока
                 Quaternion bulletRotation = Quaternion.LookRotation(fireDir);
 
                 GameObject bullet = Instantiate(bulletPrefab, stingerMuzzle.position, bulletRotation);
@@ -178,9 +172,8 @@ public class QueenAI : MonoBehaviour, IDamageable
 
     private void MaintainDistanceToPlayer()
     {
-        // Королева держится на расстоянии от игрока, летая вокруг него
         Vector3 targetPos = player.position + (transform.position - player.position).normalized * hoverDistance;
-        targetPos.y = player.position.y + 4f; // Всегда чуть выше игрока
+        targetPos.y = player.position.y + 4f;
 
         transform.position = Vector3.MoveTowards(transform.position, targetPos, phase2Speed * Time.deltaTime);
         RotateTowards(player.position);
@@ -192,11 +185,8 @@ public class QueenAI : MonoBehaviour, IDamageable
         Vector3 dir = (target - transform.position).normalized;
         if (dir != Vector3.zero)
         {
-            // 1. Вычисляем направление на игрока
             Quaternion lookRot = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
 
-            // 2. Добавляем поправку (Offset). 
-            // Если она смотрит левым боком, попробуйте 90. Если правым — -90.
             Quaternion offset = Quaternion.Euler(0, -90, 0);
 
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRot * offset, Time.deltaTime * rotationSpeed);
@@ -223,7 +213,6 @@ public class QueenAI : MonoBehaviour, IDamageable
     {
         Debug.Log("Королева побеждена!");
         StopAllCoroutines();
-        // Можно добавить взрыв или падение
         Destroy(gameObject);
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 public class MoleAI : MonoBehaviour, IDamageable
 {
-    public enum MoleState { Burrowing, Positioning, Emerging, Attacking, Submerging }
+    public enum MoleState { Burrowing, Positioning, Emerging, Attacking, Submerging, Idle }
 
     [Header("Состояние")]
     public MoleState currentState = MoleState.Burrowing;
@@ -18,8 +18,8 @@ public class MoleAI : MonoBehaviour, IDamageable
     public GameObject visuals;
     public GameObject burrowEffect;
 
-    private NavMeshAgent agent;
-    private Collider moleCollider;
+    [Header("Настройки обнаружения")]
+    public float detectionRange = 15f;
 
     [Header("Настройки дистанции")]
     public float triggerDistance = 12f;
@@ -40,6 +40,8 @@ public class MoleAI : MonoBehaviour, IDamageable
     public float submergeTime = 1f;
 
     private Vector3 ambushPoint;
+    private NavMeshAgent agent;
+    private Collider moleCollider;
 
     void Start()
     {
@@ -72,6 +74,27 @@ public class MoleAI : MonoBehaviour, IDamageable
         if (target == null)
         {
             FindTarget();
+            return;
+        }
+
+        float distance = Vector3.Distance(transform.position, target.position);
+
+        if (distance > detectionRange)
+        {
+            if (currentState == MoleState.Attacking)
+            {
+                StopAllCoroutines();
+                StartCoroutine(SubmergeRoutine());
+            }
+
+            if (currentState == MoleState.Burrowing || currentState == MoleState.Positioning)
+            {
+                if (agent && agent.isActiveAndEnabled)
+                {
+                    agent.isStopped = true;
+                    agent.velocity = Vector3.zero;
+                }
+            }
             return;
         }
 
@@ -110,7 +133,11 @@ public class MoleAI : MonoBehaviour, IDamageable
 
     private void UpdateBurrowing()
     {
-        agent.SetDestination(target.position);
+        if (agent && agent.isActiveAndEnabled)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(target.position);
+        }
 
         if (currentBurrowTimer > 0)
         {
@@ -136,11 +163,11 @@ public class MoleAI : MonoBehaviour, IDamageable
         {
             ambushPoint = hit.position;
             currentState = MoleState.Positioning;
-            agent.SetDestination(ambushPoint);
-        }
-        else
-        {
-            Debug.LogWarning($"{gameObject.name}: Не удалось найти точку на NavMesh!");
+            if (agent && agent.isActiveAndEnabled)
+            {
+                agent.isStopped = false;
+                agent.SetDestination(ambushPoint);
+            }
         }
     }
 
@@ -231,12 +258,13 @@ public class MoleAI : MonoBehaviour, IDamageable
         }
         Destroy(proj, 5f);
     }
-    public void takeDamage(float amount)
+
+    public void takeDamage(float damage)
     {
         if (isDead) return;
         if (currentState == MoleState.Burrowing || currentState == MoleState.Positioning || currentState == MoleState.Submerging) return;
 
-        health -= amount;
+        health -= damage;
         if (health <= 0) Die();
     }
 
@@ -244,16 +272,9 @@ public class MoleAI : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
-
-        Debug.Log($"{gameObject.name} погиб!");
-
         StopAllCoroutines();
 
-        if (agent && agent.isActiveAndEnabled)
-        {
-            agent.isStopped = true;
-            agent.enabled = false;
-        }
+        if (agent) agent.enabled = false;
         if (visuals) visuals.SetActive(true);
         if (burrowEffect) burrowEffect.SetActive(false);
 

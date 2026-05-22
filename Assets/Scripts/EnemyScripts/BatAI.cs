@@ -7,7 +7,7 @@ public class BatAI : MonoBehaviour, IDamageable
     [SerializeField] private LayerMask groundMask;
 
     [Header("Настройки обнаружения")]
-    [SerializeField] private float detectionRange = 20f; // Замечает игрока на этом расстоянии
+    [SerializeField] private float detectionRange = 20f;
 
     [Header("Настройки стрельбы")]
     [SerializeField] private GameObject projectilePrefab;
@@ -15,15 +15,15 @@ public class BatAI : MonoBehaviour, IDamageable
     [SerializeField] private float fireRate = 1.5f;
     [SerializeField] private LayerMask obstacleMask;
     [SerializeField] private float arcHeight = 2f;
-    [SerializeField] private float speedMultiplier = 3f; // Должно совпадать с gravityScale в BatProj
+    [SerializeField] private float speedMultiplier = 3f;
     [Range(0f, 1f)]
-    [SerializeField] private float leadAccuracy = 0.6f; // Немного снизил для реализма
+    [SerializeField] private float leadAccuracy = 0.6f;
 
     [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float heightAdjustSpeed = 2f;
-    [SerializeField] private float stopDistance = 6f; // Расстояние, на котором мышь останавливается
-    [SerializeField] private float minHorizontalDist = 5f; // Не подлетать ближе этого по горизонтали
+    [SerializeField] private float stopDistance = 6f;
+    [SerializeField] private float minHorizontalDist = 5f;
     [SerializeField] private float hoverHeight = 4f;
     [SerializeField] private float rotationSpeed = 8f;
 
@@ -50,13 +50,12 @@ public class BatAI : MonoBehaviour, IDamageable
 
         float distance = Vector3.Distance(transform.position, player.position);
 
-        // 1. Не делать ничего, если игрок слишком далеко
         if (distance > detectionRange) return;
 
         CalculatePlayerVelocity();
         LookAtPlayer();
 
-        // 2. Логика движения: держим дистанцию, чтобы не висеть над головой
+
         Vector3 playerXZ = new Vector3(player.position.x, 0, player.position.z);
         Vector3 myXZ = new Vector3(transform.position.x, 0, transform.position.z);
         float horizontalDist = Vector3.Distance(playerXZ, myXZ);
@@ -67,7 +66,6 @@ public class BatAI : MonoBehaviour, IDamageable
         }
         else
         {
-            // Если слишком близко по горизонтали — просто висим и целимся
             MaintainHeight();
         }
 
@@ -87,14 +85,12 @@ public class BatAI : MonoBehaviour, IDamageable
         RaycastHit hit;
         float targetY;
 
-        // 3. Исправление "полета в космос": увеличили луч и добавили fallback
         if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out hit, 40f, groundMask))
         {
             targetY = hit.point.y + hoverHeight;
         }
         else
         {
-            // Если под мышью нет пола (вылетела за край), держимся высоты игрока
             targetY = player.position.y + hoverHeight;
         }
 
@@ -106,7 +102,6 @@ public class BatAI : MonoBehaviour, IDamageable
     {
         if (Time.time >= nextFireTime)
         {
-            // Целимся в центр тела (живот), а не в ноги
             Vector3 playerCenter = player.position + Vector3.up * 1.0f;
 
             bool blocked = Physics.Linecast(firePoint.position, playerCenter, obstacleMask);
@@ -122,11 +117,9 @@ public class BatAI : MonoBehaviour, IDamageable
     {
         if (projectilePrefab == null) return;
 
-        // 4. Расчет упреждения с учетом центра игрока
         float travelTime = GetArcTime(firePoint.position, targetCenter, arcHeight, speedMultiplier);
 
         Vector3 horizontalVel = new Vector3(playerVelocity.x, 0, playerVelocity.z);
-        // Ограничиваем время предсказания, чтобы мышь не стреляла "в бесконечность"
         float predictTime = Mathf.Min(travelTime, 1.2f);
         Vector3 predictedTarget = targetCenter + (horizontalVel * predictTime * leadAccuracy);
 
@@ -136,14 +129,13 @@ public class BatAI : MonoBehaviour, IDamageable
         if (rb != null)
         {
             rb.useGravity = true;
-            // Передаем точный расчет скорости
             rb.linearVelocity = CalculateArcVelocity(firePoint.position, predictedTarget, arcHeight, speedMultiplier);
         }
 
         Destroy(projectile, 5f);
     }
 
-    // --- Математика баллистики (без изменений, но теперь работает с верными точками) ---
+
 
     float GetArcTime(Vector3 start, Vector3 target, float height, float speedScale)
     {
@@ -176,7 +168,7 @@ public class BatAI : MonoBehaviour, IDamageable
         float dt = Time.deltaTime > 0 ? Time.deltaTime : 0.01f;
         playerVelocity = (currentPlayerPos - lastPlayerPosition) / dt;
         lastPlayerPosition = currentPlayerPos;
-        if (playerVelocity.magnitude > 20f) playerVelocity = Vector3.zero; // Снизил порог аномалий
+        if (playerVelocity.magnitude > 20f) playerVelocity = Vector3.zero;
     }
 
     void LookAtPlayer()

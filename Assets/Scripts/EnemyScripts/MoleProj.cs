@@ -11,7 +11,7 @@ public class MoleProj : MonoBehaviour
 
         if (damageable != null)
         {
-            if (collision.gameObject.CompareTag("PlayerBody"))
+            if (collision.gameObject.CompareTag("Player"))
             {
                 damageable.takeDamage(damage);
             }

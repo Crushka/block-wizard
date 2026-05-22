@@ -8,12 +8,12 @@ public class BeeAI : MonoBehaviour, IDamageable
     [SerializeField] private LayerMask groundMask;
 
     [Header("Настройки обнаружения")]
-    [SerializeField] private float detectionRange = 15f; // На каком расстоянии замечает игрока
+    [SerializeField] private float detectionRange = 15f;
 
     [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 4f;
     [SerializeField] private float hoverHeight = 2.5f;
-    [SerializeField] private float minHorizontalDistance = 2.5f; // Не подлетать ближе этого по горизонтали
+    [SerializeField] private float minHorizontalDistance = 2.5f;
     [SerializeField] private float heightAdjustSpeed = 3f;
     [SerializeField] private float rotationSpeed = 10f;
 
@@ -54,7 +54,6 @@ public class BeeAI : MonoBehaviour, IDamageable
 
         float distance = Vector3.Distance(transform.position, player.position);
 
-        // 1. Проверка обнаружения
         if (distance > detectionRange) return;
 
         LookAtPlayer();
@@ -75,7 +74,6 @@ public class BeeAI : MonoBehaviour, IDamageable
         Vector3 myPosXZ = new Vector3(transform.position.x, 0, transform.position.z);
         float horizontalDist = Vector3.Distance(playerPosXZ, myPosXZ);
 
-        // 2. Горизонтальный стоп (не лезть на голову)
         if (horizontalDist > minHorizontalDistance)
         {
             Vector3 dir = (player.position - transform.position);
@@ -91,14 +89,12 @@ public class BeeAI : MonoBehaviour, IDamageable
         RaycastHit hit;
         float targetY;
 
-        // 3. Улучшенный рейкаст (длиннее луч)
         if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out hit, 30f, groundMask))
         {
             targetY = hit.point.y + hoverHeight;
         }
         else
         {
-            // Если землю потеряли, ориентируемся на высоту игрока
             targetY = player.position.y + hoverHeight;
         }
 
@@ -106,7 +102,6 @@ public class BeeAI : MonoBehaviour, IDamageable
         transform.position = new Vector3(transform.position.x, newY, transform.position.z);
     }
 
-    // Остальные методы (LookAtPlayer, StingAttack, Die и т.д.) остаются такими же, как были в вашем коде
     void LookAtPlayer()
     {
         Vector3 direction = (player.position - transform.position);

@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour
     private float dashTimer = 0f;
     private float dashCooldownTimer = 0f;
     private Vector3 dashDirection = Vector3.zero;
+    private Vector3 impact = Vector3.zero;
 
     void Awake()
     {
@@ -198,6 +199,13 @@ public class PlayerController : MonoBehaviour
                     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
                 }
             }
+
+            if (impact.magnitude > 0.2f)
+            {
+                controller.Move(impact * Time.deltaTime);
+            }
+
+            impact = Vector3.Lerp(impact, Vector3.zero, 5f * Time.deltaTime);
         }
         else
         {
@@ -243,5 +251,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
+    public void AddKnockback(Vector3 direction, float force)
+    {
+        direction.Normalize();
+        if (direction.y < 0) direction.y = -direction.y;
+        impact += direction * force;
+    }
 }
