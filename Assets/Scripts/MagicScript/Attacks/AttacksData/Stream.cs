@@ -54,9 +54,4 @@ public class Stream : IAttack
             spell?.Setup(_nodeData?.Damage ?? 10f, _nodeData?.Range ?? 12f, _nodeData?.Speed ?? 10f);
         }
     }
-
-    float IAttack.getDamage()
-    {
-        return _nodeData?.Damage ?? 10f;
-    }
 }

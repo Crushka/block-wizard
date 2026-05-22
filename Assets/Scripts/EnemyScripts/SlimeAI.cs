@@ -26,7 +26,7 @@ public class SlimeAI : MonoBehaviour, IDamageable
     private NavMeshAgent agent;
     private Rigidbody rb;
     private int enemyLayerMask;
-
+    public float knockbackForce = 15f;
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -86,16 +86,12 @@ public class SlimeAI : MonoBehaviour, IDamageable
         isAttacking = true;
         agent.enabled = false;
 
-        Debug.Log("СЛИЗЕНЬ: Подготовка к прыжку!");
         yield return new WaitForSeconds(0.5f);
 
         if (target != null)
         {
             Vector3 attackDir = (target.position - transform.position).normalized;
-
-            attackDir.y = 0.2f; 
-
-
+            attackDir.y = 0.2f;
             rb.AddForce(attackDir * lungeForce, ForceMode.Impulse);
         }
 
@@ -104,18 +100,24 @@ public class SlimeAI : MonoBehaviour, IDamageable
         Collider[] hitColliders = Physics.OverlapSphere(transform.position + transform.forward, 1.5f);
         foreach (var col in hitColliders)
         {
-            if (col.CompareTag("Player"))
+            if (col.CompareTag("Player") || col.CompareTag("PlayerBody"))
             {
-                IDamageable d = col.GetComponent<IDamageable>();
+                IDamageable d = col.GetComponentInParent<IDamageable>();
                 d?.takeDamage(damage);
-                Debug.Log("СЛИЗЕНЬ: Ударил игрока!");
+
+                PlayerController pc = col.GetComponentInParent<PlayerController>();
+                if (pc != null)
+                {
+                    Vector3 pushDir = (col.transform.position - transform.position).normalized;
+                    pushDir.y = 0.5f;
+
+                    pc.AddKnockback(pushDir, knockbackForce);
+                    Debug.Log("СЛИЗЕНЬ: Отбросил игрока!");
+                }
             }
         }
 
-
-        yield return new WaitForSeconds(0.5f); 
-
-
+        yield return new WaitForSeconds(0.5f);
         agent.enabled = true;
         isAttacking = false;
     }

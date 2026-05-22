@@ -51,6 +51,7 @@ public class GolemAI : MonoBehaviour, IDamageable
     private Vector3 lastPlayerPosition;
     private Vector3 playerVelocity;
     private CharacterController targetController;
+    private bool minionsSpawned = false;
 
     public static List<GolemAI> AllGolems = new List<GolemAI>();
 
@@ -134,23 +135,19 @@ public class GolemAI : MonoBehaviour, IDamageable
         }
         else
         {
+            if (!minionsSpawned)
+            {
+                minionsSpawned = true;
+                if (SpawnEnemies.Instance != null)
+                {
+                    SpawnEnemies.Instance.SpawnBossMinions();
+                }
+            }
+
             if (Time.time >= nextJumpTime && !isAttacking)
             {
                 StartCoroutine(MeteorSlamRoutine());
                 nextJumpTime = Time.time + jumpCooldown;
-            }
-            else if (!isAttacking)
-            {
-                if (distance <= stopDistance + 0.5f)
-                {
-                    agent.isStopped = true;
-                    TryAttack(isRanged: false);
-                }
-                else
-                {
-                    agent.isStopped = false;
-                    agent.SetDestination(target.position);
-                }
             }
         }
     }

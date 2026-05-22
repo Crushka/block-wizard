@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Prefabs/BeeRes/BeeJunior.prefab.meta
+guid: 78c5b65c185edd84baa974bca2ab7548
+PrefabImporter:
+========
 guid: 5b9e57cc37a7aa640aa5992759eb5ca3
 DefaultImporter:
+>>>>>>>> experimental:Assets/Scenes/DeadScreen.unity.meta
   externalObjects: {}
   userData: 
   assetBundleName: 

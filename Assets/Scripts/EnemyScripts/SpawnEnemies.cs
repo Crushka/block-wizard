@@ -2,35 +2,48 @@ using UnityEngine;
 
 public class SpawnEnemies : MonoBehaviour
 {
+    public static SpawnEnemies Instance;
 
     public GameObject[] enemies;
     public GameObject cell;
-    public int cellQuantity = 0;
+    public int cellQuantity = 5;
+    public int enemiesPerType = 3;
 
-    private void Start()
-    {  
-        for(int i = 0; i < enemies.Length; i++)
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    public void SpawnBossMinions()
+    {
+        Debug.Log("СПАВНЕР: Король Голем призвал миньонов!");
+
+        for (int i = 0; i < enemies.Length; i++)
         {
-            for(int j = 0; j < 100; j++)
+            for (int j = 0; j < enemiesPerType; j++)
             {
-                if(enemies[i].name == "Slime")
+                Vector3 spawnPos = new Vector3(RandomNumber(), 1, 10);
+
+                if (enemies[i].name == "Slime")
                 {
-                    Instantiate(enemies[i], new Vector3(RandomNumber(), 1, 10), Quaternion.Euler(0, 0, 0));
-                    continue;
+                    Instantiate(enemies[i], spawnPos, Quaternion.identity);
                 }
-                Instantiate(enemies[i], new Vector3(RandomNumber(), 5, 10), Quaternion.Euler(0, 0, 0));
+                else
+                {
+                    spawnPos.y = 5;
+                    Instantiate(enemies[i], spawnPos, Quaternion.identity);
+                }
             }
         }
 
-        for(int i = 0; i < cellQuantity; i++)
+        for (int i = 0; i < cellQuantity; i++)
         {
-            Instantiate(cell, new Vector3(RandomNumber(), 1, 10), Quaternion.Euler(0, 0, 0));
+            Instantiate(cell, new Vector3(RandomNumber(), 1, 10), Quaternion.identity);
         }
     }
 
-
     private int RandomNumber()
     {
-        return Random.Range(0, 20);
+        return Random.Range(-20, 20);
     }
 }

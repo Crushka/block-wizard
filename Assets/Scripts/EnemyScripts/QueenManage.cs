@@ -24,7 +24,6 @@ public class QueenManage : MonoBehaviour
         cagesDestroyed++;
         Debug.Log($"Клеток разрушено: {cagesDestroyed}/{totalCages}");
 
-        // Уведомляем королеву, что нужно ускориться
         onAngerIncreased.Invoke();
 
         if (cagesDestroyed >= cagesForPhase2)

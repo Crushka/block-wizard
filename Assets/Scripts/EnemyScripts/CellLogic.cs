@@ -4,11 +4,11 @@ public class CellLogic : MonoBehaviour, IDamageable
 {
     [Header("Настройки здоровья")]
     [SerializeField] private float health = 50f;
-    [SerializeField] private GameObject breakEffectPrefab; // Эффект разрушения (частицы)
+    [SerializeField] private GameObject breakEffectPrefab;
 
     [Header("Настройки спавна пчел")]
-    [SerializeField] private GameObject beePrefab; // Префаб вашей пчелы с BeeAI
-    [SerializeField] private int beeCount = 3; // Сколько пчел вылетит
+    [SerializeField] private GameObject beePrefab;
+    [SerializeField] private int beeCount = 3;
     [SerializeField] private float spawnRadius = 1.5f;
 
     private bool isDestroyed = false;
@@ -20,7 +20,6 @@ public class CellLogic : MonoBehaviour, IDamageable
         health -= amount;
         Debug.Log($"Клетка получила урон: {amount}. Осталось: {health}");
 
-        // Можно добавить микро-тряску клетки при попадании
         transform.position += Random.insideUnitSphere * 0.05f;
 
         if (health <= 0)
@@ -28,14 +27,11 @@ public class CellLogic : MonoBehaviour, IDamageable
             Die();
         }
     }
-
-    // Вставьте это в ваш существующий скрипт BeeCage.cs в метод Die()
     private void Die()
     {
         if (isDestroyed) return;
         isDestroyed = true;
 
-        // СООБЩАЕМ МЕНЕДЖЕРУ
         if (QueenManage.Instance != null)
         {  
             QueenManage.Instance.CageDestroyed();
@@ -52,17 +48,15 @@ public class CellLogic : MonoBehaviour, IDamageable
 
         for (int i = 0; i < beeCount; i++)
         {
-            // Генерируем случайную позицию вокруг клетки
+
             Vector3 randomOffset = Random.insideUnitSphere * spawnRadius;
-            randomOffset.y = Mathf.Abs(randomOffset.y); // Чтобы пчелы не спавнились под землей
+            randomOffset.y = Mathf.Abs(randomOffset.y);
 
             Vector3 spawnPos = transform.position + randomOffset;
 
-            // Создаем пчелу
+
             GameObject bee = Instantiate(beePrefab, spawnPos, Quaternion.identity);
 
-            // Если нужно, чтобы пчелы сразу атаковали игрока, можно найти его
-            // Но в вашем BeeAI.cs поиск игрока уже реализован в Start() через Tag "Player"
         }
     }
 }

@@ -7,15 +7,19 @@ public class BeeAI : MonoBehaviour, IDamageable
     [SerializeField] private Transform player;
     [SerializeField] private LayerMask groundMask;
 
+    [Header("Настройки обнаружения")]
+    [SerializeField] private float detectionRange = 15f;
+
     [Header("Настройки движения")]
     [SerializeField] private float moveSpeed = 4f;
     [SerializeField] private float hoverHeight = 2.5f;
+    [SerializeField] private float minHorizontalDistance = 2.5f;
     [SerializeField] private float heightAdjustSpeed = 3f;
     [SerializeField] private float rotationSpeed = 10f;
 
     [Header("Настройки атаки")]
     [SerializeField] private float attackRange = 5f;
-    [SerializeField] private float attackCooldown = 2f; // Пауза перед следующей попыткой
+    [SerializeField] private float attackCooldown = 2f;
     [SerializeField] private float windUpTime = 0.6f;
     [SerializeField] private float dashSpeed = 18f;
     [SerializeField] private float dashDamage = 20f;
@@ -34,7 +38,6 @@ public class BeeAI : MonoBehaviour, IDamageable
         if (rb != null)
         {
             rb.useGravity = false;
-            // Важно для рывка, чтобы пчела не крутилась от физики
             rb.constraints = RigidbodyConstraints.FreezeRotation;
         }
 
@@ -51,9 +54,10 @@ public class BeeAI : MonoBehaviour, IDamageable
 
         float distance = Vector3.Distance(transform.position, player.position);
 
+        if (distance > detectionRange) return;
+
         LookAtPlayer();
 
-        // Атакуем, если подошли близко и время перезарядки прошло
         if (distance <= attackRange && Time.time >= nextAttackAvailableTime)
         {
             StartCoroutine(StingAttack());
@@ -66,33 +70,42 @@ public class BeeAI : MonoBehaviour, IDamageable
 
     void MoveTowardsPlayer()
     {
-        Vector3 dir = (player.position - transform.position);
-        dir.y = 0;
+        Vector3 playerPosXZ = new Vector3(player.position.x, 0, player.position.z);
+        Vector3 myPosXZ = new Vector3(transform.position.x, 0, transform.position.z);
+        float horizontalDist = Vector3.Distance(playerPosXZ, myPosXZ);
 
-        // Двигаемся только если не слишком близко, чтобы не "тереться" об игрока во время КД
-        if (Vector3.Distance(transform.position, player.position) > 2f)
+        if (horizontalDist > minHorizontalDistance)
         {
+            Vector3 dir = (player.position - transform.position);
+            dir.y = 0;
             transform.position += dir.normalized * moveSpeed * Time.deltaTime;
         }
+
         MaintainHeight();
     }
 
     void MaintainHeight()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out hit, 10f, groundMask))
+        float targetY;
+
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out hit, 30f, groundMask))
         {
-            float targetY = hit.point.y + hoverHeight;
-            float newY = Mathf.Lerp(transform.position.y, targetY, Time.deltaTime * heightAdjustSpeed);
-            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
+            targetY = hit.point.y + hoverHeight;
         }
+        else
+        {
+            targetY = player.position.y + hoverHeight;
+        }
+
+        float newY = Mathf.Lerp(transform.position.y, targetY, Time.deltaTime * heightAdjustSpeed);
+        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
     }
 
     void LookAtPlayer()
     {
         Vector3 direction = (player.position - transform.position);
         direction.y = 0;
-
         if (direction.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
@@ -103,52 +116,36 @@ public class BeeAI : MonoBehaviour, IDamageable
     IEnumerator StingAttack()
     {
         isAttacking = true;
-
-        // 1. ПОДГОТОВКА (Wind-up)
         float elapsed = 0;
         while (elapsed < windUpTime)
         {
-            // Плавно наводимся на центр игрока
             Vector3 targetPoint = player.position + Vector3.up * 1.0f;
             Vector3 lookDir = (targetPoint - transform.position).normalized;
-
             if (lookDir != Vector3.zero)
             {
                 Quaternion targetRot = Quaternion.LookRotation(lookDir);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * rotationSpeed * 2f);
             }
-
             transform.position += Random.insideUnitSphere * 0.03f;
             elapsed += Time.deltaTime;
             yield return null;
         }
-
-        // 2. ФИКСАЦИЯ ЦЕЛИ (Ключевой момент)
-        // Мы берем ТОЧКУ, где игрок находится СЕЙЧАС, и вычисляем вектор один раз
         Vector3 finalTargetPoint = player.position + Vector3.up * 1.0f;
         Vector3 dashDirection = (finalTargetPoint - transform.position).normalized;
-
-        // Поворачиваем пчелу строго по этому вектору
         transform.rotation = Quaternion.LookRotation(dashDirection);
-
-        // 3. РЫВОК (Dash)
         float dashTimer = 0;
         while (dashTimer < dashDuration)
         {
-            // Принудительно ставим скорость каждый кадр, чтобы пчела не тормозила
             rb.linearVelocity = dashDirection * dashSpeed;
-
             dashTimer += Time.deltaTime;
             yield return null;
         }
-
         StopDash();
     }
 
     private void StopDash()
     {
         if (isDead) return;
-
         rb.linearVelocity = Vector3.zero;
         isAttacking = false;
         nextAttackAvailableTime = Time.time + attackCooldown;
@@ -157,11 +154,7 @@ public class BeeAI : MonoBehaviour, IDamageable
     private void OnCollisionEnter(Collision collision)
     {
         if (!isAttacking || isDead) return;
-
-        // Ищем компонент урона в объекте, в который врезались, ИЛИ в его родителях
-        // Это решит проблему, если пчела попала в "ногу", а скрипт на "голове"
         IDamageable damageable = collision.gameObject.GetComponentInParent<IDamageable>();
-
         if (damageable != null && (collision.gameObject.CompareTag("PlayerBody") || collision.gameObject.CompareTag("Player")))
         {
             damageable.takeDamage(dashDamage);
@@ -169,13 +162,13 @@ public class BeeAI : MonoBehaviour, IDamageable
         }
         else if (!(collision.gameObject.layer == LayerMask.NameToLayer("Enemy")))
         {
-            // Врезались в стену или пол
             StopDash();
         }
     }
 
     public void takeDamage(float damage)
     {
+        Debug.Log($"Пчела получила урон! Текущее HP: {health}");
         if (isDead) return;
         health -= damage;
         if (health <= 0) Die();
@@ -186,11 +179,9 @@ public class BeeAI : MonoBehaviour, IDamageable
         if (isDead) return;
         isDead = true;
         StopAllCoroutines();
-
         rb.useGravity = true;
-        rb.constraints = RigidbodyConstraints.None; // Чтобы тушка падала реалистично
+        rb.constraints = RigidbodyConstraints.None;
         rb.linearVelocity = Vector3.zero;
-
         Destroy(gameObject, 1.5f);
     }
 }

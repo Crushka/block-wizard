@@ -45,7 +45,7 @@ public class ThunderAttack : IAttack
             Collider[] hitEnemies = Physics.OverlapSphere(targetPos, 0.5f, EnemyMask);
             foreach(var enemy in hitEnemies)
             {
-                IDamageable damageable = enemy.GetComponent<IDamageable>();
+                IDamageable damageable = enemy.GetComponentInParent<IDamageable>();
                 if(damageable != null)
                 {
                     damageable.takeDamage(_nodeData?.Damage ?? 10f);
@@ -85,10 +85,5 @@ public class ThunderAttack : IAttack
 
         _isCasting = true;
         _damageTimer = 0f;
-    }
-
-    float IAttack.getDamage()
-    {
-        return _nodeData?.Damage ?? 10f;
     }
 }

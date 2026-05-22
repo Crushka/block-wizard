@@ -76,6 +76,17 @@ public class BeamProjectile : MonoBehaviour
         _line.receiveShadows = false;
     }
 
+    //void OnTriggerEnter(Collider other)
+    //{
+    //    IDamageable damageable = other.GetComponentInParent<IDamageable>();
+
+    //    if (damageable != null && !other.CompareTag("Player"))
+    //    {
+    //        damageable.takeDamage(_damage);
+    //    }
+    //    Die();
+    //}
+
     void OnDestroy()
     {
         if (_impactInstance != null)

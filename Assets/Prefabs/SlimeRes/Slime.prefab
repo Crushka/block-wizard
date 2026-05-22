@@ -70,8 +70,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6ada6c98c32f6c418969374099ca1dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTarget
+  health: 100
+  damage: 15
+  isDead: 0
   target: {fileID: 0}
-  lookRadius: 60
+  lookRadius: 50
+  stopDistance: 2.5
+  moveSpeed: 3.5
+  attackRate: 2
+  lungeForce: 10
+  knockbackForce: 40
 --- !u!54 &-8887190291045638322
 Rigidbody:
   m_ObjectHideFlags: 0

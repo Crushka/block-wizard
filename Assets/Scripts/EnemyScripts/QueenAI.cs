@@ -17,7 +17,7 @@ public class QueenAI : MonoBehaviour, IDamageable
     public float baseSpeed = 10f;
     public float phase2Speed = 6f;
     public float rotationSpeed = 5f;
-    public float hoverDistance = 10f; // Дистанция от игрока во 2 фазе
+    public float hoverDistance = 10f;
 
     [Header("Настройки пулемета")]
     public float shootingDuration = 4f;
@@ -28,9 +28,13 @@ public class QueenAI : MonoBehaviour, IDamageable
     [Header("Настройки призыва")]
     public int minionsToSummon = 3;
 
+    [Header("Вторая фаза")]
+    [SerializeField] private Transform phase2LandingSpot;
+    [SerializeField] private float transitionMoveSpeed = 5f;
+
     private float currentSpeed;
     private int currentWaypointIndex = 0;
-    public float health = 500f;
+    public float health = 3000f;
 
     void Start()
     {
@@ -48,7 +52,6 @@ public class QueenAI : MonoBehaviour, IDamageable
             case QueenState.Phase2_Moving:
                 MaintainDistanceToPlayer();
                 break;
-                // Состояния Shooting и Summoning управляются корутинами
         }
     }
 
@@ -75,16 +78,23 @@ public class QueenAI : MonoBehaviour, IDamageable
     IEnumerator TransitionToPhase2()
     {
         currentState = QueenState.Transition;
-        Debug.Log("Королева спускается...");
+        Vector3 targetPos = phase2LandingSpot != null ? phase2LandingSpot.position : transform.position;
 
-        Vector3 targetPos = new Vector3(transform.position.x, 4f, transform.position.z);
-        while (Vector3.Distance(transform.position, targetPos) > 0.5f)
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null) rb.isKinematic = true;
+
+        while (Vector3.Distance(transform.position, targetPos) > 0.1f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, 5f * Time.deltaTime);
-            RotateTowards(player.position);
+            transform.position = Vector3.MoveTowards(transform.position, targetPos, transitionMoveSpeed * Time.deltaTime);
+
+            Vector3 dirToPlayer = (player.position - transform.position).normalized;
+            Quaternion lookRot = Quaternion.LookRotation(dirToPlayer);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * rotationSpeed);
+
             yield return null;
         }
 
+        if (rb != null) rb.isKinematic = false;
         currentState = QueenState.Phase2_Moving;
         StartCoroutine(BossBrain());
     }
@@ -93,17 +103,15 @@ public class QueenAI : MonoBehaviour, IDamageable
     #region ИИ Второй Фазы
     IEnumerator BossBrain()
     {
-        while (currentState != QueenState.Phase1) // Пока жива
+        while (currentState != QueenState.Phase1)
         {
-            // Случайный выбор атаки
             float choice = Random.value;
 
-            if (choice < 0.6f) // 60% шанс на пулемет
+            if (choice < 0.6f)
                 yield return StartCoroutine(MachineGunAttack());
-            else // 40% шанс на призыв
+            else
                 yield return StartCoroutine(SummonAttack());
 
-            // Пауза между атаками (просто летаем за игроком)
             currentState = QueenState.Phase2_Moving;
             yield return new WaitForSeconds(Random.Range(2f, 4f));
         }
@@ -116,18 +124,26 @@ public class QueenAI : MonoBehaviour, IDamageable
 
         while (timer < shootingDuration)
         {
-            // Поворачиваемся жалом к игроку (если жало сзади, инвертируем направление)
             Vector3 dirToPlayer = (player.position - transform.position).normalized;
-            Quaternion lookRotation = Quaternion.LookRotation(dirToPlayer);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
+            Vector3 flatDir = new Vector3(dirToPlayer.x, 0, dirToPlayer.z);
 
-            // Выстрел
+            if (flatDir.sqrMagnitude > 0.001f)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(flatDir);
+                Quaternion offset = Quaternion.Euler(0, -90, 0);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation * offset, Time.deltaTime * rotationSpeed);
+            }
+
             if (bulletPrefab && stingerMuzzle)
             {
-                GameObject bullet = Instantiate(bulletPrefab, stingerMuzzle.position, stingerMuzzle.rotation);
-                // Настраиваем пулю (предполагаем, что на ней висит ваш SpellProjectile или StreamProjectile)
-                var proj = bullet.GetComponent<StreamProjecttile>();
-                if (proj != null) proj.Setup(bulletDamage, bulletSpeed, 3f, 5f);
+                Vector3 fireDir = (player.position + Vector3.up * 1.0f - stingerMuzzle.position).normalized;
+                Quaternion bulletRotation = Quaternion.LookRotation(fireDir);
+
+                GameObject bullet = Instantiate(bulletPrefab, stingerMuzzle.position, bulletRotation);
+
+                var queenShootComponent = bullet.GetComponent<QueenShoot>();
+                if (queenShootComponent != null)
+                    queenShootComponent.Setup(bulletDamage, bulletSpeed, 3f, 5f);  
             }
 
             timer += fireRate;
@@ -156,9 +172,8 @@ public class QueenAI : MonoBehaviour, IDamageable
 
     private void MaintainDistanceToPlayer()
     {
-        // Королева держится на расстоянии от игрока, летая вокруг него
         Vector3 targetPos = player.position + (transform.position - player.position).normalized * hoverDistance;
-        targetPos.y = player.position.y + 4f; // Всегда чуть выше игрока
+        targetPos.y = player.position.y + 4f;
 
         transform.position = Vector3.MoveTowards(transform.position, targetPos, phase2Speed * Time.deltaTime);
         RotateTowards(player.position);
@@ -170,8 +185,11 @@ public class QueenAI : MonoBehaviour, IDamageable
         Vector3 dir = (target - transform.position).normalized;
         if (dir != Vector3.zero)
         {
-            Quaternion rot = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
-            transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * rotationSpeed);
+            Quaternion lookRot = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
+
+            Quaternion offset = Quaternion.Euler(0, -90, 0);
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot * offset, Time.deltaTime * rotationSpeed);
         }
     }
 
@@ -179,7 +197,15 @@ public class QueenAI : MonoBehaviour, IDamageable
 
     public void takeDamage(float amount)
     {
-        health -= amount;
+        if(amount > 40)
+        {
+            health -= 40;
+        }
+        else 
+        {
+            health -= amount;
+        }
+        
         if (health <= 0) Die();
     }
 
@@ -187,7 +213,6 @@ public class QueenAI : MonoBehaviour, IDamageable
     {
         Debug.Log("Королева побеждена!");
         StopAllCoroutines();
-        // Можно добавить взрыв или падение
         Destroy(gameObject);
     }
 }

@@ -147,15 +147,15 @@ public class SpikeProjectile : MonoBehaviour
         transform.position = to;
     }
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-        IDamageable damageable = other.GetComponent<IDamageable>();
-        Debug.Log($"нанесен урон: {other.gameObject.name}");
+        IDamageable damageable = other.GetComponentInParent<IDamageable>();
+
         if (damageable != null && !other.CompareTag("Player"))
         {
             damageable.takeDamage(_damage);
+            Die();
         }
-        Die();
     }
 
     private void Die()

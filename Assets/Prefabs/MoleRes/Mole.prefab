@@ -241,13 +241,14 @@ MonoBehaviour:
   firePoint: {fileID: 7789715790287270517}
   visuals: {fileID: 2682134308477542763}
   burrowEffect: {fileID: 0}
-  triggerDistance: 12
+  detectionRange: 50
+  triggerDistance: 20
   ambushRadius: 9
   burrowSpeed: 5
   minBurrowTime: 3
   attackDuration: 3
   fireRate: 1
-  spitSpeed: 10
+  spitSpeed: 5
   rotationSpeed: 10
   emergeTime: 1
   submergeTime: 1
