@@ -55,7 +55,7 @@ public class CheckpointTrigger : MonoBehaviour
 
         if (saveInventory)
         {
-            var inv = Object.FindAnyObjectByType<InventoryManager>();
+            var inv = FindAnyObjectByType<InventoryManager>();
             if (inv != null)
                 gsm.SaveInventory(inv);
         }

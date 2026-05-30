@@ -55,7 +55,7 @@ public class FireNode : ElementNode // 1
         var comp = new NodeComposition();
         comp.Add(ElementType.Fire, 1.0f);
         comp.Add(AttackType.Stream, 1.0f);
-        comp.Add(EffectType.Burn, 0.8f);
+        comp.Add(StatusEffectType.Burn, 0.8f);
         return comp;
     }
 }
@@ -70,7 +70,7 @@ public class WaterNode : ElementNode // 2
         Range = 8f;
         Speed = 1.6f;
         Weight = 1.3f;
-        PrimaryColor = new Color(0.35f, 0.82f, 0.95f);  // ярко-синий
+        PrimaryColor = new Color(0.35f, 0.82f, 0.95f); 
         EmissionIntensity = 0.8f;
         TrailLength = 1.1f;
         ParticleSize = 0.9f;
@@ -87,7 +87,7 @@ public class WaterNode : ElementNode // 2
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
         comp.Add(AttackType.Spray, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -119,7 +119,7 @@ public class EartNode : ElementNode // 3
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
         comp.Add(AttackType.Ball, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -151,7 +151,7 @@ public class AirNode : ElementNode // 4
         var comp = new NodeComposition();
         comp.Add(ElementType.Air, 1.0f);
         comp.Add(AttackType.Stream, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -183,7 +183,7 @@ public class ColdNode : ElementNode // 4
         var comp = new NodeComposition();
         comp.Add(ElementType.Air, 1.0f);
         comp.Add(AttackType.Spray, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -216,7 +216,7 @@ public class LightningNode : ElementNode // 5
         comp.Add(ElementType.Lightning, 1.0f);
         comp.Add(AttackType.Thunder, 1.0f);
         comp.Add(AttackType.Spray, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -249,7 +249,7 @@ public class SteamNode : ElementNode
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
         comp.Add(AttackType.Stream, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -280,7 +280,7 @@ public class IceNode : ElementNode
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
         comp.Add(AttackType.Spike, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -311,7 +311,7 @@ public class MudNode : ElementNode
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
         comp.Add(AttackType.Spray, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }
@@ -326,10 +326,10 @@ public class PlasmaNode : ElementNode
         Range = 8f;
         Speed = 1.2f;
         Weight = 0.5f;
-        PrimaryColor = new Color(1.0f, 0.68f, 0.02f);   // бледно-голубой
+        PrimaryColor = new Color(1.0f, 0.68f, 0.02f); 
         EmissionIntensity = 0.9f;
-        TrailLength = 1.5f;   // длинный след у воздуха
-        ParticleSize = 0.6f;   // мелкие частицы
+        TrailLength = 1.5f;
+        ParticleSize = 0.6f;
     }
 
     public override List<ElementType> SynergyWith { get; } = new() { ElementType.Fire, ElementType.Earth };
@@ -342,7 +342,7 @@ public class PlasmaNode : ElementNode
         var comp = new NodeComposition();
         comp.Add(ElementType.Water, 1.0f);
         comp.Add(AttackType.Beam, 1.0f);
-        comp.Add(EffectType.Slow, 0.6f);
+        comp.Add(StatusEffectType.Slow, 0.6f);
         return comp;
     }
 }

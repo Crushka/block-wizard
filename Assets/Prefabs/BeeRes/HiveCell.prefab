@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CellLogic
   health: 100
-  breakEffectPrefab: {fileID: 919132149155446097, guid: 36870ad100ff4eaabccec1d39dafbe63, type: 3}
+  breakEffectPrefab: {fileID: 0}
   beePrefab: {fileID: 3602737079790508653, guid: d9dc7a52ac3f5be43b2103608c9461e6, type: 3}
   beeCount: 1
   spawnRadius: 1.5
@@ -167,6 +167,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 077b6f5896094f746aa402a4fad911c7, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 587324b1c7cc6a4409788f0a9a532635, type: 2}
     - target: {fileID: 919132149155446097, guid: 077b6f5896094f746aa402a4fad911c7, type: 3}
       propertyPath: m_Name
       value: BeeCupsule

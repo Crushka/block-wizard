@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class DeadScreenUI : MonoBehaviour
 {
     public static DeadScreenUI Instance { get; private set; }
@@ -43,6 +42,7 @@ public class DeadScreenUI : MonoBehaviour
             gsm.ActiveSpellSlotIndex = 0;
         }
 
+        KillOldPlayer();
         LoadScene(firstScene);
     }
 
@@ -70,12 +70,24 @@ public class DeadScreenUI : MonoBehaviour
         string scene = SaveSystem.PeekSavedScene();
         if (string.IsNullOrEmpty(scene)) scene = firstScene;
 
+        KillOldPlayer();
         LoadScene(scene);
+    }
+
+
+    private void KillOldPlayer()
+    {
+        var player = PlayerPersistence.Instance;
+        if (player != null)
+        {
+            Debug.Log("[DeadScreenUI] Уничтожаем старого игрока перед загрузкой сцены.");
+            PlayerPersistence.ClearInstance();
+            Destroy(player.gameObject); 
+        }
     }
 
     private void LoadScene(string sceneName)
     {
-
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.LoadScene(sceneName);
     }
@@ -97,15 +109,10 @@ public class DeadScreenUI : MonoBehaviour
 
     private void HideDeadScreen()
     {
+        if (visualPanel != null) visualPanel.SetActive(false);
+        if (deadCamera != null) deadCamera.gameObject.SetActive(false);
+
         Cursor.lockState = CursorLockMode.Locked;
-
-        foreach (Transform child in transform)
-        {
-            child.gameObject.SetActive(false);
-        }
-
-      
+        Cursor.visible = false;
     }
-
-
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
-public class BeamProjectile : MonoBehaviour
+public class BeamProjectile : ProjectTile
 {
     [Header("Визуал луча")]
     public float StartWidth = 0.05f;
@@ -24,6 +24,7 @@ public class BeamProjectile : MonoBehaviour
 
     }
 
+
     public void UpdateBeam(Vector3 origin, Vector3 endPoint)
     {
         _line.SetPosition(0, origin);
@@ -45,7 +46,14 @@ public class BeamProjectile : MonoBehaviour
         }
     }
 
-    public void SetupVisual(NodeBase node)
+    public override void Setup(float damage, float speed, float range, float lifetime = 0, float spread = 0)
+    {
+        _damage = damage;
+        _speed = speed;
+        _range = range;
+    }
+
+    public override void SetupVisual(NodeBase node)
     {
         BeamColor = node.PrimaryColor;
         StartWidth = 0.03f + 0.03f * node.EmissionIntensity;
@@ -76,20 +84,4 @@ public class BeamProjectile : MonoBehaviour
         _line.receiveShadows = false;
     }
 
-    //void OnTriggerEnter(Collider other)
-    //{
-    //    IDamageable damageable = other.GetComponentInParent<IDamageable>();
-
-    //    if (damageable != null && !other.CompareTag("Player"))
-    //    {
-    //        damageable.takeDamage(_damage);
-    //    }
-    //    Die();
-    //}
-
-    void OnDestroy()
-    {
-        if (_impactInstance != null)
-            Destroy(_impactInstance);
-    }
 }

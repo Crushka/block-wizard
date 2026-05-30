@@ -285,20 +285,11 @@ internal class SpellGraphSolver
             if (node == graph.StartNode) continue;
             int nodeNum = node.num > 0 ? node.num : 1;
             node.Data.Weight = Mathf.Max(0.75f + 1 / Mathf.Sqrt(nodeNum), 1f);
-            UnityEngine.Debug.Log($"[547263487562395] num: {node.num}, weight: {node.Data.Weight}");
+            UnityEngine.Debug.Log($"[SpellGraphSlover] num: {node.num}, weight: {node.Data.Weight}");
         }
 
         GraphNode finalSpell;
         List<List<GraphNode>> separateGraphs = SeparateGraph(graph);
-
-        //foreach (var i in separateGraphs)
-        //{
-        //    UnityEngine.Debug.Log($"[SpellGraphSlover]{i.Count}");
-        //    foreach( var j in i)
-        //    {
-        //        UnityEngine.Debug.Log($"[SpellSlower] {j.Data.NodeType}");
-        //    }
-        //}
 
         var collapsedNodes = new List<GraphNode>(separateGraphs.Count);
 

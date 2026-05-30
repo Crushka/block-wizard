@@ -85,7 +85,7 @@ public static class SaveSystem
 
         string json = JsonUtility.ToJson(data, prettyPrint: true);
         File.WriteAllText(SavePath, json);
-        Debug.Log($"[SaveSystem] Сохранено → {SavePath}");
+        Debug.Log($"[SaveSystem] Сохранено {SavePath}");
     }
 
     public static bool Load(GameStateManager gsm)

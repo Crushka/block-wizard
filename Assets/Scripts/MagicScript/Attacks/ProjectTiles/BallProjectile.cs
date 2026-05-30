@@ -2,12 +2,10 @@
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class SpellProjectile : MonoBehaviour
+public class BallProjectile : ProjectTile
 {
-    private float _damage, _range, _speed;
     private Vector3 _startPos;
     private Vector3 _flyDirection;
-    private bool _isDestroyed = false;
 
     private Vector3 _rotationAxis;
     private float _rotationSpeed;
@@ -16,14 +14,23 @@ public class SpellProjectile : MonoBehaviour
     private TrailRenderer _trail;
     private ParticleSystem _particles;
     private Light _light;
-
-    public void Setup(float damage, float range, float speed)
+    void Update()
     {
-        Debug.Log($"[SpellProjectile] Setup получил параметры: dmg={damage}, range={range}, speed={speed}");
+        transform.position += _flyDirection * _speed * Time.deltaTime;
+
+        transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
+
+        if (Vector3.Distance(_startPos, transform.position) >= _range)
+            Destroy(gameObject);
+
+    }
+    public override void Setup(float damage, float range, float speed, float _ = 0f, float __ = 0f)
+    {
         _damage = damage;
         _range = range;
         _speed = speed;
         _startPos = transform.position;
+        Debug.Log($"[SpellProjectile] Setup получил параметры: dmg={_damage}, range={_range}, speed={_speed}");
 
         _flyDirection = transform.forward;
         _rotationAxis = Random.onUnitSphere;
@@ -31,7 +38,7 @@ public class SpellProjectile : MonoBehaviour
         transform.rotation = Random.rotation;
     }
 
-    public void SetupVisual(NodeBase node)
+    public override void SetupVisual(NodeBase node)
     {
         var vfx = GetComponentInChildren<VisualEffect>();
         if (vfx != null)
@@ -83,31 +90,5 @@ public class SpellProjectile : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        transform.position += _flyDirection * _speed * Time.deltaTime;
-
-        transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(_startPos, transform.position) >= _range)
-            Destroy(gameObject);
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        IDamageable damageable = other.GetComponentInParent<IDamageable>();
-
-        if (damageable != null && !other.CompareTag("Player"))
-        {
-            damageable.takeDamage(_damage);
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        if (_isDestroyed) return;
-        _isDestroyed = true;
-        Destroy(gameObject);
-    }
+    
 }

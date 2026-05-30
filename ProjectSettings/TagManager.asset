@@ -3,15 +3,25 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - AttackPrefab
+  - Enemy
+  - PlayerBody
+  - Con
+  - Mole
+  - Golem
+  - NonePlayebleObject
+  - AttackProjecttile
+  - Bat
+  - StreamProjectile
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
+  - Enemy
   - 
   - 
   - 

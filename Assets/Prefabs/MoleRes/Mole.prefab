@@ -248,7 +248,7 @@ MonoBehaviour:
   minBurrowTime: 3
   attackDuration: 3
   fireRate: 1
-  spitSpeed: 5
+  spitSpeed: 8
   rotationSpeed: 10
   emergeTime: 1
   submergeTime: 1

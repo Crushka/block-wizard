@@ -23,7 +23,7 @@ public class SpellNodePickup : MonoBehaviour
     [Tooltip("Можно ли подобрать повторно (только если destroyOnPickup = false)")]
     public bool singleUse = true;
 
-    [Header("Визуальный эффект (необязательно)")]
+    [Header("Визуальный эффект")]
     [Tooltip("GameObject-эффект, который заспавнится в момент подбора (можно оставить пустым)")]
     public GameObject pickupEffectPrefab;
 
