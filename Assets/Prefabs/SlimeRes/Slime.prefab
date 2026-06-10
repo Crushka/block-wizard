@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4330252952242696161}
-  - component: {fileID: 4100525747695842610}
-  - component: {fileID: 1667574684095641254}
   - component: {fileID: -8887190291045638322}
   - component: {fileID: 1947046693401887623}
-  m_Layer: 6
+  - component: {fileID: 6569428514760811500}
+  - component: {fileID: 5897185942768287719}
+  m_Layer: 3
   m_Name: Slime
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,50 +36,6 @@ Transform:
   - {fileID: 6569809931073920061}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!195 &4100525747695842610
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6517052385958834344}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 2
-  m_Speed: 10
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 4
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &1667574684095641254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6517052385958834344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6ada6c98c32f6c418969374099ca1dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerTarget
-  health: 100
-  damage: 15
-  isDead: 0
-  target: {fileID: 0}
-  lookRadius: 50
-  stopDistance: 2.5
-  moveSpeed: 3.5
-  attackRate: 2
-  lungeForce: 10
-  knockbackForce: 40
 --- !u!54 &-8887190291045638322
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -89,7 +45,7 @@ Rigidbody:
   m_GameObject: {fileID: 6517052385958834344}
   serializedVersion: 5
   m_Mass: 1
-  m_LinearDamping: 0
+  m_LinearDamping: 0.5
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -103,10 +59,10 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 80
+  m_CollisionDetection: 1
 --- !u!65 &1947046693401887623
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -128,6 +84,49 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 4, y: 3.9376593, z: 4}
   m_Center: {x: 0, y: 1.9687738, z: 0}
+--- !u!114 &6569428514760811500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6517052385958834344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5d9e234618860478d817ec23a5fa41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeBehaviour
+--- !u!114 &5897185942768287719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6517052385958834344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07748dd9ddc70224996b6bc3e43af67d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeEnemy
+  maxHP: 100
+  HP: 100
+  speed: 14
+  reg_points: 0
+  target: {fileID: 0}
+  animator: {fileID: 0}
+  baseAI: {fileID: 0}
+  jumpHeight: 0.5
+  jumpInterval: 0.5
+  lookRadius: 15
+  attackRange: 5
+  gravityMultiplier: 1.5
+  damage: 15
+  knockbackForce: 10
+  damageRadius: 1.5
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  rb: {fileID: 0}
 --- !u!1001 &2617990823809323829
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -138,7 +137,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 702074280687349099, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8373193598122710450, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_Name
@@ -146,7 +145,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8373193598122710450, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9185196557083709192, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_LocalPosition.x

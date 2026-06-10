@@ -5520,6 +5520,7 @@ MonoBehaviour:
   playerAnimator: {fileID: 7698034628576773835}
   isMovementEnabled: 1
   isAiming: 0
+  kbDrag: 4
 --- !u!114 &8890341756764822602
 MonoBehaviour:
   m_ObjectHideFlags: 0

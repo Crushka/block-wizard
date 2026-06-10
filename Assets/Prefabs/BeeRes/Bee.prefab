@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 39808217812191492}
   - component: {fileID: 5524292841680212928}
   m_Layer: 3
-  m_Layer: 3
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4850,7 +4849,6 @@ GameObject:
   - component: {fileID: 5637122087450420711}
   - component: {fileID: 181483793489231359}
   m_Layer: 3
-  m_Layer: 3
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5075,9 +5073,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8377093903993361279}
-  - component: {fileID: -684855827496146126}
   - component: {fileID: 5704539875307334410}
-  m_Layer: 3
+  - component: {fileID: 3918986856066409561}
+  - component: {fileID: 4432985213824892913}
   m_Layer: 3
   m_Name: Bee
   m_TagString: Untagged
@@ -5104,39 +5102,6 @@ Transform:
   - {fileID: 2546976205596361903}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-684855827496146126
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3602737079790508653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb8c82c8f221ff84db1f1b2a0fd6e02e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BeeAI
-  player: {fileID: 0}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 1
-  detectionRange: 1000
-  moveSpeed: 10
-  hoverHeight: 5
-  minHorizontalDistance: 5
-  heightAdjustSpeed: 5
-    m_Bits: 0
-  moveSpeed: 4
-  hoverHeight: 2.5
-  heightAdjustSpeed: 3
-  rotationSpeed: 10
-  attackRange: 10
-  attackCooldown: 2
-  windUpTime: 0.6
-  dashSpeed: 20
-  dashDamage: 20
-  dashDuration: 1.5
-  health: 100
 --- !u!54 &5704539875307334410
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5145,7 +5110,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3602737079790508653}
   serializedVersion: 5
-  m_Mass: 1
+  m_Mass: 10
   m_LinearDamping: 0
   m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -5164,6 +5129,55 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 126
   m_CollisionDetection: 1
+--- !u!114 &3918986856066409561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3602737079790508653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a80906c6216d2fb439169e83f1b64e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeeBehaviour
+  isAttacking: 0
+  nextAttackAvailiableTime: 5
+--- !u!114 &4432985213824892913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3602737079790508653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b750dbffdc9b6a45aa7e104e244553a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeeEnemy
+  maxHP: 100
+  HP: 100
+  speed: 15
+  reg_points: 0
+  target: {fileID: 0}
+  animator: {fileID: 0}
+  baseAI: {fileID: 0}
+  rb: {fileID: 0}
+  detectionRange: 30
+  moveSpeed: 4
+  hoverHeight: 2.5
+  minHorizontalDistance: 2.5
+  heightAdjustSpeed: 3
+  rotationSpeed: 10
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  attackRange: 7
+  attackCooldown: 2
+  windUpTime: 0.6
+  dashSpeed: 18
+  dashDamage: 20
+  dashDuration: 0.8
 --- !u!1 &4762031770990386815
 GameObject:
   m_ObjectHideFlags: 0
@@ -5176,7 +5190,6 @@ GameObject:
   - component: {fileID: 2486549160315612928}
   - component: {fileID: 2304742661190659217}
   - component: {fileID: 8044528658004171434}
-  m_Layer: 3
   m_Layer: 3
   m_Name: Sphere (2)
   m_TagString: Untagged
@@ -5291,7 +5304,6 @@ GameObject:
   - component: {fileID: 8707426291515681368}
   - component: {fileID: 5224178471493520459}
   m_Layer: 3
-  m_Layer: 3
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5405,7 +5417,6 @@ GameObject:
   - component: {fileID: 8408640790466903828}
   - component: {fileID: 7528091181685375034}
   - component: {fileID: 3324866676261719407}
-  m_Layer: 3
   m_Layer: 3
   m_Name: Particle System
   m_TagString: Untagged
@@ -10244,7 +10255,6 @@ GameObject:
   - component: {fileID: 7595683594671940755}
   - component: {fileID: 4271057831180925242}
   m_Layer: 3
-  m_Layer: 3
   m_Name: Sphere (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10357,7 +10367,6 @@ GameObject:
   - component: {fileID: 8872557785593682525}
   - component: {fileID: 7758285433408827789}
   - component: {fileID: 7673598873995002980}
-  m_Layer: 3
   m_Layer: 3
   m_Name: Sting
   m_TagString: Untagged
@@ -10472,7 +10481,6 @@ GameObject:
   - component: {fileID: 4235937513295684788}
   - component: {fileID: 5133501162379717063}
   - component: {fileID: 2854214619438497105}
-  m_Layer: 3
   m_Layer: 3
   m_Name: Head
   m_TagString: Untagged

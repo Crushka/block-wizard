@@ -2,28 +2,41 @@ using UnityEngine;
 
 public class BatProj : MonoBehaviour
 {
-    public float gravityScale = 3f;
-    public float damage = 5f;
+    private Vector3 direction;
+    private float speed;
+    private float damage;
+    private bool isInitialized = false;
 
-    private void OnCollisionEnter(Collision collision)
+    public void SetupDirect(Vector3 dir, float moveSpeed, float dmg)
     {
-        IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
+        direction = dir;
+        speed = moveSpeed;
+        damage = dmg;
+        isInitialized = true;
 
-        if(damageable != null)
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
         {
-            if(!collision.gameObject.CompareTag("Bat"))
-            {
-                damageable.takeDamage(damage);
-            }
+            rb.useGravity = false;
+            rb.linearVelocity = direction * speed;
         }
 
-        Destroy(gameObject);
+        Destroy(gameObject, 5f);
     }
 
-    private void FixedUpdate()
+    private void OnTriggerEnter(Collider other)
     {
-        Rigidbody body = GetComponent<Rigidbody>();
-        Vector3 extraGravity = Physics.gravity * (gravityScale - 1) * body.mass;
-        body.AddForce(extraGravity);
+        if (other.CompareTag("Enemy") || other.CompareTag("Bat")) return;
+
+        IDamageable damageable = other.GetComponentInParent<IDamageable>();
+        if (damageable != null && ((other.CompareTag("Player") || other.CompareTag("PlayerBody")||LayerMask.NameToLayer("Player") == other.gameObject.layer)))
+        {
+            damageable.takeDamage(damage);
+            Destroy(gameObject);
+        }
+        else if (!other.isTrigger)
+        {
+            Destroy(gameObject);
+        }
     }
 }

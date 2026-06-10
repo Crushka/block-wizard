@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4821844364071473504}
   - component: {fileID: 102136914647636461}
-  - component: {fileID: 8966204922837214372}
   - component: {fileID: 402113412595140924}
+  - component: {fileID: 1821284832237060918}
+  - component: {fileID: 8969419519709749353}
   m_Layer: 3
   m_Name: Bat
   m_TagString: Untagged
@@ -59,39 +60,6 @@ CapsuleCollider:
   m_Height: 1.9406325
   m_Direction: 1
   m_Center: {x: 0, y: 0.82419324, z: -0.049193442}
---- !u!114 &8966204922837214372
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5943705245041629041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1cd5b7473e7a2c746b71b4c9df0a254d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BatAI
-  player: {fileID: 0}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 1
-  detectionRange: 50
-  projectilePrefab: {fileID: 3910950108595853705, guid: cf3a9e3edb4864c47a661e1fe8086287, type: 3}
-  firePoint: {fileID: 4031466215430992976}
-  fireRate: 1.5
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 1
-  arcHeight: 2
-  speedMultiplier: 5
-  leadAccuracy: 0.606
-  moveSpeed: 10
-  heightAdjustSpeed: 2
-  stopDistance: 6
-  minHorizontalDist: 5
-  hoverHeight: 4
-  rotationSpeed: 8
-  health: 100
 --- !u!54 &402113412595140924
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -119,6 +87,56 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1821284832237060918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5943705245041629041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40a01ae72f7b36d4f98e088e21741534, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BatEnemy
+  maxHP: 100
+  HP: 100
+  speed: 10
+  reg_points: 0
+  target: {fileID: 0}
+  animator: {fileID: 0}
+  baseAI: {fileID: 0}
+  detectionRange: 30
+  dashSpeed: 20
+  heightAdjustSpeed: 5
+  stopDistance: 0.5
+  minRadius: 6
+  maxRadius: 12
+  hoverHeight: 3
+  rotationSpeed: 8
+  projectilePrefab: {fileID: 3910950108595853705, guid: cf3a9e3edb4864c47a661e1fe8086287, type: 3}
+  firePoint: {fileID: 4031466215430992976}
+  fireRate: 3
+  chargeTime: 1
+  bulletSpeed: 60
+  bulletDamage: 20
+  leadAccuracy: 0.656
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 1
+  rb: {fileID: 0}
+--- !u!114 &8969419519709749353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5943705245041629041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d59faa6ca4898744a5ccec63c916e61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BatBehaviour
 --- !u!1 &9213308196549438289
 GameObject:
   m_ObjectHideFlags: 0

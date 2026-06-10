@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6698357915251875040}
   - component: {fileID: 3784534092568957332}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: WavePrefab
   m_TagString: AttackPrefab
   m_Icon: {fileID: 0}
@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 2785937823379494019}
   - component: {fileID: 6983696895013731079}
   - component: {fileID: 1569860470774988579}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cilynder(1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
