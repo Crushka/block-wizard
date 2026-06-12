@@ -3,19 +3,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// Central inventory singleton.
-///
-/// Inspector setup:
-///   • inventorySlots  — all regular inventory cell GameObjects
-///   • quickSlots      — exactly 4 quick-slot GameObjects (index 0-3)
-///   • quickSlotHUDImages — 4 Image components in the player HUD (same order)
-///   • inventoryItemPrefab — prefab with InventoryItem + DraggableItem + CanvasGroup
-///   • itemIcons       — list of id → Sprite mappings
-/// </summary>
 public class InventorySlotManager : MonoBehaviour
 {
-    // ── Singleton ─────────────────────────────────────────────────────────────
     public static InventorySlotManager Instance { get; private set; }
 
     private void Awake()
@@ -24,14 +13,13 @@ public class InventorySlotManager : MonoBehaviour
         Instance = this;
     }
 
-    // ── Inspector ─────────────────────────────────────────────────────────────
     [Header("Inventory Slots")]
     [SerializeField] private List<InventorySlot> inventorySlots = new();
 
     [Header("Quick Slots — панель инвентаря (4 шт, порядок 0-3)")]
     [SerializeField] private List<InventorySlot> quickSlots = new();
 
-    [Header("HUD Mirror Slots — UI игрока (те же префабы, тот же порядок 0-3)")]
+    [Header("HUD Mirror Slots — UI игрока (тот же порядок 0-3, с HUDSlotActiveIndicator)")]
     [SerializeField] private List<InventorySlot> hudMirrorSlots = new();
 
     [Header("Prefab")]
@@ -40,32 +28,65 @@ public class InventorySlotManager : MonoBehaviour
     [Header("Item Icons")]
     [SerializeField] private List<ItemIconEntry> itemIcons = new();
 
-    // ── Runtime ───────────────────────────────────────────────────────────────
     private readonly Dictionary<string, InventoryItem> _stackMap = new();
 
-    // ─────────────────────────────────────────────────────────────────────────
-    #region Public API
+    // ── Public API ────────────────────────────────────────────────────────────
 
     public void AddItem(Item item)
     {
-        if (item == null) return;
+        if (item == null) { Debug.LogError("[Inventory] AddItem: item == null"); return; }
 
-        if (_stackMap.TryGetValue(item.id, out InventoryItem existing))
+        // Копируем данные сразу — объект будет уничтожен в этом же кадре
+        string itemId = item.id;
+        int itemAmount = item.amount;
+        Sprite icon = GetIcon(itemId);
+
+        Debug.Log($"[Inventory] AddItem called: id='{itemId}', amount={itemAmount}");
+
+        if (string.IsNullOrEmpty(itemId))
         {
-            existing.AddCount(item.amount);
+            Debug.LogError("[Inventory] Item id пустой! Назначь id в инспекторе prefab-а предмета на сцене.");
             return;
         }
 
-        InventorySlot freeSlot = inventorySlots.FirstOrDefault(s => s.CurrentItem == null);
+        // Уже есть в инвентаре — добавляем к стаку
+        if (_stackMap.TryGetValue(itemId, out InventoryItem existing))
+        {
+            Debug.Log($"[Inventory] Стак найден для '{itemId}', добавляем {itemAmount}. Было: {existing.Count}");
+            existing.AddCount(itemAmount);
+            InventorySlot existingSlot = FindSlotWith(existing);
+            if (existingSlot != null && existingSlot.isQuickSlot)
+                existingSlot.SyncHUDMirror(existing);
+            return;
+        }
+
+        // Диагностика слотов
+        Debug.Log($"[Inventory] Свободные inventorySlots: {inventorySlots.Count(s => SlotIsEmpty(s))}/{inventorySlots.Count}");
+        Debug.Log($"[Inventory] Свободные quickSlots:     {quickSlots.Count(s => SlotIsEmpty(s))}/{quickSlots.Count}");
+
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            var s = inventorySlots[i];
+            var ci = s.CurrentItem;
+            bool unityNull = !(ci as UnityEngine.Object);
+            Debug.Log($"[Inventory]   inventorySlots[{i}]: CurrentItem={ci}, unityNull={unityNull}, isEmpty={SlotIsEmpty(s)}");
+        }
+
+        InventorySlot freeSlot =
+            inventorySlots.FirstOrDefault(s => SlotIsEmpty(s)) ??
+            quickSlots.FirstOrDefault(s => SlotIsEmpty(s));
+
         if (freeSlot == null)
         {
-            Debug.LogWarning($"[Inventory] No free slot for '{item.id}'.");
+            Debug.LogError($"[Inventory] Нет свободного слота для '{itemId}'! Все слоты заняты.");
             return;
         }
 
-        InventoryItem entry = CreateVisual(item, item.amount);
+        Debug.Log($"[Inventory] Кладём '{itemId}' в слот '{freeSlot.gameObject.name}'");
+        InventoryItem entry = CreateVisual(itemId, itemAmount, icon, item);
         freeSlot.PlaceItem(entry);
-        _stackMap[item.id] = entry;
+        _stackMap[itemId] = entry;
+        Debug.Log($"[Inventory] '{itemId}' успешно добавлен. _stackMap.Count={_stackMap.Count}");
     }
 
     public void CreateNode(ElementType nodeType)
@@ -76,42 +97,70 @@ public class InventorySlotManager : MonoBehaviour
     public void ConsumeItem(string itemId, int amount = 1)
     {
         if (!_stackMap.TryGetValue(itemId, out InventoryItem entry)) return;
-
         entry.AddCount(-amount);
         if (entry.Count > 0) return;
-
         _stackMap.Remove(itemId);
         FindSlotWith(entry)?.ClearSlot(destroy: true);
     }
 
-    /// <summary>Возвращает HUD-зеркало по индексу быстрого слота.</summary>
+    public void ConsumeFromQuickSlot(int index)
+    {
+        if (index < 0 || index >= quickSlots.Count) return;
+
+        InventorySlot slot = quickSlots[index];
+        InventoryItem item = slot.CurrentItem;
+        if (item == null) return;
+
+        string itemId = item.ItemData?.id;
+        item.AddCount(-1);
+        Debug.Log($"[Inventory] ConsumeFromQuickSlot[{index}]: id='{itemId}', осталось={item.Count}");
+
+        if (item.Count <= 0)
+        {
+            if (!string.IsNullOrEmpty(itemId))
+                _stackMap.Remove(itemId);
+            slot.ClearSlot(destroy: true);
+        }
+        else
+        {
+            slot.SyncHUDMirror(item);
+        }
+    }
+
+    public InventoryItem GetQuickSlotItem(int index)
+    {
+        if (index < 0 || index >= quickSlots.Count) return null;
+        return quickSlots[index].CurrentItem;
+    }
+
     public InventorySlot GetHUDMirror(int index)
     {
         if (index < 0 || index >= hudMirrorSlots.Count) return null;
         return hudMirrorSlots[index];
     }
 
-    /// <summary>Создаёт визуальный клон InventoryItem для HUD (без DraggableItem).</summary>
     public InventoryItem CloneVisual(InventoryItem source)
     {
-        InventoryItem clone = CreateVisual(source.ItemData, source.Count);
-        return clone;
+        return CreateVisual(source.ItemData.id, source.Count, GetIcon(source.ItemData.id), source.ItemData);
     }
 
-    #endregion
+    // ── Private helpers ───────────────────────────────────────────────────────
 
-    // ─────────────────────────────────────────────────────────────────────────
-    #region Private helpers
+    private static bool SlotIsEmpty(InventorySlot slot)
+    {
+        InventoryItem ci = slot.CurrentItem;
+        if (ci == null) return true;
+        if (!(ci as UnityEngine.Object)) return true;
+        return false;
+    }
 
-    private InventoryItem CreateVisual(Item item, int count)
+    private InventoryItem CreateVisual(string itemId, int count, Sprite icon, Item sourceItem)
     {
         GameObject go = Instantiate(inventoryItemPrefab);
         InventoryItem iv = go.GetComponent<InventoryItem>();
-        iv.Initialise(item, count, GetIcon(item.id));
-
+        iv.Initialise(sourceItem, count, icon);
         if (go.GetComponent<DraggableItem>() == null)
             go.AddComponent<DraggableItem>();
-
         return iv;
     }
 
@@ -128,8 +177,6 @@ public class InventorySlotManager : MonoBehaviour
         foreach (var s in quickSlots) if (s.CurrentItem == item) return s;
         return null;
     }
-
-    #endregion
 
     [System.Serializable]
     public class ItemIconEntry

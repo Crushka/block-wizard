@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4988276950872829655
+--- !u!1 &1161675519106602832
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4690874119710379541}
-  - component: {fileID: 2126048456057804095}
-  - component: {fileID: 9055752383130951382}
-  - component: {fileID: 1462605166138091004}
-  - component: {fileID: 4474531487789765588}
+  - component: {fileID: 1085155030322007941}
+  - component: {fileID: 4947293684878359030}
+  - component: {fileID: 593034645464578363}
+  - component: {fileID: 3517080290870872197}
+  - component: {fileID: 4074053105632666685}
   m_Layer: 0
-  m_Name: TestItem
+  m_Name: SpeedPotion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4690874119710379541
+--- !u!4 &1085155030322007941
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4988276950872829655}
+  m_GameObject: {fileID: 1161675519106602832}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.26111585, y: 0.26111585, z: 0.26111585}
+  m_LocalPosition: {x: 65.06, y: 68.15, z: 38.42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2126048456057804095
+--- !u!33 &4947293684878359030
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4988276950872829655}
-  m_Mesh: {fileID: -2432090755550338912, guid: 4869f07b53cc9e6479c616e16ebfd695, type: 3}
---- !u!23 &9055752383130951382
+  m_GameObject: {fileID: 1161675519106602832}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &593034645464578363
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4988276950872829655}
+  m_GameObject: {fileID: 1161675519106602832}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -68,7 +68,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -876546973899608171, guid: 4f53dfcf20632794fbd1451aca666aea, type: 3}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -92,13 +92,13 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &1462605166138091004
+--- !u!65 &3517080290870872197
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4988276950872829655}
+  m_GameObject: {fileID: 1161675519106602832}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -111,24 +111,24 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.1440268, y: 3.8238397, z: 3.228764}
-  m_Center: {x: -0.0052289963, y: 1.8721011, z: -0.02212888}
---- !u!114 &4474531487789765588
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4074053105632666685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4988276950872829655}
+  m_GameObject: {fileID: 1161675519106602832}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bd0ddd8afb2a34d448b9f8d97d772b09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Potion
-  id: potion_health
+  id: potion_speed
   amount: 1
-  itemType: Test
-  potionType: 0
-  healAmount: 30
+  itemType: speed
+  potionType: 1
+  healAmount: 0
   speedBoostAmount: 1.5
   speedBoostDuration: 20
