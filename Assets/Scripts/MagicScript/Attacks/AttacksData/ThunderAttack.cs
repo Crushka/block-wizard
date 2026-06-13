@@ -48,7 +48,7 @@ public class ThunderAttack : IAttack
                 IDamageable damageable = enemy.GetComponentInParent<IDamageable>();
                 if(damageable != null)
                 {
-                    damageable.takeDamage(_nodeData?.Damage ?? 10f);
+                    damageable.takeDamage(_nodeData?.Damage * 0.5f ?? 10f);
                 }
             }
         }

@@ -5,11 +5,11 @@ public class NodeComposition
 {
     public Dictionary<ElementType, float> Elements { get; } = new();
     public Dictionary<AttackType, float> AttackTypes { get; } = new();
-    public Dictionary<EffectType, float> Effects { get; } = new();
+    public Dictionary<StatusEffectType, float> Effects { get; } = new();
 
     public void Add(ElementType type, float weight) => AddToDict(Elements, type, weight);
     public void Add(AttackType type, float weight) => AddToDict(AttackTypes, type, weight);
-    public void Add(EffectType type, float weight) => AddToDict(Effects, type, weight);
+    public void Add(StatusEffectType type, float weight) => AddToDict(Effects, type, weight);
 
     private void AddToDict<T>(Dictionary<T, float> dict, T key, float weight) where T : struct
     {
@@ -51,7 +51,7 @@ public class NodeComposition
 
     public ElementType GetDominantElement() => GetDominant(Elements, ElementType.None);
     public AttackType GetDominantAttack() => GetDominant(AttackTypes, AttackType.Ball);
-    public EffectType GetDominantEffect() => GetDominant(Effects, EffectType.Burn);
+    public StatusEffectType GetDominantEffect() => GetDominant(Effects, StatusEffectType.Burn);
 
     public static T GetDominant<T>(Dictionary<T, float> dict, T fallback) where T : struct
     {

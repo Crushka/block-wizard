@@ -18,12 +18,10 @@ public class BallAttack : IAttack
         _hasFired = true;
 
         GameObject projectile = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
-        var spellScript = projectile.GetComponent<SpellProjectile>();
+        var spellScript = projectile.GetComponent<BallProjectile>();
         spellScript.Setup(_nodeData.Damage, _nodeData.Range, _nodeData.Speed);
         spellScript.SetupVisual(_nodeData);
     }
-
-
 
     public void Stop()
     {

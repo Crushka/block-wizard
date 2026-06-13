@@ -3,9 +3,9 @@
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class SprayProjectile : MonoBehaviour
+public class SprayProjectile : ProjectTile
 {
-    private float _damage, _lifetime;
+    private float _lifetime;
     private bool _isDead;
     private Rigidbody _rb;
 
@@ -14,9 +14,9 @@ public class SprayProjectile : MonoBehaviour
 
 
 
-    public void Setup(float damage, float speed, float lifetime, float spread = 8f)
+    public override void Setup(float damage, float range, float speed, float lifetime, float spread = 8f)
     {
-        _damage = damage;
+        _damage = damage * 0.06f;
         _lifetime = lifetime;
         _rb = GetComponent<Rigidbody>();
 
@@ -38,7 +38,7 @@ public class SprayProjectile : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    public void SetupVisual(NodeBase node)
+    public override void SetupVisual(NodeBase node)
     {
         var renderers = GetComponentsInChildren<Renderer>();
         foreach (var rend in renderers)
@@ -88,30 +88,5 @@ public class SprayProjectile : MonoBehaviour
                 0.05f * node.ParticleSize,
                 0.15f * node.ParticleSize);
         }
-    }
-
-    void Update()
-    {
-        transform.Rotate(_rotationAxis, _rotationSpeed * Time.deltaTime);
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        IDamageable damageable = other.GetComponentInParent<IDamageable>();
-
-        if (damageable != null && !other.CompareTag("Player"))
-        {
-            damageable.takeDamage(_damage);
-            Die();
-        }
-    }
-
-
-    private void Die()
-    {
-        if (_isDead) return;
-        _isDead = true;
-
-        Destroy(gameObject);
     }
 }

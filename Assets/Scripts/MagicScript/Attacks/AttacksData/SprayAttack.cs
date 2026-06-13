@@ -12,9 +12,6 @@ public class SprayAttack : IAttack
 
     private float _fireTimer;
 
-    private float GetDamagePerProjectile() =>
-        (_nodeData?.Damage ?? 10f);
-
     public void Init(NodeBase node, GameObject prefab)
     {
         _nodeData = node;
@@ -41,20 +38,8 @@ public class SprayAttack : IAttack
 
         GameObject proj = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
 
-        float damagePerProjectile = GetDamagePerProjectile();
-
         var spray = proj.GetComponent<SprayProjectile>();
-        if (spray != null)
-        {
-            float dmg = _nodeData != null ? _nodeData.Damage : 10f;
-            spray.Setup(damagePerProjectile, ProjectileSpeed, ProjectileLifetime, SpreadAngle);
-            spray.SetupVisual(_nodeData);
-        }
-        else
-        {
-            var spell = proj.GetComponent<SpellProjectile>();
-            spell?.Setup(_nodeData?.Damage ?? 0.1f, _nodeData?.Range ?? 12f, _nodeData?.Speed ?? 10f);
-            //spray.SetupVisual(_nodeData);
-        }
+        spray.Setup(_nodeData.Damage, _nodeData.Range, _nodeData.Speed, ProjectileLifetime, SpreadAngle);
+        spray.SetupVisual(_nodeData);
     }
 }

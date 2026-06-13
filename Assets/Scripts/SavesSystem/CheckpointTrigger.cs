@@ -1,9 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Положи этот компонент на объект с коллайдером (Is Trigger = true).
-/// При входе игрока — делает полное сохранение на диск.
-/// </summary>
+
 [RequireComponent(typeof(Collider))]
 public class CheckpointTrigger : MonoBehaviour
 {
@@ -19,8 +16,8 @@ public class CheckpointTrigger : MonoBehaviour
     [SerializeField] private bool saveHP = true;
 
     [Header("Визуал (опционально)")]
-    [SerializeField] private GameObject activeVisual;   // напр. свет / партикли "активного" чекпоинта
-    [SerializeField] private GameObject inactiveVisual; // серый вариант
+    [SerializeField] private GameObject activeVisual;
+    [SerializeField] private GameObject inactiveVisual;
 
     private bool _activated = false;
 
@@ -33,7 +30,7 @@ public class CheckpointTrigger : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag(playerTag)) return;
-        if (_activated) return;   // уже сохранялись здесь в этой сессии
+        if (_activated) return;
 
         DoSave(other.gameObject);
     }
@@ -47,10 +44,8 @@ public class CheckpointTrigger : MonoBehaviour
             return;
         }
 
-        // 1. Обновляем спавн-точку
         gsm.LastSpawnPointId = spawnPointId;
 
-        // 2. HP
         if (saveHP)
         {
             var health = playerObject.GetComponent<PlayerHealth>();
@@ -58,25 +53,22 @@ public class CheckpointTrigger : MonoBehaviour
                 gsm.SaveHP(health.health);
         }
 
-        // 3. Инвентарь
         if (saveInventory)
         {
-            var inv = Object.FindAnyObjectByType<InventoryManager>();
+            var inv = FindAnyObjectByType<InventoryManager>();
             if (inv != null)
                 gsm.SaveInventory(inv);
         }
 
-        // 4. Слоты заклинаний (включая текущий граф в редакторе)
         if (saveSpellSlots)
             gsm.SaveAllSpellSlotsState();
 
-        // 5. Пишем на диск
         SaveSystem.Save(gsm);
 
         _activated = true;
         SetVisual(true);
 
-        Debug.Log($"[CheckpointTrigger] ✓ Сохранено на чекпоинте '{spawnPointId}'");
+        Debug.Log($"[CheckpointTrigger] Сохранено на чекпоинте '{spawnPointId}'");
     }
 
     private void SetVisual(bool isActive)

@@ -58,7 +58,7 @@ public class SceneTrigger : MonoBehaviour
 
         if (saveInventory)
         {
-            var inv = Object.FindAnyObjectByType<InventoryManager>();
+            var inv = FindAnyObjectByType<InventoryManager>();
             if (inv != null)
                 gsm.SaveInventory(inv);
             else
@@ -70,13 +70,24 @@ public class SceneTrigger : MonoBehaviour
             gsm.SaveAllSpellSlotsState();
         }
 
-        var caster = Object.FindAnyObjectByType<SpellCaster>();
+        var caster = FindAnyObjectByType<SpellCaster>();
         if (caster != null && caster.CurrentSpellNode != null)
             gsm.SaveSpell(caster.CurrentSpellNode);
 
+        var visualizer = FindAnyObjectByType<GraphVisualizer>();
+        if (visualizer != null)
+        {
+            visualizer.StopAllCoroutines();
+            visualizer.gameObject.SetActive(false);
+        }
+
+        var nodeEditor = FindAnyObjectByType<NodeEditorManager>();
+        if (nodeEditor != null)
+            nodeEditor.StopAllCoroutines();
+
         Debug.Log($"[SceneTrigger] Переход в '{targetScene}', спавн: '{spawnPointId}'");
         SceneManager.LoadScene(targetScene);
-       
-        
+
+
     }
 }

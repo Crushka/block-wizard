@@ -1,44 +1,76 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerPersistence : MonoBehaviour
 {
     public static PlayerPersistence Instance { get; private set; }
 
+    public bool IsDead { get; set; } = false;
+
     void Awake()
     {
-        if (Instance != null)
+        if (Instance != null && Instance.gameObject == null)
+            Instance = null;
+
+        if (Instance == null)
         {
-            Destroy(gameObject);
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            Debug.Log($"[PlayerPersistence] Зарегистрирован: {gameObject.name}");
             return;
         }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
+
+        if (Instance == this) return;
+
+        Debug.Log("[PlayerPersistence] Дубликат уничтожен.");
+        Destroy(gameObject);
     }
 
-    public void TeleportTo(Transform spawnPoint)
+    public static void ClearInstance()
     {
-        StartCoroutine(ExecuteTeleport(spawnPoint));
+        Instance = null;
     }
 
-    private IEnumerator ExecuteTeleport(Transform spawnPoint)
+    public void TeleportTo(Transform targetTransform)
     {
-        var cc = GetComponent<CharacterController>();
-        if (cc != null) cc.enabled = false;
+        GameObject childPlayer = null;
+        foreach (Transform child in transform)
+        {
+            if (child.CompareTag("Player"))
+            {
+                childPlayer = child.gameObject;
+                break;
+            }
+        }
 
-        yield return new WaitForEndOfFrame();
+        CharacterController controller = childPlayer?.GetComponent<CharacterController>();
+        Rigidbody rb = childPlayer?.GetComponent<Rigidbody>();
 
-        Vector3 targetPos = spawnPoint.position;
-        Quaternion targetRot = spawnPoint.rotation;
+        if (controller != null) controller.enabled = false;
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+        }
 
-        transform.SetPositionAndRotation(targetPos, targetRot);
-        Physics.SyncTransforms();
+        transform.position = targetTransform.position;
+        transform.rotation = targetTransform.rotation;
 
-        yield return null;
+        if (childPlayer != null)
+        {
+            childPlayer.transform.localPosition = Vector3.zero;
+            childPlayer.transform.localRotation = Quaternion.identity;
+        }
 
-        transform.SetPositionAndRotation(targetPos, targetRot);
-        Physics.SyncTransforms();
+        if (controller != null) controller.enabled = true;
+        if (rb != null) rb.isKinematic = false;
 
-        if (cc != null) cc.enabled = true;
+        Debug.Log($"[PlayerPersistence] Телепортирован на {targetTransform.position}. Дочерний: '{childPlayer?.name}'");
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 }

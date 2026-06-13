@@ -1,7 +1,7 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections;
 using TMPro;
 
 public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler
@@ -18,16 +18,18 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     private RectTransform _rt;
     private CanvasGroup _cg;
 
+    private bool _isDragClone = false;
+    private bool _removedFromGraph = false;
+
     public void Initialize(NodeModel data)
     {
         Data = data;
         _rt = GetComponent<RectTransform>();
-        _canvas = GetComponentInParent<Canvas>(true);
+        _canvas = GetComponentInParent<Canvas>();
         _cg = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
         _initialSize = _rt.sizeDelta;
-
-        Debug.Log($"[NodeView.Init] {data.type} | canvas={(_canvas != null ? _canvas.name : "NULL")} | scaleFactor={(_canvas != null ? _canvas.scaleFactor : 0)}");
-
+        _removedFromGraph = false;
+        _isDragClone = false;
         UpdateVisuals();
     }
 
@@ -44,24 +46,43 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         if (eventData.button == PointerEventData.InputButton.Right)
         {
             if (NodeEditorManager.Instance != null)
-            {
                 NodeEditorManager.Instance.OnNodeRightClick(this);
-            }
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (eventData.button != PointerEventData.InputButton.Left) return;
-
         if (Data.type == ElementType.None) { eventData.pointerDrag = null; return; }
 
         if (_canvas == null) _canvas = GetComponentInParent<Canvas>();
 
-        Debug.Log($"[NodeView.BeginDrag] canvas={(_canvas != null ? _canvas.name : "NULL")} | parent before={transform.parent?.name}");
-        transform.SetParent(_canvas.transform, true);
+        bool isInInventory = InventoryManager.Instance != null
+            && transform.IsChildOf(InventoryManager.Instance.inventoryContainer);
 
-        Debug.Log($"[NodeView.BeginDrag] parent after={transform.parent?.name}");
+        if (isInInventory)
+        {
+            NodeView clone = InventoryManager.Instance.SpawnDragClone(this, _canvas);
+            clone._isDragClone = true;
+            clone._canvas = _canvas;
+            clone._removedFromGraph = false;
+
+            CanvasGroup cloneCg = clone.GetComponent<CanvasGroup>()
+                                  ?? clone.gameObject.AddComponent<CanvasGroup>();
+            cloneCg.blocksRaycasts = false;
+            cloneCg.alpha = 0.6f;
+            clone._cg = cloneCg;
+
+            eventData.pointerDrag = clone.gameObject;
+            return;
+        }
+        if (!_removedFromGraph && NodeEditorManager.Instance != null)
+        {
+            NodeEditorManager.Instance.RemoveNodeFromGraph(this);
+            _removedFromGraph = true;
+        }
+
+        transform.SetParent(_canvas.transform, true);
         if (_cg != null) { _cg.blocksRaycasts = false; _cg.alpha = 0.6f; }
     }
 
@@ -73,32 +94,24 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         if (_canvas == null) _canvas = GetComponentInParent<Canvas>();
 
         _rt.anchoredPosition += eventData.delta / _canvas.scaleFactor;
-        
+
         if (NodeEditorManager.Instance != null)
-        {
             NodeEditorManager.Instance.RefreshLines();
-        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         if (_cg != null) { _cg.blocksRaycasts = true; _cg.alpha = 1f; }
-        StartCoroutine(CheckDrop());
-    }
 
-    private IEnumerator CheckDrop()
-    {
-        yield return new WaitForEndOfFrame();
-
-        if (transform.parent == _canvas.transform)
+        if (_canvas != null && transform.parent == _canvas.transform)
         {
-            var manager = NodeEditorManager.Instance;
-            
-            if (manager != null)
+            if (_isDragClone)
             {
-                manager.RemoveNodeFromGraph(this);
-
-                InventoryManager.Instance.MoveToInventory(this);
+                InventoryManager.Instance?.DestroyDragClone(this);
+            }
+            else
+            {
+                Destroy(gameObject);
             }
         }
     }

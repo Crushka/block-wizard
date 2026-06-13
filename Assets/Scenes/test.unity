@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 50843755}
   - component: {fileID: 50843754}
   - component: {fileID: 50843753}
-  - component: {fileID: 50843752}
+  - component: {fileID: 50843757}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -244,7 +244,7 @@ Transform:
   m_GameObject: {fileID: 50843751}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 34.18715, y: 1.35, z: 49.70658}
+  m_LocalPosition: {x: 34.18715, y: -61.4, z: 49.70658}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -596,7 +596,7 @@ Transform:
   m_GameObject: {fileID: 355274485}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.297, y: -0.7, z: 42.46802}
+  m_LocalPosition: {x: 29.297, y: -62.58, z: 42.46802}
   m_LocalScale: {x: 985.25244, y: 1.143744, z: 2040.6523}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1061,6 +1061,7 @@ MonoBehaviour:
   nodeEditorManager: {fileID: 0}
   spellCaster: {fileID: 0}
   restoreSpell: 1
+  playerWaitTimeout: 5
 --- !u!4 &1141946847
 Transform:
   m_ObjectHideFlags: 0
@@ -1309,7 +1310,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1483874045}
-  - component: {fileID: 1483874044}
+  - component: {fileID: 1483874046}
   m_Layer: 0
   m_Name: GameObject (1)
   m_TagString: Untagged
@@ -1345,6 +1346,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1483874046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483874043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d49897fbc1d66459890271f8d277b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
+  spawnId: default
 --- !u!1 &1588806305
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,7 +1368,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1588806307}
-  - component: {fileID: 1588806306}
+  - component: {fileID: 1588806308}
   m_Layer: 0
   m_Name: GameObject (2)
   m_TagString: Untagged
@@ -1362,19 +1376,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1588806306
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1588806305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef5cf723eb1780f45bd178deefcc0b66, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpawnPoint
-  spawnId: default
 --- !u!4 &1588806307
 Transform:
   m_ObjectHideFlags: 0

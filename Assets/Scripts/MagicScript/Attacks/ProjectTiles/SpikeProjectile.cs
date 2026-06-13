@@ -37,7 +37,7 @@ public class SpikeAttackRunner : MonoBehaviour
             {
                 GameObject spike = Instantiate(prefab, groundPos.Value, Quaternion.identity);
                 var proj = spike.GetComponent<SpikeProjectile>();
-                proj?.Setup(damage, speed);
+                proj?.Setup(damage, range, speed);
                 proj?.SetupVisual(nodeData);
             }
 
@@ -60,7 +60,7 @@ public class SpikeAttackRunner : MonoBehaviour
 
 }
 
-public class SpikeProjectile : MonoBehaviour
+public class SpikeProjectile : ProjectTile
 {
     [Header("Визуал")]
     public float riseHeight = 1.5f;
@@ -68,21 +68,19 @@ public class SpikeProjectile : MonoBehaviour
     public float holdTime = 0.4f;
     public float sinkTime = 0.2f;
 
-    private float _damage;
-    private float _speed; 
     private bool  _isDead;
 
-    
     private Vector3 _belowGround;
     private Vector3 _peakPos;
 
-    public void Setup(float damage, float speed)
+    public override void Setup(float damage, float range, float speed, float _ = 0f, float __ = 0f)
     {
         _damage = damage;
         _speed  = speed;
+        _range = range;
     }
 
-    public void SetupVisual(NodeBase node)
+    public override void SetupVisual(NodeBase node)
     {
         var renderers = GetComponentsInChildren<Renderer>();
         foreach (var rend in renderers)
@@ -145,21 +143,5 @@ public class SpikeProjectile : MonoBehaviour
             yield return null;
         }
         transform.position = to;
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        IDamageable damageable = other.GetComponentInParent<IDamageable>();
-
-        if (damageable != null && !other.CompareTag("Player"))
-        {
-            damageable.takeDamage(_damage);
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        Destroy(gameObject);
     }
 }

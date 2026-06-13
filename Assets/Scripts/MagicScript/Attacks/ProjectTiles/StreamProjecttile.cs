@@ -3,24 +3,24 @@
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(Collider))]
-public class StreamProjecttile : MonoBehaviour
+public class StreamProjecttile : ProjectTile
 {
-    private float _damage, _lifetime;
+    private float _lifetime;
     private bool _isDead;
     private Rigidbody _rb;
 
 
-    public void Setup(float damage, float speed, float lifetime, float spread = 8f)
+    public override void Setup(float damage, float range, float speed, float lifetime, float spread = 8f)
     {
-        _damage = damage;
+        _damage = damage * 0.05f;
         _lifetime = lifetime;
         _rb = GetComponent<Rigidbody>();
 
 
         Vector3 dir = transform.forward;
         dir = Quaternion.Euler(
-            Random.Range(-speed, spread),
-            Random.Range(-speed, spread),
+            Random.Range(-spread, spread),
+            Random.Range(-spread, spread),
             0f
         ) * dir;
 
@@ -36,7 +36,7 @@ public class StreamProjecttile : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    public void SetupVisual(NodeBase node)
+    public override void SetupVisual(NodeBase node)
     {
         var renderers = GetComponentsInChildren<Renderer>();
         foreach (var rend in renderers)
@@ -69,24 +69,4 @@ public class StreamProjecttile : MonoBehaviour
 
     }
 
-
-    void OnTriggerEnter(Collider other)
-    {
-        IDamageable damageable = other.GetComponentInParent<IDamageable>();
-
-        if (damageable != null && !other.CompareTag("Player"))
-        {
-            damageable.takeDamage(_damage);
-            Die();
-        }
-        
-    }
-
-    private void Die()
-    {
-        if (_isDead) return;
-        _isDead = true;
-
-        Destroy(gameObject);
-    }
 }

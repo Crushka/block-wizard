@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8715761110306057034}
   - component: {fileID: 7244217926703120311}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BeeQuuenRoot
   m_TagString: Enemy
   m_Icon: {fileID: 0}

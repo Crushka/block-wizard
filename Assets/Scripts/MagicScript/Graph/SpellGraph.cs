@@ -57,7 +57,7 @@ public class SpellGraph
 
         int n = Nodes.Count;
         int r = Elements.Values.Max();
-        Weight = (float)(1 / (Math.Pow(n, Math.Sqrt(r * 0.5) / (Math.Max(1, n - r))))) + 0.4f;
+        Weight = (float)(1 / (Math.Pow(n, Math.Sqrt(r * 0.5) / (Math.Max(1, n - r))))) + 0.2f;
     }
 
     public IEnumerable<GraphNode> AllNodes()

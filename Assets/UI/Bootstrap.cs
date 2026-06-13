@@ -11,13 +11,17 @@ public class SceneBootstrap : MonoBehaviour
     [Header("Восстанавливать заклинание?")]
     [SerializeField] private bool restoreSpell = true;
 
+    [Header("Настройки ожидания игрока")]
+    [Tooltip("Максимальное время ожидания появления игрока (сек)")]
+    [SerializeField] private float playerWaitTimeout = 5f;
+
     void Start()
     {
         var gsm = GameStateManager.Instance;
 
         if (gsm == null)
         {
-            Debug.Log("[SceneBootstrap] GameStateManager не найден. Создаем временный для этой сцены.");
+            Debug.Log("[SceneBootstrap] GameStateManager не найден. Создаём временный для этой сцены.");
             var go = new GameObject("GameStateManager_AutoCreated");
             gsm = go.AddComponent<GameStateManager>();
             gsm.LastSpawnPointId = "default";
@@ -53,55 +57,64 @@ public class SceneBootstrap : MonoBehaviour
 
     private IEnumerator SpawnPlayer()
     {
-        yield return new WaitForEndOfFrame();
-
         var gsm = GameStateManager.Instance;
         if (gsm == null) yield break;
 
-        var player = PlayerPersistence.Instance;
+        SpawnPoint target = FindSpawnPoint(gsm.LastSpawnPointId);
+
+        if (target == null)
+        {
+            Debug.LogError("[SceneBootstrap] На сцене нет нужной точки спавна и нет 'default'! Телепортация отменена.");
+            yield break;
+        }
+
+        Debug.Log($"[SceneBootstrap] Точка спавна найдена: '{target.spawnId}' → {target.transform.position}");
+
+        float waited = 0f;
+        PlayerPersistence player = PlayerPersistence.Instance;
+
+        while (player == null && waited < playerWaitTimeout)
+        {
+            yield return null;
+            waited += Time.unscaledDeltaTime;
+            player = PlayerPersistence.Instance;
+        }
+
         if (player == null)
         {
-            Debug.LogError("[SceneBootstrap] КРИТИЧЕСКАЯ ОШИБКА: Игрок с компонентом PlayerPersistence не найден в DontDestroyOnLoad!");
+            Debug.LogError($"[SceneBootstrap] Игрок не появился за {playerWaitTimeout} сек. Телепортация отменена.");
             yield break;
         }
 
-        var allSpawnPoints = Object.FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude);
+        Debug.Log($"[SceneBootstrap] Игрок найден (ждали {waited:F2}с). Телепортируем на '{target.spawnId}'.");
 
-        SpawnPoint target = null;
+        yield return null;
 
-        Debug.Log($"[SceneBootstrap] Начинаем поиск точки спавна. Ищем целевой ID: '{gsm.LastSpawnPointId}'");
-
-        foreach (var sp in allSpawnPoints)
-        {
-            if (sp.spawnId == gsm.LastSpawnPointId)
-            {
-                target = sp;
-                break;
-            }
-        }
-
-        if (target == null)
-        {
-            Debug.LogWarning($"[SceneBootstrap] Точка '{gsm.LastSpawnPointId}' не найдена на сцене. Пробуем найти точку 'default'...");
-            foreach (var sp in allSpawnPoints)
-            {
-                if (sp.spawnId == "default")
-                {
-                    target = sp;
-                    break;
-                }
-            }
-        }
-
-        if (target == null)
-        {
-            Debug.LogError("[SceneBootstrap] На сцене нет ни нужной точки спавна, ни точки 'default'! Игрок остался на старом месте.");
-            yield break;
-        }
-
-        Debug.Log($"[SceneBootstrap] ТОЧКА НАЙДЕНА! Телепортируем игрока на спавнпоинт: '{target.spawnId}' (Позиция: {target.transform.position})");
         player.TeleportTo(target.transform);
 
-        Debug.Log("[SceneBootstrap] Телепортация игрока успешно завершена!");
+        Debug.Log("[SceneBootstrap] Телепортация завершена!");
+    }
+
+    private SpawnPoint FindSpawnPoint(string id)
+    {
+        var allPoints = FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude);
+
+        foreach (var sp in allPoints)
+        {
+            if (sp.spawnId == id)
+            {
+                Debug.Log($"[SceneBootstrap] Найдена точка спавна: '{id}'");
+                return sp;
+            }
+        }
+
+        Debug.LogWarning($"[SceneBootstrap] Точка '{id}' не найдена, ищем default");
+        foreach (var sp in allPoints)
+        {
+            if (sp.spawnId == "default")
+                return sp;
+        }
+
+        return null;
     }
 }

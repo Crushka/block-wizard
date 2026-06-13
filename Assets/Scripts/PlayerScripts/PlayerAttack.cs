@@ -115,8 +115,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    // Ищет cooldown для текущего типа атаки в SpellCaster.
-    // Если запись не найдена — возвращает 0 (без задержки, старое поведение).
+ 
     private float GetCurrentCooldown()
     {
         if (spellCaster?.CurrentSpellNode == null) return 0f;

@@ -132,7 +132,7 @@ public class SpellSlot
         try
         {
             var calcGraph = new SpellGraph();
-            var map = new System.Collections.Generic.Dictionary<string, GraphNode>();
+            var map = new Dictionary<string, GraphNode>();
 
             foreach (var uiNode in graph.Nodes)
             {

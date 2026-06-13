@@ -36,14 +36,26 @@ public class QueenAI : MonoBehaviour, IDamageable
     private int currentWaypointIndex = 0;
     public float health = 3000f;
 
+    // Проверяет жив ли игрок (не null и объект не уничтожен)
+    private bool PlayerAlive => player != null && player.gameObject != null;
+
     void Start()
     {
         currentSpeed = baseSpeed;
-        if (player == null) player = GameObject.FindGameObjectWithTag("PlayerBody").transform;
     }
 
     void Update()
     {
+        // Ищем игрока если потеряли ссылку
+        if (!PlayerAlive)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("PlayerBody");
+            if (playerObj != null)
+                player = playerObj.transform;
+        }
+
+        if (!PlayerAlive) return;
+
         switch (currentState)
         {
             case QueenState.Phase1:
@@ -87,9 +99,12 @@ public class QueenAI : MonoBehaviour, IDamageable
         {
             transform.position = Vector3.MoveTowards(transform.position, targetPos, transitionMoveSpeed * Time.deltaTime);
 
-            Vector3 dirToPlayer = (player.position - transform.position).normalized;
-            Quaternion lookRot = Quaternion.LookRotation(dirToPlayer);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * rotationSpeed);
+            if (PlayerAlive)
+            {
+                Vector3 dirToPlayer = (player.position - transform.position).normalized;
+                Quaternion lookRot = Quaternion.LookRotation(dirToPlayer);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Time.deltaTime * rotationSpeed);
+            }
 
             yield return null;
         }
@@ -105,6 +120,13 @@ public class QueenAI : MonoBehaviour, IDamageable
     {
         while (currentState != QueenState.Phase1)
         {
+            // Если игрок мёртв — ждём пока не появится новый
+            if (!PlayerAlive)
+            {
+                yield return new WaitForSeconds(1f);
+                continue;
+            }
+
             float choice = Random.value;
 
             if (choice < 0.6f)
@@ -124,6 +146,13 @@ public class QueenAI : MonoBehaviour, IDamageable
 
         while (timer < shootingDuration)
         {
+            // Прерываем атаку если игрок погиб
+            if (!PlayerAlive)
+            {
+                currentState = QueenState.Phase2_Moving;
+                yield break;
+            }
+
             Vector3 dirToPlayer = (player.position - transform.position).normalized;
             Vector3 flatDir = new Vector3(dirToPlayer.x, 0, dirToPlayer.z);
 
@@ -143,7 +172,7 @@ public class QueenAI : MonoBehaviour, IDamageable
 
                 var queenShootComponent = bullet.GetComponent<QueenShoot>();
                 if (queenShootComponent != null)
-                    queenShootComponent.Setup(bulletDamage, bulletSpeed, 3f, 5f);  
+                    queenShootComponent.Setup(bulletDamage, bulletSpeed, 3f, 5f);
             }
 
             timer += fireRate;
@@ -154,7 +183,6 @@ public class QueenAI : MonoBehaviour, IDamageable
     IEnumerator SummonAttack()
     {
         currentState = QueenState.Phase2_Summoning;
-        Debug.Log("Королева призывает подмогу!");
 
         for (int i = 0; i < minionsToSummon; i++)
         {
@@ -172,6 +200,8 @@ public class QueenAI : MonoBehaviour, IDamageable
 
     private void MaintainDistanceToPlayer()
     {
+        if (!PlayerAlive) return;
+
         Vector3 targetPos = player.position + (transform.position - player.position).normalized * hoverDistance;
         targetPos.y = player.position.y + 4f;
 
@@ -186,9 +216,7 @@ public class QueenAI : MonoBehaviour, IDamageable
         if (dir != Vector3.zero)
         {
             Quaternion lookRot = Quaternion.LookRotation(new Vector3(dir.x, 0, dir.z));
-
             Quaternion offset = Quaternion.Euler(0, -90, 0);
-
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRot * offset, Time.deltaTime * rotationSpeed);
         }
     }
@@ -197,15 +225,7 @@ public class QueenAI : MonoBehaviour, IDamageable
 
     public void takeDamage(float amount)
     {
-        if(amount > 40)
-        {
-            health -= 40;
-        }
-        else 
-        {
-            health -= amount;
-        }
-        
+        health -= amount > 40 ? 40 : amount;
         if (health <= 0) Die();
     }
 
