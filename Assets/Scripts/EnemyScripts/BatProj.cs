@@ -6,6 +6,7 @@ public class BatProj : MonoBehaviour
     private float speed;
     private float damage;
     private bool isInitialized = false;
+    private bool _hasDealtDamage = false;
 
     public void SetupDirect(Vector3 dir, float moveSpeed, float dmg)
     {
@@ -26,16 +27,27 @@ public class BatProj : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (_hasDealtDamage) return;
         if (other.CompareTag("Enemy") || other.CompareTag("Bat")) return;
 
         IDamageable damageable = other.GetComponentInParent<IDamageable>();
-        if (damageable != null && ((other.CompareTag("Player") || other.CompareTag("PlayerBody")||LayerMask.NameToLayer("Player") == other.gameObject.layer)))
+        bool isPlayer = other.CompareTag("Player") ||
+                        other.CompareTag("PlayerBody") ||
+                        other.gameObject.layer == LayerMask.NameToLayer("Player");
+
+        if (damageable != null && isPlayer)
         {
+            _hasDealtDamage = true;
+
             damageable.takeDamage(damage);
+
+            Debug.Log($"Снаряд попал в игрока! Урон: {damage}");
+
             Destroy(gameObject);
         }
         else if (!other.isTrigger)
         {
+            _hasDealtDamage = true;
             Destroy(gameObject);
         }
     }
