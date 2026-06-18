@@ -20215,7 +20215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 111987752213914347, guid: 4f52a1878e1223e4180f42a9281c8eec, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 3471.222
+      value: -186.25003
       objectReference: {fileID: 0}
     - target: {fileID: 2028176552414026530, guid: 4f52a1878e1223e4180f42a9281c8eec, type: 3}
       propertyPath: deadScreen
@@ -20275,7 +20275,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7385553924775439260, guid: 4f52a1878e1223e4180f42a9281c8eec, type: 3}
       propertyPath: slotCount
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8890341756764822602, guid: 4f52a1878e1223e4180f42a9281c8eec, type: 3}
       propertyPath: attackCooldowns.Array.data[2].cooldown

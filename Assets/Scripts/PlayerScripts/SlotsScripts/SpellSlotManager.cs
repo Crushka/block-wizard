@@ -17,7 +17,7 @@ public class SpellSlotManager : MonoBehaviour
 
     private List<SpellSlot> _slots = new();
     private int _activeIndex = 0;
-    private InputAction[] _slotActions;
+    private InputAction[] _slotActions = System.Array.Empty<InputAction>();
 
     public event System.Action<int> OnSlotChanged;
     public event System.Action<int, SpellSlot> OnSlotSaved;
@@ -27,17 +27,142 @@ public class SpellSlotManager : MonoBehaviour
     public SpellSlot ActiveSlot => _slots[_activeIndex];
     public SpellSlot GetSlot(int i) => (i >= 0 && i < _slots.Count) ? _slots[i] : null;
 
+    // ── Unity lifecycle ────────────────────────────────────────────────────────
 
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         BuildSlots();
-        BuildInputActions();
+        BuildInputActions(); // actions создаются и сразу включаются здесь
     }
 
-    void OnEnable() { foreach (var a in _slotActions) a.Enable(); }
-    void OnDisable() { foreach (var a in _slotActions) a.Disable(); }
+    // OnEnable/OnDisable больше не трогают actions — Enable вызывается прямо в BuildInputActions
+    // чтобы избежать гонки между Awake и OnEnable
+
+    void OnDestroy()
+    {
+        DisableAndClearActions();
+    }
+
+    // ── Slot switching ─────────────────────────────────────────────────────────
+
+    public void SwitchToSlot(int newIndex)
+    {
+        if (newIndex < 0 || newIndex >= _slots.Count) return;
+        if (newIndex == _activeIndex) return;
+
+        Debug.Log($"[SpellSlotManager] Переключение слота: {_activeIndex + 1} → {newIndex + 1}");
+
+        if (nodeEditorManager != null)
+        {
+            _slots[_activeIndex].SnapshotFromEditor(nodeEditorManager);
+            _slots[_activeIndex].Compile();
+        }
+
+        _activeIndex = newIndex;
+
+        if (nodeEditorManager != null)
+            _slots[_activeIndex].RestoreToEditor(nodeEditorManager);
+
+        ApplyToCaster();
+        SyncGSM();
+        OnSlotChanged?.Invoke(_activeIndex);
+    }
+
+    // ── Save ───────────────────────────────────────────────────────────────────
+
+    public void SaveCurrentSlot()
+    {
+        var slot = _slots[_activeIndex];
+        slot.SnapshotFromEditor(nodeEditorManager);
+        slot.Compile();
+
+        ApplyToCaster();
+        SyncGSM();
+
+        OnSlotSaved?.Invoke(_activeIndex, slot);
+        Debug.Log($"[SpellSlotManager] Слот {_activeIndex + 1} сохранён");
+    }
+
+    public void SaveAllSlots()
+    {
+        SaveCurrentSlot();
+        var gsm = GameStateManager.Instance;
+        if (gsm == null) return;
+        foreach (var slot in gsm.SpellSlots)
+            if (slot.compiledNode == null && !slot.IsEmpty)
+                slot.Compile();
+        Debug.Log($"[SpellSlotManager] Все {gsm.SpellSlots.Count} слотов сохранены.");
+    }
+
+    // ── Drag & drop API ────────────────────────────────────────────────────────
+
+    public void AssignToSlot(int slotIndex, NodeBase node)
+    {
+        if (slotIndex < 0 || slotIndex >= _slots.Count || node == null) return;
+
+        var slot = _slots[slotIndex];
+        slot.graph = null;
+        slot.compiledNode = node;
+
+        if (slotIndex == _activeIndex)
+            ApplyToCaster();
+
+        SyncGSM();
+        OnSlotSaved?.Invoke(slotIndex, slot);
+        Debug.Log($"[SpellSlotManager] AssignToSlot: слот {slotIndex + 1} ← {node.GetDominantAttack()} dmg={node.Damage:F1}");
+    }
+
+    public void SwapSlots(int indexA, int indexB)
+    {
+        if (indexA < 0 || indexA >= _slots.Count) return;
+        if (indexB < 0 || indexB >= _slots.Count) return;
+        if (indexA == indexB) return;
+
+        var slotA = _slots[indexA];
+        var slotB = _slots[indexB];
+
+        (slotA.graph, slotB.graph) = (slotB.graph, slotA.graph);
+        (slotA.compiledNode, slotB.compiledNode) = (slotB.compiledNode, slotA.compiledNode);
+
+        if (_activeIndex == indexA || _activeIndex == indexB)
+        {
+            if (nodeEditorManager != null)
+                _slots[_activeIndex].RestoreToEditor(nodeEditorManager);
+            ApplyToCaster();
+        }
+
+        SyncGSM();
+        OnSlotChanged?.Invoke(_activeIndex);
+        Debug.Log($"[SpellSlotManager] SwapSlots: {indexA + 1} ↔ {indexB + 1}");
+    }
+
+    // ── Book ───────────────────────────────────────────────────────────────────
+
+    public void OnBookOpened()
+    {
+        Debug.Log($"[SpellSlotManager] Книга открыта → слот {_activeIndex + 1}");
+        _slots[_activeIndex].RestoreToEditor(nodeEditorManager);
+    }
+
+    // ── Late init ──────────────────────────────────────────────────────────────
+
+    public void LateInit(NodeEditorManager mgr, SpellCaster caster, BookInteraction book)
+    {
+        if (mgr != null) nodeEditorManager = mgr;
+        if (caster != null) spellCaster = caster;
+        if (book != null) bookInteraction = book;
+
+        // Отключаем старые actions перед пересозданием
+        DisableAndClearActions();
+        BuildSlots();
+        BuildInputActions();
+        ApplyToCaster();
+        Debug.Log("[SpellSlotManager] LateInit завершён");
+    }
+
+    // ── Private ────────────────────────────────────────────────────────────────
 
     private void BuildSlots()
     {
@@ -49,10 +174,8 @@ public class SpellSlotManager : MonoBehaviour
         {
             _slots.AddRange(gsm.SpellSlots);
             _activeIndex = Mathf.Clamp(gsm.ActiveSpellSlotIndex, 0, count - 1);
-
             foreach (var slot in _slots)
                 if (!slot.IsEmpty) slot.Compile();
-
             Debug.Log($"[SpellSlotManager] Восстановлено {count} слотов из GSM, активный {_activeIndex + 1}");
         }
         else
@@ -71,70 +194,22 @@ public class SpellSlotManager : MonoBehaviour
             var a = new InputAction($"Slot{i + 1}", InputActionType.Button);
             a.AddBinding($"<Keyboard>/{i + 1}");
             a.performed += _ => SwitchToSlot(idx);
+            a.Enable(); // включаем сразу, не ждём OnEnable
             _slotActions[i] = a;
         }
+        Debug.Log($"[SpellSlotManager] Input actions созданы и включены ({_slots.Count} шт.)");
     }
 
-    public void SwitchToSlot(int newIndex)
+    private void DisableAndClearActions()
     {
-        if (newIndex < 0 || newIndex >= _slots.Count || newIndex == _activeIndex) return;
-        if (_slots.Count == 0) return;
-
-        Debug.Log($"[SpellSlotManager] Переключение слота: {_activeIndex + 1} → {newIndex + 1}");
-
-        if (nodeEditorManager != null)
+        foreach (var a in _slotActions)
         {
-            _slots[_activeIndex].SnapshotFromEditor(nodeEditorManager);
-            _slots[_activeIndex].Compile();
+            a.performed -= _ => { }; // убираем анонимные подписки не получится, но хотя бы Disable
+            a.Disable();
+            a.Dispose();
         }
-
-        _activeIndex = newIndex;
-
-        if (nodeEditorManager != null)
-        {
-            _slots[_activeIndex].RestoreToEditor(nodeEditorManager);
-        }
-
-        ApplyToCaster();
-        SyncGSM();
-
-        OnSlotChanged?.Invoke(_activeIndex);
+        _slotActions = System.Array.Empty<InputAction>();
     }
-    public void SaveCurrentSlot()
-    {
-        var slot = _slots[_activeIndex];
-        slot.SnapshotFromEditor(nodeEditorManager);  
-        slot.Compile();
-
-        ApplyToCaster();
-        SyncGSM();
-
-        OnSlotSaved?.Invoke(_activeIndex, slot);
-        Debug.Log($"[SpellSlotManager] Слот {_activeIndex + 1} сохранён");
-    }
-
-    public void SaveAllSlots()
-    {
-        SaveCurrentSlot();
-
-        var gsm = GameStateManager.Instance;
-        if (gsm == null) return;
-
-        foreach (var slot in gsm.SpellSlots)
-        {
-            if (slot.compiledNode == null && !slot.IsEmpty)
-                slot.Compile();
-        }
-
-        Debug.Log($"[SpellSlotManager] Все {gsm.SpellSlots.Count} слотов сохранены.");
-    }
-
-    public void OnBookOpened()
-    {
-        Debug.Log($"[SpellSlotManager] Книга открыта → слот {_activeIndex + 1}");
-        _slots[_activeIndex].RestoreToEditor(nodeEditorManager);
-    }
-
 
     private void ApplyToCaster()
     {
@@ -145,8 +220,12 @@ public class SpellSlotManager : MonoBehaviour
             spellCaster.PrepareSpellFromNode(node);
             Debug.Log($"[SpellSlotManager] SpellCaster ← слот {_activeIndex + 1}");
         }
+        else
+        {
+            spellCaster.ClearSpell();
+            Debug.Log($"[SpellSlotManager] SpellCaster сброшен — слот {_activeIndex + 1} пустой");
+        }
     }
-
 
     private void SyncGSM()
     {
@@ -154,17 +233,5 @@ public class SpellSlotManager : MonoBehaviour
         if (gsm == null) return;
         gsm.SpellSlots = _slots;
         gsm.ActiveSpellSlotIndex = _activeIndex;
-    }
-
-    public void LateInit(NodeEditorManager mgr, SpellCaster caster, BookInteraction book)
-    {
-        if (mgr != null) nodeEditorManager = mgr;
-        if (caster != null) spellCaster = caster;
-        if (book != null) bookInteraction = book;
-
-        BuildSlots();
-        BuildInputActions();
-        ApplyToCaster();
-        Debug.Log("[SpellSlotManager] LateInit завершён");
     }
 }

@@ -5,6 +5,7 @@ public class InventoryBehavior : MonoBehaviour
 {
     [SerializeField] private GameObject inventoryUI;
     [SerializeField] private GameObject hpUI;
+    [SerializeField] private GameObject abilitiesUI;
     [SerializeField] private BookInteraction bookInteraction;
     [SerializeField] private CameraController cameraController;
     [SerializeField] private PlayerController playerController;
@@ -19,6 +20,7 @@ public class InventoryBehavior : MonoBehaviour
         {
             ToggleInventory();
             ToggleHP();
+            ToggleAbilities();
             ToggleCanRead();
             ToggleCursorLock();
             ToggleCameraLock();
@@ -61,6 +63,19 @@ public class InventoryBehavior : MonoBehaviour
         else
         {
             Debug.LogWarning("Пожалуйста, назначьте HP Object в инспекторе скрипта.", this);
+        }
+    }
+
+    private void ToggleAbilities()
+    {
+        if (abilitiesUI != null)
+        {
+            bool isActive = inventoryUI.activeSelf;
+            abilitiesUI.SetActive(!isActive);
+        }
+        else
+        {
+            Debug.LogWarning("Пожалуйста, назначьте Abilities Object в инспекторе скрипта.", this);
         }
     }
 

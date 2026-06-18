@@ -15,6 +15,11 @@ public class InventorySlot : MonoBehaviour, IDropHandler
     public bool isHUDMirror = false;
     public int quickSlotIndex = 0;
 
+    [Header("HUD Mirror Settings")]
+    [Tooltip("Масштаб иконки в HUD-зеркале относительно оригинала (0.5 = 50%)")]
+    [Range(0.1f, 1f)]
+    public float hudIconScale = 0.5f;
+
     public InventoryItem CurrentItem { get; private set; }
 
     // ── IDropHandler ──────────────────────────────────────────────────────────
@@ -130,20 +135,19 @@ public class InventorySlot : MonoBehaviour, IDropHandler
         DraggableItem drag = clone.GetComponent<DraggableItem>();
         if (drag != null) Destroy(drag);
 
-        // Вставляем в HUD-слот и подгоняем размер под слот
+        // Вставляем в HUD-слот и подгоняем размер
         RectTransform cloneRect = clone.GetComponent<RectTransform>();
-        RectTransform mirrorRect = mirror.GetComponent<RectTransform>();
 
         clone.transform.SetParent(mirror.transform, false);
 
-        // rect.size — реальный отрисованный размер, работает при любом anchor
-        // (sizeDelta при stretch содержит отступы, а не размер)
         cloneRect.anchorMin = new Vector2(0.5f, 0.5f);
         cloneRect.anchorMax = new Vector2(0.5f, 0.5f);
         cloneRect.pivot = new Vector2(0.5f, 0.5f);
         cloneRect.anchoredPosition = Vector2.zero;
-        // Берём размер оригинала, а не слота — так иконка выглядит так же как в инвентаре
-        cloneRect.sizeDelta = item.GetComponent<RectTransform>().sizeDelta;
+
+        // Масштабируем иконку относительно оригинала через hudIconScale
+        Vector2 originalSize = item.GetComponent<RectTransform>().sizeDelta;
+        cloneRect.sizeDelta = originalSize * hudIconScale;
 
         mirror.CurrentItem = clone;
     }

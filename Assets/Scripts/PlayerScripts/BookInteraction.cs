@@ -12,6 +12,9 @@ public class BookInteraction : MonoBehaviour
     public SpellEditorUI spellEditorUI;
     public InventoryBehavior inventoryBehavior;
 
+    [Header("UI объекты")]
+    [SerializeField] private GameObject playerUI;
+
     [Header("Настройки перехода")]
     public float transitionDuration = 1.0f;
 
@@ -70,6 +73,7 @@ public class BookInteraction : MonoBehaviour
         }
 
         isReading = !isReading;
+        playerUI.SetActive(!isReading);
         if (isReading && SpellSlotManager.Instance != null) SpellSlotManager.Instance.OnBookOpened();
         Debug.Log($"[BookInteraction] isReading={isReading}, spellEditorUI={spellEditorUI}");
 

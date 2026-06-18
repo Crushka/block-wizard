@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1462605166138091004}
   - component: {fileID: 4474531487789765588}
   m_Layer: 0
-  m_Name: TestItem
+  m_Name: HealPotion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,8 +127,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Potion
   id: potion_health
   amount: 1
-  itemType: Test
+  itemType: heal
   potionType: 0
   healAmount: 30
-  speedBoostAmount: 1.5
-  speedBoostDuration: 20
+  speedBoostAmount: 0
+  speedBoostDuration: 0
