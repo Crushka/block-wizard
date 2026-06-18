@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6737846169551555133}
   m_Layer: 0
   m_Name: BeamPrefab
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -155,10 +155,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3362635335477ee49a6f5ca25894ff37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeamProjectile
-  StartWidth: 0.05
-  EndWidth: 0.02
+  _damageInterval: 2
+  _beamRadius: 0.01
+  StartWidth: 0.02
+  EndWidth: 2
   BeamColor: {r: 0.4, g: 0.8, b: 1, a: 1}
   EnablePulse: 1
-  PulseSpeed: 12
-  PulseAmount: 0.02
-  ImpactPrefab: {fileID: 0}
+  PulseSpeed: 3
+  PulseAmount: 0.2
+  _impactInstance: {fileID: 0}

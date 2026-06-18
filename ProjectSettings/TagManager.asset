@@ -4,16 +4,14 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - AttackPrefab
   - Enemy
   - PlayerBody
   - Con
   - Mole
   - Golem
   - NonePlayebleObject
-  - AttackProjecttile
   - Bat
-  - StreamProjectile
+  - Projectile
   layers:
   - Default
   - TransparentFX

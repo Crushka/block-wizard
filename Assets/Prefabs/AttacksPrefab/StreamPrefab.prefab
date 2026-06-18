@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -5207412976486528849}
   m_Layer: 0
   m_Name: StreamPrefab
-  m_TagString: AttackPrefab
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

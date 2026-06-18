@@ -29,17 +29,20 @@ public class DeadScreenUI : MonoBehaviour
 
     public void StartFromBegin()
     {
-        SaveSystem.DeleteSave();
-
         var gsm = GameStateManager.Instance;
         if (gsm != null)
         {
+            // Удаляем файл сохранения через менеджер
+            gsm.DeleteSaveFile();
+
+            // Сбрасываем все параметры в памяти на дефолтные
             gsm.PlayerHP = gsm.PlayerMaxHP;
             gsm.LastSpawnPointId = firstSpawnPointId;
             gsm.SavedInventory.Clear();
             gsm.SpellSlots.Clear();
             gsm.DeadBossIds.Clear();
             gsm.ActiveSpellSlotIndex = 0;
+            gsm.CurrentSceneName = firstScene; // Сбрасываем имя сцены
         }
 
         KillOldPlayer();
@@ -49,25 +52,29 @@ public class DeadScreenUI : MonoBehaviour
     public void StartFromCheckpoint()
     {
         var gsm = GameStateManager.Instance;
-
-        if (!SaveSystem.HasSave())
+        if (gsm == null)
         {
-            Debug.LogWarning("[DeadScreenUI] Нет сохранения, загружаем с начала.");
+            Debug.LogError("[DeadScreenUI] GameStateManager не найден!");
             StartFromBegin();
             return;
         }
 
-        bool ok = SaveSystem.Load(gsm);
-        if (!ok)
+        // Проверяем наличие файла сохранения на диске через менеджер
+        if (!gsm.HasSaveFile())
         {
-            Debug.LogError("[DeadScreenUI] Ошибка загрузки.");
+            Debug.LogWarning("[DeadScreenUI] Нет сохранения на диске, загружаем сначала.");
             StartFromBegin();
             return;
         }
 
-        if (gsm != null) gsm.PlayerHP = gsm.PlayerMaxHP;
+        // Загружаем данные с диска в GameStateManager
+        gsm.LoadGameFromDisk();
 
-        string scene = SaveSystem.PeekSavedScene();
+        // Полностью восстанавливаем здоровье
+        gsm.PlayerHP = gsm.PlayerMaxHP;
+
+        // Считываем имя сцены, в которой было сделано сохранение
+        string scene = gsm.CurrentSceneName;
         if (string.IsNullOrEmpty(scene)) scene = firstScene;
 
         KillOldPlayer();
@@ -82,7 +89,7 @@ public class DeadScreenUI : MonoBehaviour
         {
             Debug.Log("[DeadScreenUI] Уничтожаем старого игрока перед загрузкой сцены.");
             PlayerPersistence.ClearInstance();
-            Destroy(player.gameObject); 
+            Destroy(player.gameObject);
         }
     }
 

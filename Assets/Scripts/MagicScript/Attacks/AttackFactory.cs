@@ -6,6 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+public enum AttackType
+{
+    Spray,
+    Ball,
+    Thunder,
+    Stream,
+    CircularWave,
+    Spike,
+    Beam
+}
+
 public class AttackFactory : MonoBehaviour
 {
     [SerializeField] private GameObject sprayPrefab;
@@ -48,7 +59,7 @@ public class AttackFactory : MonoBehaviour
                 return thunder;
             
             case AttackType.Stream:
-                var stream = new Stream();
+                var stream = new StreamAttack();
                 stream.Init(node, streamPrefab);
                 return stream;
 

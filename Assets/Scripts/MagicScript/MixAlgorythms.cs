@@ -65,11 +65,8 @@ internal class MixAlgorithms
         target.Damage = (n1.Damage + n2.Damage) * target.Weight;
         target.Range = (n1.Range + n2.Range) * target.Weight;
         target.Speed = (n1.Speed + n2.Speed) * target.Weight;
-
-        if (n1.NodeType == n2.NodeType)
-        {
-            NodeVisualMixer.MixVisuals(target, n1, n2, n1.Weight, n2.Weight);
-        }
+        NodeVisualMixer.MixVisuals(target, n1, n2, n1.Weight, n2.Weight);
+        
         return target;
     }
 
@@ -114,10 +111,10 @@ internal class MixAlgorithms
             for (int j = i + 1; j < nodes.Count; j++)
             {
                 if (ChekSig(nodes[i], nodes[j]))
-                    buff += 0.5f;
+                    buff += 0.4f;
 
                 else if (ChekIng(nodes[i], nodes[j]))
-                    buff -= 0.5f;
+                    buff -= 0.2f;
             }
         }
 

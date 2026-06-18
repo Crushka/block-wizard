@@ -32,7 +32,6 @@ public class SprayProjectile : ProjectTile
 
         _rb.linearVelocity = dir * speed;
 
-
         _rb.useGravity = true;
 
         Destroy(gameObject, lifetime);

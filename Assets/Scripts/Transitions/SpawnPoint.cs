@@ -2,7 +2,7 @@
 
 public class SpawnPoint : MonoBehaviour
 {
-    [SerializeField] public string spawnId = "default";
+    [SerializeField] public string spawnId = "checkpoint_1";
 
     void OnDrawGizmos()
     {

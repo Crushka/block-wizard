@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Serializable]
 public class SpellSlot
 {
     public int index;
@@ -99,7 +101,7 @@ public class SpellSlot
             mgr.Graph.Nodes.Add(node);
 
             // Создаем визуальный объект на холсте
-            var obj = Object.Instantiate(mgr.nodePrefab, mgr.graphContainer);
+            var obj = UnityEngine.Object.Instantiate(mgr.nodePrefab, mgr.graphContainer);
 
             // Сразу выставляем ей правильную сохраненную позицию на UI панели!
             var rt = obj.GetComponent<RectTransform>();

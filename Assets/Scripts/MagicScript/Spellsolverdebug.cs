@@ -26,7 +26,7 @@ public class VizStep
 public static class SpellSolverDebug
 {
     private static readonly System.Random Rng = new System.Random();
-    private const int MaxCollapseIterations = 250;
+    private const int MaxCollapseIterations = 90;
 
     private static Dictionary<NodeBase, string> _dataToUiIds = new Dictionary<NodeBase, string>();
 

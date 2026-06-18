@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 
 public class SprayAttack : IAttack
@@ -6,7 +7,6 @@ public class SprayAttack : IAttack
     private GameObject _prefab;
 
     private const float FireInterval = 0.02f;
-    private const float ProjectileSpeed = 12f;
     private const float ProjectileLifetime = 1.8f;
     private const float SpreadAngle = 12f;
 
@@ -39,7 +39,13 @@ public class SprayAttack : IAttack
         GameObject proj = Object.Instantiate(_prefab, spawnPoint.position, spawnPoint.rotation);
 
         var spray = proj.GetComponent<SprayProjectile>();
-        spray.Setup(_nodeData.Damage, _nodeData.Range, _nodeData.Speed, ProjectileLifetime, SpreadAngle);
+        float dmg = _nodeData != null ? _nodeData.Damage : 10f;
+        float range = _nodeData?.Range ?? 12f;
+        float speed = _nodeData?.Speed ?? 10f;
+
+        Debug.Log("[SprayAttack]" + speed);
+
+        spray.Setup(dmg, range, speed, ProjectileLifetime, SpreadAngle);
         spray.SetupVisual(_nodeData);
     }
 }

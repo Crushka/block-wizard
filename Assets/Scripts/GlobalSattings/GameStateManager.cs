@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using SaveSystem.Data;
 public class GameStateManager : MonoBehaviour
 {
     public static GameStateManager Instance { get; private set; }
-
+    public string CurrentSceneName { get; set; } = "Level1";
     public float PlayerHP = 100f;
     public float PlayerMaxHP = 100f;
     public string LastSpawnPointId { get; set; } = "default";
@@ -15,6 +16,11 @@ public class GameStateManager : MonoBehaviour
 
     public List<string> DeadBossIds = new();
 
+    private SaveSystem.SaveSystem _saveSystem;
+
+
+    public bool HasSaveFile() => _saveSystem != null && _saveSystem.HasSave();
+    public void DeleteSaveFile() => _saveSystem?.DeleteSave();
 
     public GraphModel SavedGraph
     {
@@ -38,6 +44,59 @@ public class GameStateManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        string folder = Application.isEditor ? Application.dataPath : Application.persistentDataPath;
+        _saveSystem = new SaveSystem.SaveSystem(folder);
+
+        LoadGameFromDisk();
+    }
+
+    public void SaveGameToDisk()
+    {
+        GameData data = new GameData();
+
+        data.PlayerState.PlayerHP = PlayerHP;
+        data.PlayerState.PlayerMaxHP = PlayerMaxHP;
+        data.PlayerState.LastSpawnPointId = LastSpawnPointId;
+        data.PlayerState.ActiveSpellSlotIndex = ActiveSpellSlotIndex;
+        data.PlayerState.CurrentSceneName = this.CurrentSceneName;
+
+        data.PlayerProgress.DeadBossIds = new List<string>(DeadBossIds);
+
+        data.PlayerProgress.SavedInventory = new List<int>();
+        foreach (var item in this.SavedInventory)
+        {
+            data.PlayerProgress.SavedInventory.Add((int)item);
+        }
+
+        // Если SpellSlots полностью сериализуемые (без Unity-объектов), сохраняем и их:
+         data.PlayerProgress.SpellSlots = new List<SpellSlot>(this.SpellSlots);
+
+        _saveSystem.Save(data);
+        Debug.Log("[GSM] ИГРА УСПЕШНО СОХРАНЕНА НА ДИСК!");
+    }
+
+    public void LoadGameFromDisk()
+    {
+        GameData data = _saveSystem.Load();
+
+        PlayerHP = data.PlayerState.PlayerHP == 0 ? 100f : data.PlayerState.PlayerHP;
+        PlayerMaxHP = data.PlayerState.PlayerMaxHP == 0 ? 100f : data.PlayerState.PlayerMaxHP;
+        LastSpawnPointId = string.IsNullOrEmpty(data.PlayerState.LastSpawnPointId) ? "default" : data.PlayerState.LastSpawnPointId;
+        ActiveSpellSlotIndex = data.PlayerState.ActiveSpellSlotIndex;
+
+
+        DeadBossIds = data.PlayerProgress.DeadBossIds ?? new List<string>();
+
+        SavedInventory.Clear();
+        if (data.PlayerProgress.SavedInventory != null)
+        {
+            foreach (int itemInt in data.PlayerProgress.SavedInventory)
+            {
+                SavedInventory.Add((ElementType)itemInt);
+            }
+        }
+        this.CurrentSceneName = string.IsNullOrEmpty(data.PlayerState.CurrentSceneName) ? "Level1" : data.PlayerState.CurrentSceneName;
     }
 
     private void EnsureSlot(int idx)

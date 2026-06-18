@@ -11,5 +11,6 @@ public class KillTrigger : MonoBehaviour
         {
             damageable.takeDamage(9999f);
         }
+        Debug.Log("[KillTrigger]");
     }
 }

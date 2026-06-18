@@ -11,8 +11,8 @@ public class SceneBootstrap : MonoBehaviour
     [Header("Восстанавливать заклинание?")]
     [SerializeField] private bool restoreSpell = true;
 
-    [Header("Настройки ожидания игрока")]
-    [Tooltip("Максимальное время ожидания появления игрока (сек)")]
+    [Header("Настройки спавна")]
+    [Tooltip("Максимальное время ожидания появления игрока в сцене (сек)")]
     [SerializeField] private float playerWaitTimeout = 5f;
 
     void Start()
@@ -27,19 +27,25 @@ public class SceneBootstrap : MonoBehaviour
             gsm.LastSpawnPointId = "default";
         }
 
+        // 1. Восстанавливаем инвентарь
         if (inventoryManager != null)
             gsm.RestoreInventory(inventoryManager);
-
+        Debug.Log("[SceneBootstrap] восстановили инвентарь");
+        // 2. Инициализируем слоты заклинаний
         var slotManager = FindAnyObjectByType<SpellSlotManager>();
         if (slotManager != null)
         {
             var book = FindAnyObjectByType<BookInteraction>();
             slotManager.LateInit(nodeEditorManager, spellCaster, book);
         }
+        Debug.Log("[SceneBootstrap] инициализировали слоты заклинаний");
 
+        // 3. Восстанавливаем граф заклинания в редакторе
         if (nodeEditorManager != null)
             gsm.RestoreGraph();
+        Debug.Log("[SceneBootstrap] восстановили граф");
 
+        // 4. Восстанавливаем активное заклинание
         if (restoreSpell && spellCaster != null)
         {
             try
@@ -51,28 +57,31 @@ public class SceneBootstrap : MonoBehaviour
                 Debug.LogWarning($"[SceneBootstrap] Ошибка сборки заклинания: {ex.Message}");
             }
         }
+        Debug.Log("[SceneBootstrap] восстановили активное заклинание");
 
-        StartCoroutine(SpawnPlayer());
+        // 5. Запускаем поиск спавн-поинта на сцене по сохраненному ID и телепортируем игрока
+        Debug.Log("[SceneBootstrap] запускаем телевортацию");
+        StartCoroutine(SpawnPlayerAtSpawnPoint());
     }
 
-    private IEnumerator SpawnPlayer()
+    private IEnumerator SpawnPlayerAtSpawnPoint()
     {
         var gsm = GameStateManager.Instance;
         if (gsm == null) yield break;
 
+        // Находим точку спавна по сохраненному ID (например, "checkpoint_1")
         SpawnPoint target = FindSpawnPoint(gsm.LastSpawnPointId);
 
         if (target == null)
         {
-            Debug.LogError("[SceneBootstrap] На сцене нет нужной точки спавна и нет 'default'! Телепортация отменена.");
+            Debug.LogError($"[SceneBootstrap] На сцене не найдена точка спавна '{gsm.LastSpawnPointId}' и нет точки 'default'!");
             yield break;
         }
-
-        Debug.Log($"[SceneBootstrap] Точка спавна найдена: '{target.spawnId}' → {target.transform.position}");
 
         float waited = 0f;
         PlayerPersistence player = PlayerPersistence.Instance;
 
+        // Ждем, пока сцена полностью проинициализирует игрока
         while (player == null && waited < playerWaitTimeout)
         {
             yield return null;
@@ -86,29 +95,53 @@ public class SceneBootstrap : MonoBehaviour
             yield break;
         }
 
-        Debug.Log($"[SceneBootstrap] Игрок найден (ждали {waited:F2}с). Телепортируем на '{target.spawnId}'.");
+        yield return null; // Ждем один кадр для стабильности физики Unity
 
-        yield return null;
+        // =====================================================================
+        // ИСПРАВЛЕНИЕ БАГА С РАССИНХРОНОМ CHARACTER CONTROLLER
+        // =====================================================================
 
+        // 1. Ищем компонент CharacterController на игроке (или его дочерних объектах)
+        CharacterController cc = player.GetComponent<CharacterController>();
+        if (cc == null) cc = player.GetComponentInChildren<CharacterController>();
+
+        // 2. Перед телепортацией временно отключаем физику контроллера
+        if (cc != null)
+        {
+            cc.enabled = false;
+        }
+
+        // 3. Телепортируем игрока на найденную точку через ваш метод
         player.TeleportTo(target.transform);
 
-        Debug.Log("[SceneBootstrap] Телепортация завершена!");
+        // 4. Насильно просим физический движок Unity обновить координаты в текущем кадре
+        Physics.SyncTransforms();
+
+        // 5. Включаем физику обратно (теперь коллайдер встанет ровно на место визуала)
+        if (cc != null)
+        {
+            cc.enabled = true;
+        }
+
+        // =====================================================================
+
+        Debug.Log($"[SceneBootstrap] Игрок телепортирован на точку '{target.spawnId}' (координаты: {target.transform.position})");
     }
 
+    // Метод поиска точки спавна на сцене по её ID
     private SpawnPoint FindSpawnPoint(string id)
     {
         var allPoints = FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude);
 
+        // Сначала пытаемся найти точное совпадение
         foreach (var sp in allPoints)
         {
             if (sp.spawnId == id)
-            {
-                Debug.Log($"[SceneBootstrap] Найдена точка спавна: '{id}'");
                 return sp;
-            }
         }
 
-        Debug.LogWarning($"[SceneBootstrap] Точка '{id}' не найдена, ищем default");
+        // Если точное совпадение не найдено (например, новая игра), ищем точку по умолчанию
+        Debug.LogWarning($"[SceneBootstrap] Точка спавна '{id}' не найдена, ищем резервную 'default'");
         foreach (var sp in allPoints)
         {
             if (sp.spawnId == "default")

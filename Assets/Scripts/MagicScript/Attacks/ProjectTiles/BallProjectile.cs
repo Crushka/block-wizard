@@ -30,7 +30,6 @@ public class BallProjectile : ProjectTile
         _range = range;
         _speed = speed;
         _startPos = transform.position;
-        Debug.Log($"[SpellProjectile] Setup получил параметры: dmg={_damage}, range={_range}, speed={_speed}");
 
         _flyDirection = transform.forward;
         _rotationAxis = Random.onUnitSphere;

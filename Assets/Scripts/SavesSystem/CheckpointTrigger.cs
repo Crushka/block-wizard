@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 [RequireComponent(typeof(Collider))]
 public class CheckpointTrigger : MonoBehaviour
 {
@@ -10,7 +9,7 @@ public class CheckpointTrigger : MonoBehaviour
 
     [SerializeField] private string playerTag = "Player";
 
-    [Header("Что сохранять")]
+    [Header("Что обновлять в памяти")]
     [SerializeField] private bool saveInventory = true;
     [SerializeField] private bool saveSpellSlots = true;
     [SerializeField] private bool saveHP = true;
@@ -44,10 +43,12 @@ public class CheckpointTrigger : MonoBehaviour
             return;
         }
 
+        // 1. Обновляем нужные данные внутри Менеджера (в оперативной памяти)
         gsm.LastSpawnPointId = spawnPointId;
 
         if (saveHP)
         {
+            // Убедись, что скрипт PlayerHealth существует на игроке
             var health = playerObject.GetComponent<PlayerHealth>();
             if (health != null)
                 gsm.SaveHP(health.health);
@@ -61,29 +62,24 @@ public class CheckpointTrigger : MonoBehaviour
         }
 
         if (saveSpellSlots)
+        {
             gsm.SaveAllSpellSlotsState();
+        }
 
-        SaveSystem.Save(gsm);
+        // 2. ФИНАЛЬНЫЙ АККОРД: Скидываем всю собранную в GSM информацию на жесткий диск!
+        gsm.CurrentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        gsm.SaveGameToDisk();
 
+        // 3. Визуальная часть триггера
         _activated = true;
         SetVisual(true);
 
-        Debug.Log($"[CheckpointTrigger] Сохранено на чекпоинте '{spawnPointId}'");
+        Debug.Log($"[CheckpointTrigger] Сохранено на диск с чекпоинта '{spawnPointId}'");
     }
 
     private void SetVisual(bool isActive)
     {
-        if (activeVisual != null)   activeVisual.SetActive(isActive);
+        if (activeVisual != null) activeVisual.SetActive(isActive);
         if (inactiveVisual != null) inactiveVisual.SetActive(!isActive);
     }
-
-#if UNITY_EDITOR
-    void OnDrawGizmos()
-    {
-        Gizmos.color = _activated ? Color.green : Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, 1f);
-        UnityEditor.Handles.Label(transform.position + Vector3.up * 1.5f,
-            $"Checkpoint\n'{spawnPointId}'");
-    }
-#endif
 }
