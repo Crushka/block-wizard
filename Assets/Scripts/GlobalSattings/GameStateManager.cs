@@ -308,6 +308,7 @@ public class GameStateManager : MonoBehaviour
                 }
             }
         }
+        Debug.Log("[GSM] начало");
 
         // Записываем список в общую структуру сохранения
         data.PlayerProgress.SavedItemSlots = new List<SavedItemSlot>(this.SavedItemInventory);
