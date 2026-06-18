@@ -335,18 +335,15 @@ public class GameStateManager : MonoBehaviour
         {
             foreach (int itemInt in data.PlayerProgress.SavedInventory)
             {
+                Debug.Log(itemInt);
                 SavedInventory.Add((ElementType)itemInt);
             }
         }
+        SavedItemInventory = data.PlayerProgress.SavedItemSlots ?? new List<SavedItemSlot>();
 
-        // НОВОЕ: Загружаем список предметов обычного инвентаря в оперативную память
-        SavedItemInventory.Clear();
-        if (data.PlayerProgress.SavedItemSlots != null)
-        {
-            SavedItemInventory = new List<SavedItemSlot>(data.PlayerProgress.SavedItemSlots);
-        }
 
-        this.CurrentSceneName = string.IsNullOrEmpty(data.PlayerState.CurrentSceneName) ? "Level1" : data.PlayerState.CurrentSceneName;
+        CurrentSceneName = string.IsNullOrEmpty(data.PlayerState.CurrentSceneName) ? "Level1" : data.PlayerState.CurrentSceneName;
+       
     }
 
     private void EnsureSlot(int idx)
