@@ -164,6 +164,7 @@ MonoBehaviour:
   - Attack1Hold
   - Attack2Hold
   - Attack3Hold
+  canAttack: 1
 --- !u!114 &7322657885936309732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,6 +223,7 @@ MonoBehaviour:
   playerAnimator: {fileID: 7073683638945668735}
   isMovementEnabled: 1
   isAiming: 0
+  kbDrag: 4
 --- !u!114 &6607210001227448876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,10 +242,11 @@ MonoBehaviour:
   playerAnimator: {fileID: 7073683638945668735}
   aimMarker: {fileID: 0}
   spellCaster: {fileID: 6139742138351454231}
+  chargeSystem: {fileID: 0}
   aimDistance: 1.5
   aimCameraOffset: {x: 0.5, y: 0.5, z: 0}
   transitionSpeed: 9.5
-  attackCooldowns: []
+  isAiming: 0
 --- !u!114 &7071105950734422861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,6 +261,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   health: 100
   maxHealth: 100
+  healAmount: 5
+  healInterval: 3
+  healDelay: 5
 --- !u!1 &96651419638072678
 GameObject:
   m_ObjectHideFlags: 0
@@ -2438,7 +2444,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8257852566598139193
 Transform:
   m_ObjectHideFlags: 0
@@ -2782,9 +2788,13 @@ MonoBehaviour:
   playerController: {fileID: 8006084746469861082}
   playerAnimator: {fileID: 7073683638945668735}
   spellEditorUI: {fileID: 3761717594272325557}
+  inventoryBehavior: {fileID: 0}
+  infoManager: {fileID: 0}
+  playerUI: {fileID: 0}
   transitionDuration: 1
   grabDuration: 0.6
   releaseDuration: 0.6
+  isReading: 0
   canRead: 1
 --- !u!1 &3798689865645539039
 GameObject:
@@ -4438,7 +4448,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -146.5, y: -234.99957}
-  m_SizeDelta: {x: 291, y: -425}
+  m_SizeDelta: {x: 291, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3163596244245822344
 MonoBehaviour:

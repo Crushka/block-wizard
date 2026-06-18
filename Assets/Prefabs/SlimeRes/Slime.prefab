@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 1947046693401887623}
   - component: {fileID: 6569428514760811500}
   - component: {fileID: 5897185942768287719}
-  m_Layer: 3
+  m_Layer: 10
   m_Name: Slime
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -137,7 +137,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 702074280687349099, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8373193598122710450, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_Name
@@ -145,7 +145,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8373193598122710450, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_Layer
-      value: 3
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9185196557083709192, guid: 64d5a6e9f2ce07a4f848027d61d3f037, type: 3}
       propertyPath: m_LocalPosition.x

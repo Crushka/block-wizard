@@ -142,13 +142,18 @@ public class BatBehaviour : EnemyBehaviour
     {
         RaycastHit hit;
         float targetY;
+
+        float minAllowedY = owner.target.position.y + bat.hoverHeight;
+
         if (Physics.SphereCast(transform.position + Vector3.up * 1f, 0.5f, Vector3.down, out hit, 30f, bat.groundMask))
         {
-            targetY = hit.point.y + bat.hoverHeight;
+            float groundTargetY = hit.point.y + bat.hoverHeight;
+
+            targetY = Mathf.Max(groundTargetY, minAllowedY);
         }
         else
         {
-            targetY = owner.target.position.y + bat.hoverHeight;
+            targetY = minAllowedY;
         }
 
         float bobbingOffset = Mathf.Sin(Time.time * bat.bobSpeed + bobPhase) * bat.bobAmount;
