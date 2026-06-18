@@ -17,7 +17,13 @@ public class BeeBehaviour : EnemyBehaviour
 
     public override void execute()
     {
-        if(isAttacking || owner.target == null)
+        if (BossQueen.MinionsFrozen)
+        {
+            if (bee.rb != null) bee.rb.linearVelocity = Vector3.zero;
+            return;
+        }
+
+        if (isAttacking || owner.target == null)
         {
             return;
         }
@@ -30,14 +36,16 @@ public class BeeBehaviour : EnemyBehaviour
         }
 
         LookAtPlayer();
-
-        if(distance <= bee.attackRange && Time.time >= nextAttackAvailiableTime)
+        if (!BossQueen.MinionsFrozen)
         {
-            StartCoroutine(StingAttack());
-        }
-        else
-        {
-            MoveTowardsPlayer();
+            if (distance <= bee.attackRange && Time.time >= nextAttackAvailiableTime)
+            {
+                StartCoroutine(StingAttack());
+            }
+            else
+            {
+                MoveTowardsPlayer();
+            }
         }
     }
 
@@ -89,6 +97,12 @@ public class BeeBehaviour : EnemyBehaviour
     IEnumerator StingAttack()
     {
         isAttacking = true;
+
+        if (bee != null)
+        {
+             bee.ResetDamageFlag();
+        }
+
         float elapsed = 0;
 
         while (elapsed < bee.windUpTime)

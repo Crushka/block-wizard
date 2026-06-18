@@ -28,8 +28,6 @@ public abstract class ProjectTile: MonoBehaviour
             Die();
             return;
         }
-
-        Die();
     }
 
     private void Die()

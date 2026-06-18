@@ -1,9 +1,9 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BeeEnemy : Enemy
 {
     [HideInInspector] public Rigidbody rb;
+
     [Header("Настройки обнаружения")]
     [SerializeField] public float detectionRange = 15f;
 
@@ -22,8 +22,11 @@ public class BeeEnemy : Enemy
     [SerializeField] public float dashSpeed = 18f;
     [SerializeField] public float dashDamage = 20f;
     [SerializeField] public float dashDuration = 0.8f;
+
     private bool isDead = false;
 
+    // ПРЕДОХРАНИТЕЛЬ ОТ МНОГОКРАТНОГО УРОНА:
+    private bool _hasDealtDamage = false;
 
     private void Start()
     {
@@ -37,51 +40,64 @@ public class BeeEnemy : Enemy
         {
             rb.useGravity = false;
             rb.constraints = RigidbodyConstraints.FreezeRotation;
-            Debug.Log("Работает rb");
         }
         base.InitializeAI();
     }
 
+    // ИСПРАВЛЕННЫЙ МЕТОД СТОЛКНОВЕНИЙ
     private void OnCollisionEnter(Collision collision)
     {
+        if (isDead || _hasDealtDamage) return;
+
         BeeBehaviour brain = baseAI as BeeBehaviour;
-        if(brain != null && !brain.isAttacking)
+        if (brain == null || !brain.IsAttacking) return;
+
+        // Ищем IDamageable с защитой от вложенности
+        IDamageable damageable = collision.gameObject.GetComponentInParent<IDamageable>();
+
+        bool isPlayer = collision.gameObject.CompareTag("PlayerBody") ||
+                        collision.gameObject.CompareTag("Player");
+
+        if (damageable != null && isPlayer)
         {
-            return;
-        }
-        IDamageable damageable = collision.gameObject.GetComponent<IDamageable>();
-        if (damageable != null && collision.gameObject.CompareTag("PlayerBody") || collision.gameObject.CompareTag("Player"))
-        {
+            _hasDealtDamage = true; // Блокируем повторные удары в этом же прыжке
+
             damageable.takeDamage(dashDamage);
+            Debug.Log($"Пчела ужалила игрока на {dashDamage} урона!");
             Die();
         }
-        else if (!(collision.gameObject.layer == LayerMask.NameToLayer("Enemy")))
+        else if (collision.gameObject.layer != LayerMask.NameToLayer("Enemy"))
         {
             brain.StopDash();
         }
     }
+
+    public void ResetDamageFlag() => _hasDealtDamage = false;
 
     public override void Die()
     {
         if (isDead) return;
         isDead = true;
         StopAllCoroutines();
-        rb.useGravity = true;
-        rb.constraints = RigidbodyConstraints.None;
-        rb.linearVelocity = Vector3.zero;
-        if (baseAI != null)
+
+        if (rb != null)
         {
-            baseAI.enabled = false;
+            rb.useGravity = true;
+            rb.constraints = RigidbodyConstraints.None;
+            rb.linearVelocity = Vector3.zero;
         }
+
+        if (baseAI != null) baseAI.enabled = false;
+
         Destroy(gameObject, 1.5f);
     }
 
     public override void takeDamage(float amount)
     {
+        if (isDead) return;
         HP -= amount;
-        if(HP <= 0)
-        {
-            Die();
-        }
+        if (HP <= 0) Die();
     }
+
+    public override void Regeneration() { }
 }

@@ -5165,7 +5165,7 @@ MonoBehaviour:
   rb: {fileID: 0}
   detectionRange: 30
   moveSpeed: 4
-  hoverHeight: 2.5
+  hoverHeight: 4
   minHorizontalDistance: 2.5
   heightAdjustSpeed: 3
   rotationSpeed: 10

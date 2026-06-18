@@ -187,3 +187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73e786b0d9da743429b1568086600c76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BatProj
+  homingStrength: 25
+  homingDuration: 0.6
+  disableHomingDist: 4

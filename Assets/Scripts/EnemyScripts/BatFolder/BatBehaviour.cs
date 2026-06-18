@@ -97,7 +97,9 @@ public class BatBehaviour : EnemyBehaviour
 
             BatProj projScript = proj.GetComponent<BatProj>();
             if (projScript != null)
-                projScript.SetupDirect(fireDir, bat.bulletSpeed, bat.bulletDamage);
+            {
+                projScript.SetupDirect(fireDir, bat.bulletSpeed, bat.bulletDamage, owner.target);
+            }
         }
 
         isCharging = false;

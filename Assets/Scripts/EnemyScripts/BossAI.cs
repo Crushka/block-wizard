@@ -1,24 +1,20 @@
 using UnityEngine;
 
-public class BossAI : Enemy
+public abstract class BossAI : Enemy
 {
     public string id;
     public EnemyBehaviour bossAI;
 
     public override void InitializeAI()
     {
-        base.InitializeAI();
-        EnemyBehaviour[] allBehaviours = GetComponents<EnemyBehaviour>();
-        
-        foreach(var b in allBehaviours)
-        {
-            if(b != bossAI)
-            {
-                bossAI = b;
-                bossAI.Init(this);
-                break;
-            }
-        }
+        if (target == null)
+            target = GameObject.FindGameObjectWithTag("PlayerBody")?.transform;
+
+        baseAI = GetComponent<QueenFlight>();
+        bossAI = GetComponent<QueenCombatBehaviour>();
+
+        if (baseAI != null) baseAI.Init(this);
+        if (bossAI != null) bossAI.Init(this);
     }
 
 

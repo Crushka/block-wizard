@@ -42,7 +42,7 @@ public class CannonBehaviour : EnemyBehaviour
         if (cannon.firePoint == null) return;
 
         Vector3 targetCenter = owner.target.position;
-        float dist = Vector3.Distance(cannon.firePoint.position, targetCenter);
+        float dist = Vector3.Distance(cannon.firePoint.position, targetCenter); 
         float travelTime = dist / cannon.projectileSpeed;
         Vector3 predictedPos = targetCenter + (playerVelocity * travelTime * cannon.leadAccuracy);
 
@@ -54,6 +54,7 @@ public class CannonBehaviour : EnemyBehaviour
             cannon.firePoint.rotation = Quaternion.Slerp(cannon.firePoint.rotation, targetRot, Time.deltaTime * 5f);
         }
     }
+
 
     private void CalculatePlayerVelocity()
     {
@@ -86,14 +87,12 @@ public class CannonBehaviour : EnemyBehaviour
     {
         if (cannon.projectilePrefab == null || cannon.firePoint == null) return;
 
-        // Спавним снаряд точно в позиции и с поворотом нашего firePoint
         GameObject proj = Instantiate(cannon.projectilePrefab, cannon.firePoint.position, cannon.firePoint.rotation);
 
         BatProj projScript = proj.GetComponent<BatProj>();
         if (projScript != null)
         {
-            // Снаряд полетит строго по синей стрелке (Z) нашего firePoint
-            projScript.SetupDirect(cannon.firePoint.forward, cannon.projectileSpeed, cannon.damage);
+            projScript.SetupDirect(cannon.firePoint.forward, cannon.projectileSpeed, cannon.damage, owner.target);
         }
     }
 }

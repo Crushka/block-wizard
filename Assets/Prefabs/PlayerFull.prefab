@@ -6710,6 +6710,7 @@ GameObject:
   - component: {fileID: 106610301428019475}
   - component: {fileID: 8890341756764822602}
   - component: {fileID: 2028176552414026530}
+  - component: {fileID: 73336762345367297}
   m_Layer: 3
   m_Name: PlayerWithScripts
   m_TagString: Player
@@ -6819,7 +6820,7 @@ CharacterController:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_LayerOverridePriority: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
@@ -6968,6 +6969,29 @@ MonoBehaviour:
   healAmount: 5
   healInterval: 3
   healDelay: 5
+--- !u!136 &73336762345367297
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9134090425425575991}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 9
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 0.40799713
+  m_Height: 1.9057045
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.1540165, z: 0.012454987}
 --- !u!1 &9154788325745994994
 GameObject:
   m_ObjectHideFlags: 0
