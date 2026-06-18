@@ -11,6 +11,7 @@ TagManager:
   - Golem
   - NonePlayebleObject
   - Bat
+  - StreamProjectile
   - Projectile
   layers:
   - Default
@@ -19,11 +20,11 @@ TagManager:
   - Player
   - Water
   - UI
+  - Player
+  - DathTrigger
+  - GolemIgnore
+  - Projectile
   - Enemy
-  - 
-  - 
-  - 
-  - 
   - 
   - 
   - 

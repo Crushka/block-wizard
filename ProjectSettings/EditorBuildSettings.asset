@@ -13,7 +13,7 @@ EditorBuildSettings:
     guid: 2d45b28e4de81d347b79dac04726a200
   - enabled: 1
     path: Assets/Scenes/BeeHive.unity
-    guid: 49f9ac29cfafffa46b6b15a2e0e66a3c
+    guid: 967d855abdea279458c023857784cb42
   - enabled: 1
     path: Assets/Scenes/GolemScene.unity
     guid: d5f15f076b4e0f94bb02145ac8e2a0e3

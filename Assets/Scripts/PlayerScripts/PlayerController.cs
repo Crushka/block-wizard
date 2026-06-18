@@ -43,7 +43,9 @@ public class PlayerController : MonoBehaviour
     private float dashTimer = 0f;
     private float dashCooldownTimer = 0f;
     private Vector3 dashDirection = Vector3.zero;
-    private Vector3 impact = Vector3.zero;
+    private Vector3 kbImpact = Vector3.zero;
+    private float verticalMomentum = 0f;
+    [SerializeField] private float kbDrag = 4f;
 
     void Awake()
     {
@@ -109,10 +111,12 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        Vector3 horizontalMove = Vector3.zero;  
         bool isMoving = false;
         float h = 0f;
         float v = 0f;
 
+        
         if (isMovementEnabled)
         {
             Vector2 input = moveAction.ReadValue<Vector2>();
@@ -158,7 +162,7 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            Vector3 horizontalMove = Vector3.zero;
+            
 
             if (isDashing)
             {
@@ -209,13 +213,6 @@ public class PlayerController : MonoBehaviour
                     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
                 }
             }
-
-            if (impact.magnitude > 0.2f)
-            {
-                controller.Move(impact * Time.deltaTime);
-            }
-
-            impact = Vector3.Lerp(impact, Vector3.zero, 5f * Time.deltaTime);
         }
         else
         {
@@ -242,9 +239,25 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        moveDirection.y -= gravity * Time.deltaTime;
+        Vector3 totalKb = Vector3.zero;
+        if (kbImpact.magnitude > 0.1f || Mathf.Abs(verticalMomentum) > 0.1f)
+        {
+            totalKb = kbImpact + Vector3.up * verticalMomentum;
+            kbImpact = Vector3.MoveTowards(kbImpact, Vector3.zero, 15f * Time.deltaTime);
+            verticalMomentum -= 20f * Time.deltaTime;
 
-        controller.Move(moveDirection * Time.deltaTime);
+            if (controller.isGrounded && verticalMomentum < 0)
+            {
+                verticalMomentum = 0;
+                kbImpact = Vector3.zero;
+            }
+        }
+
+        //Vector3 finalVelocity = horizontalMove + Vector3.up * moveDirection.y + totalKb;
+        //controller.Move(finalVelocity * Time.deltaTime);
+
+        moveDirection.y -= gravity * Time.deltaTime;
+        controller.Move((moveDirection + totalKb + horizontalMove) * Time.deltaTime);
 
         if (playerAnimator != null)
         {
@@ -263,9 +276,13 @@ public class PlayerController : MonoBehaviour
 
     public void AddKnockback(Vector3 direction, float force)
     {
+        direction.y = 0;
         direction.Normalize();
-        if (direction.y < 0) direction.y = -direction.y;
-        impact += direction * force;
+
+        kbImpact = direction * force;
+        verticalMomentum = force * 0.7f;
+
+        moveDirection.y = 0;
     }
 
     public float getOriginalSpeed()

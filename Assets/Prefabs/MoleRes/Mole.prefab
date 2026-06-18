@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7789715790287270517}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 3839642981692007241}
   - component: {fileID: 4165654520568510302}
   - component: {fileID: 4575295986677912440}
-  m_Layer: 6
+  m_Layer: 3
   m_Name: Mole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,14 +154,15 @@ GameObject:
   - component: {fileID: 8565716090419835924}
   - component: {fileID: 2047921181089607045}
   - component: {fileID: 2503913411812263240}
-  - component: {fileID: 8458743006873489000}
-  m_Layer: 6
+  - component: {fileID: 8292994007005142412}
+  - component: {fileID: 1847803955664575743}
+  m_Layer: 3
   m_Name: Mole
   m_TagString: Mole
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8565716090419835924
 Transform:
   m_ObjectHideFlags: 0
@@ -222,7 +223,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8458743006873489000
+--- !u!114 &8292994007005142412
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -231,24 +232,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 6955141721753780560}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4329376630d009a48a38f59e581ddee1, type: 3}
+  m_Script: {fileID: 11500000, guid: 42796bec80899be4e9297b2d97dae773, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MoleAI
-  currentState: 0
-  health: 50
+  m_EditorClassIdentifier: Assembly-CSharp::MoleBehaviour
+--- !u!114 &1847803955664575743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6955141721753780560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9859d6b4ccdcadf4bb6df3166759b3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MoleEnemy
+  maxHP: 100
+  HP: 100
+  speed: 15
+  reg_points: 0
   target: {fileID: 0}
+  animator: {fileID: 0}
+  baseAI: {fileID: 0}
   projectilePrefab: {fileID: 2341596430171252547, guid: 6ac3ef060dd550241a589bbbc2a177e4, type: 3}
   firePoint: {fileID: 7789715790287270517}
-  visuals: {fileID: 2682134308477542763}
-  burrowEffect: {fileID: 0}
-  detectionRange: 50
-  triggerDistance: 20
-  ambushRadius: 9
+  visuals: {fileID: 6955141721753780560}
+  burrowEffect: {fileID: 2341596430171252547, guid: 6ac3ef060dd550241a589bbbc2a177e4, type: 3}
+  detectionRange: 30
+  triggerDistance: 12
+  ambushRadius: 5
   burrowSpeed: 5
   minBurrowTime: 3
-  attackDuration: 3
-  fireRate: 1
-  spitSpeed: 8
+  attackDuration: 4
+  fireRate: 1.2
   rotationSpeed: 10
   emergeTime: 1
   submergeTime: 1
+  agent: {fileID: 0}
+  moleCollider: {fileID: 0}

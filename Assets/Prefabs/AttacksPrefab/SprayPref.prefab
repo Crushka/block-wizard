@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3513508174779034187}
   - component: {fileID: 404776069851075379}
   - component: {fileID: -5293521604360807478}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SprayPref
   m_TagString: Projectile
   m_Icon: {fileID: 0}
@@ -146,6 +146,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 6823363d83689cd41b72d2ed8810c744, type: 3}
       propertyPath: m_Name
       value: Spray
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6823363d83689cd41b72d2ed8810c744, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6823363d83689cd41b72d2ed8810c744, type: 3}
       propertyPath: m_TagString

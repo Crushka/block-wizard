@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6389251460474079712}
   - component: {fileID: 5478943896049917771}
   - component: {fileID: 6737846169551555133}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BeamPrefab
   m_TagString: Projectile
   m_Icon: {fileID: 0}
