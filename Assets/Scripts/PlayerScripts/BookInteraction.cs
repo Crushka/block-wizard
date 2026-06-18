@@ -12,6 +12,8 @@ public class BookInteraction : MonoBehaviour
     public SpellEditorUI spellEditorUI;
     public InventoryBehavior inventoryBehavior;
 
+    [HideInInspector] public InfoManager infoManager;
+
     [Header("UI объекты")]
     [SerializeField] private GameObject playerUI;
 
@@ -31,6 +33,7 @@ public class BookInteraction : MonoBehaviour
 
     void Awake()
     {
+        infoManager = FindAnyObjectByType<InfoManager>();
         toggleReadAction = new InputAction("ToggleRead", InputActionType.Button);
         toggleReadAction.AddBinding("<Keyboard>/tab");
     }
@@ -51,6 +54,11 @@ public class BookInteraction : MonoBehaviour
     {
         Debug.Log($"[BookInteraction] Tab нажат. canRead={canRead} isTransitioning={isTransitioning}");
 
+        if (infoManager.isActive)
+        {
+            Debug.Log("[BookInteraction] СТОП: InfoManager открыт");
+            return;
+        }
         if (!canRead)
         {
             Debug.Log("[BookInteraction] СТОП: canRead=false");
