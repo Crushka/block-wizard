@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using UnityEngine;
 
 namespace SaveSystem.Storage
 {
@@ -41,7 +43,7 @@ namespace SaveSystem.Storage
         {
             ValidateKey(key);
             string path = GetFilePath(key);
-
+            UnityEngine.Debug.Log(path);
             if (!File.Exists(path))
                 throw new FileNotFoundException(
                     $"Файл сохранения не найден: {path}", path);
