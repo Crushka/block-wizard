@@ -225,7 +225,7 @@ public class PlayerAttack : MonoBehaviour
     private InputAction _aimAction;
     private InputAction _fireAction;
 
-    private bool _isAiming;
+    [HideInInspector] public bool isAiming;
     private bool _isFiring;
     private float _originalDistance;
 
@@ -279,9 +279,8 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        HandleFiring();
-        HandleCameraAim();
-    }
+        if (_isFiring && isAiming)
+            Trycast();
 
 
     private void HandleFiring()
@@ -316,7 +315,7 @@ public class PlayerAttack : MonoBehaviour
     {
         if (cameraController == null) return;
 
-        if (_isAiming)
+        if (isAiming)
         {
             cameraController.distance = Mathf.Lerp(cameraController.distance, aimDistance, Time.deltaTime * transitionSpeed);
             cameraController.targetOffset = Vector3.Lerp(cameraController.targetOffset, aimCameraOffset, Time.deltaTime * transitionSpeed);
@@ -367,7 +366,7 @@ public class PlayerAttack : MonoBehaviour
     {
         if (bookInteraction != null && bookInteraction.IsReading) return;
 
-        _isAiming = true;
+        isAiming = true;
         if (aimMarker != null) aimMarker.enabled = true;
 
         if (bookInteraction != null) bookInteraction.canRead = false;
@@ -380,8 +379,10 @@ public class PlayerAttack : MonoBehaviour
 
     private void OnAimCancel(InputAction.CallbackContext ctx)
     {
-        if (!_isAiming) return;
-        _isAiming = false;
+        if (!isAiming) return;
+
+        isAiming = false;
+        if (aimMarker != null) aimMarker.enabled = false;
 
         if (aimMarker != null) aimMarker.enabled = false;
         if (bookInteraction != null) bookInteraction.canRead = true;

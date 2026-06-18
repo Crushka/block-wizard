@@ -27,28 +27,22 @@ public class CameraController : MonoBehaviour
     private float currentY = 0.0f;
 
     private InputAction lookAction;
-    private InputAction zoomAction;
 
     void Awake()
     {
         lookAction = new InputAction("Look", InputActionType.Value);
         lookAction.AddBinding("<Mouse>/delta");
         lookAction.AddBinding("<Gamepad>/rightStick");
-
-        zoomAction = new InputAction("Zoom", InputActionType.Value);
-        zoomAction.AddBinding("<Mouse>/scroll/y");
     }
 
     void OnEnable()
     {
         lookAction.Enable();
-        zoomAction.Enable();
     }
 
     void OnDisable()
     {
         lookAction.Disable();
-        zoomAction.Disable();
     }
 
     void Start()
@@ -69,13 +63,6 @@ public class CameraController : MonoBehaviour
         currentX += lookDelta.x * sensitivity;
         currentY -= lookDelta.y * sensitivity;
         currentY = Mathf.Clamp(currentY, yMinLimit, yMaxLimit);
-
-        if (!isAiming)
-        {
-            float scroll = zoomAction.ReadValue<float>();
-            distance -= scroll * zoomSpeed;
-            distance = Mathf.Clamp(distance, minDistance, maxDistance);
-        }
 
         transform.rotation = GetOrbitRotation();
         transform.position = GetOrbitPosition();

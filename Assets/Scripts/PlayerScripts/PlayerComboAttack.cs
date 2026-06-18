@@ -23,6 +23,8 @@ public class PlayerComboAttack : MonoBehaviour
     private float holdStartTime = 0f;
     private int holdComboIndex = -1;
 
+    [HideInInspector] public bool canAttack = true;
+
     void Awake()
     {
         attackAction = new InputAction("MeleeAttack", InputActionType.Button);
@@ -46,7 +48,7 @@ public class PlayerComboAttack : MonoBehaviour
 
     private void OnAttack(InputAction.CallbackContext ctx)
     {
-        if (bookInteraction != null && bookInteraction.IsReading)
+        if (!canAttack || (bookInteraction != null && bookInteraction.IsReading))
             return;
 
         float currentTime = Time.time;

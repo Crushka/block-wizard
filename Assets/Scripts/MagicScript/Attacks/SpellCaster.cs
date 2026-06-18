@@ -24,6 +24,14 @@ public class SpellCaster : MonoBehaviour
         _currentAttack = attackFactory.GetAttack(result);
     }
 
+    // Сбрасывает текущее заклинание — вызывается при переключении на пустой слот
+    public void ClearSpell()
+    {
+        _currentAttack?.Stop();
+        _currentAttack = null;
+        CurrentSpellNode = null;
+    }
+
     public void PrepareFromEditor()
     {
         var launcher = FindAnyObjectByType<SpellCasterButton>();
@@ -47,8 +55,4 @@ public class SpellCaster : MonoBehaviour
 
     public void Cast() => _currentAttack?.Cast(spawnPoint);
     public void StopCast() => _currentAttack?.Stop();
-
-
-
-
 }

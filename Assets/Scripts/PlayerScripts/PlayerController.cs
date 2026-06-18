@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public bool isMovementEnabled = true;
 
     [HideInInspector] public bool isAiming = false;
+    [HideInInspector] private float originalSpeed;
 
     private Vector3 moveDirection = Vector3.zero;
     private CharacterController controller;
@@ -64,6 +66,9 @@ public class PlayerController : MonoBehaviour
         dashAction = new InputAction("Dash", InputActionType.Button);
         dashAction.AddBinding("<Keyboard>/shift");
         dashAction.AddBinding("<Gamepad>/buttonEast");
+
+        originalSpeed = speed;
+        Debug.Log("[PlayerController] Original speed stored: " + originalSpeed);
     }
 
     void OnEnable()
@@ -261,5 +266,26 @@ public class PlayerController : MonoBehaviour
         direction.Normalize();
         if (direction.y < 0) direction.y = -direction.y;
         impact += direction * force;
+    }
+
+    public float getOriginalSpeed()
+    {
+        return originalSpeed;
+    }
+
+    public void ApplySpeedModifier(float multiplier, float duration)
+    {
+        if (_speedCoroutine != null)
+            StopCoroutine(_speedCoroutine);
+        _speedCoroutine = StartCoroutine(SpeedModifierRoutine(multiplier, duration));
+    }
+
+    private Coroutine _speedCoroutine;
+    private IEnumerator SpeedModifierRoutine(float multiplier, float duration)
+    {
+        speed = originalSpeed * multiplier;
+        yield return new WaitForSeconds(duration);
+        speed = originalSpeed;
+        _speedCoroutine = null;
     }
 }

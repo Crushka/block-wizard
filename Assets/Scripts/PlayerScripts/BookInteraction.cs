@@ -10,6 +10,10 @@ public class BookInteraction : MonoBehaviour
     public PlayerController playerController;
     public Animator playerAnimator;
     public SpellEditorUI spellEditorUI;
+    public InventoryBehavior inventoryBehavior;
+
+    [Header("UI объекты")]
+    [SerializeField] private GameObject playerUI;
 
     [Header("Настройки перехода")]
     public float transitionDuration = 1.0f;
@@ -18,7 +22,7 @@ public class BookInteraction : MonoBehaviour
     public float grabDuration = 0.6f;
     public float releaseDuration = 0.6f;
 
-    private bool isReading = false;
+    [HideInInspector] public bool isReading = false;
     private bool isTransitioning = false;
 
     private InputAction toggleReadAction;
@@ -52,6 +56,11 @@ public class BookInteraction : MonoBehaviour
             Debug.Log("[BookInteraction] СТОП: canRead=false");
             return;
         }
+        if (inventoryBehavior != null && inventoryBehavior.isInventoryOpen)
+        {
+            Debug.Log("[BookInteraction] СТОП: инвентарь открыт");
+            return;
+        }
         if (bookViewPoint == null || cameraController == null || playerController == null)
         {
             Debug.Log($"[BookInteraction] СТОП: bookViewPoint={bookViewPoint} cam={cameraController} player={playerController}");
@@ -64,6 +73,7 @@ public class BookInteraction : MonoBehaviour
         }
 
         isReading = !isReading;
+        playerUI.SetActive(!isReading);
         if (isReading && SpellSlotManager.Instance != null) SpellSlotManager.Instance.OnBookOpened();
         Debug.Log($"[BookInteraction] isReading={isReading}, spellEditorUI={spellEditorUI}");
 
