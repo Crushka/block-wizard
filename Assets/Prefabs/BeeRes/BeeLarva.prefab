@@ -61,8 +61,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88bd78f3e68cd4b42b9f51145ba32974, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LarvaEnemy
-  maxHP: 100
-  HP: 100
+  maxHP: 60
+  HP: 60
   speed: 10
   reg_points: 0
   target: {fileID: 0}

@@ -180,6 +180,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: dc36b31af0108e946ab6923ef5b23620, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d17748e279013434c9e8f6286c912331, type: 2}
+    - target: {fileID: -7511558181221131132, guid: dc36b31af0108e946ab6923ef5b23620, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f45e8af0e61fc6140b8ecfc54af2f658, type: 2}
     - target: {fileID: 919132149155446097, guid: dc36b31af0108e946ab6923ef5b23620, type: 3}
       propertyPath: m_Name
       value: SaveGate

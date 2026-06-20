@@ -42,6 +42,13 @@ public class ScreeperBehaviour : EnemyBehaviour
 
     public override void execute()
     {
+
+        if (owner.target == null)
+        {
+            owner.FindTarget();
+            if (owner.target == null) return;
+        }
+
         if (owner.target == null || screeper.HP <= 0) return;
 
         CalculatePlayerVelocity();

@@ -8,7 +8,6 @@ namespace SaveSystem.Data
     {
         public PlayerProgressData PlayerProgress;
         public PlayerStateData PlayerState;
-
         public GameData()
         {
             PlayerProgress = new PlayerProgressData();
@@ -44,4 +43,6 @@ namespace SaveSystem.Data
         public int ActiveSpellSlotIndex;
         public string CurrentSceneName;
     }
+
+   
 }

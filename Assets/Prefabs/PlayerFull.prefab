@@ -46,14 +46,14 @@ Camera:
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 1
+  m_projectionMatrixMode: 2
   m_GateFitMode: 2
   m_FOVAxisMode: 0
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 20.78461
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -68,7 +68,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 60.000004
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -3253,9 +3253,9 @@ MonoBehaviour:
   stepDuration: 1
   nodePrefab: {fileID: 3030291203071759866, guid: f90fed345dcd2fd4e90880f76c2d06ca, type: 3}
   connectionPrefab: {fileID: 3266010637317187947, guid: 53abb567b23bece48a8601e90d3a93de, type: 3}
-  buttonCast: {fileID: 0}
-  buttonSkip: {fileID: 0}
-  buttonResetToStart: {fileID: 0}
+  buttonCast: {fileID: 4501843331300956118}
+  buttonSkip: {fileID: 1525241795070417058}
+  buttonResetToStart: {fileID: 2607172143758609259}
   textDamage: {fileID: 1485887089316024570}
   textSpeed: {fileID: 3741069455956399922}
   textRange: {fileID: 7029836354039382679}
@@ -10834,12 +10834,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641e1cf27d03a1a44a5a445d9d14b610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  speed: 60
+  speed: 6
   aimSpeed: 3
   jumpForce: 8
   gravity: 20
   rotationSpeed: 10
-  dashSpeed: 10
+  dashSpeed: 8
   dashDuration: 1
   dashCooldown: 1
   allowAirDash: 0
@@ -10885,8 +10885,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   health: 100
   maxHealth: 100
-  healAmount: 5
-  healInterval: 3
+  healAmount: 8
+  healInterval: 15
   healDelay: 5
 --- !u!136 &73336762345367297
 CapsuleCollider:

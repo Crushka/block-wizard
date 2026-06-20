@@ -276,7 +276,7 @@ GameObject:
   - component: {fileID: 2247231006340729223}
   - component: {fileID: 7310989060262080428}
   - component: {fileID: 4961697845962536458}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Viewport
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -411,7 +411,7 @@ GameObject:
   - component: {fileID: 8335418104476599240}
   - component: {fileID: 1259695281224467256}
   - component: {fileID: 4286921599668702879}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: NodeContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -486,7 +486,7 @@ GameObject:
   - component: {fileID: 956870140246083575}
   - component: {fileID: 469887225849165014}
   - component: {fileID: 804168302336614434}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -556,7 +556,7 @@ GameObject:
   - component: {fileID: 2882406292951236178}
   - component: {fileID: 5425864251321081017}
   - component: {fileID: 3007115699968722752}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: InventoryPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -903,7 +903,7 @@ GameObject:
   - component: {fileID: 4243530934337580837}
   - component: {fileID: 6487699153176245892}
   - component: {fileID: 3473854262596200111}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Button (Legacy)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1292,7 +1292,7 @@ GameObject:
   - component: {fileID: 4831171297677018486}
   - component: {fileID: 762091478667471808}
   - component: {fileID: 2116904222176204355}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2438,7 +2438,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8257852566598139193}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: BookUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3868,7 +3868,7 @@ GameObject:
   - component: {fileID: 4064178426528345717}
   - component: {fileID: 3415377062069117142}
   - component: {fileID: 2353160014838688886}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: NodeEditorPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4094,7 +4094,7 @@ GameObject:
   - component: {fileID: 8503076458379719799}
   - component: {fileID: 4244934977028416010}
   - component: {fileID: 715532368663945123}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Scroll View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4424,7 +4424,7 @@ GameObject:
   - component: {fileID: 7482978938302661093}
   - component: {fileID: 3163596244245822344}
   - component: {fileID: 8069754173564092185}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4500,7 +4500,7 @@ GameObject:
   - component: {fileID: 7577393667014587756}
   - component: {fileID: 3934866210691136036}
   - component: {fileID: 3248950147575259049}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4714,7 +4714,7 @@ GameObject:
   - component: {fileID: 188704683943414416}
   - component: {fileID: 8491165778211451995}
   - component: {fileID: 8223525590206685933}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: LineContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4789,7 +4789,7 @@ GameObject:
   - component: {fileID: 626199585010168796}
   - component: {fileID: 2903875814465642970}
   - component: {fileID: 8396595200931788358}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: AimMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5185,7 +5185,7 @@ GameObject:
   - component: {fileID: 1397787857852395948}
   - component: {fileID: 6523465287287638713}
   - component: {fileID: 937660168318092521}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: TestButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5385,7 +5385,7 @@ GameObject:
   - component: {fileID: 7592234141545547660}
   - component: {fileID: 3990888441285257477}
   - component: {fileID: 620617537237455076}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Book Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5489,7 +5489,7 @@ GameObject:
   - component: {fileID: 2380870392303494929}
   - component: {fileID: 1676826853999667350}
   - component: {fileID: 4858145801060083854}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Text (Legacy)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

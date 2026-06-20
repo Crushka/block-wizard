@@ -352,7 +352,6 @@
 
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Searcher.Searcher.AnalyticsEvent;
 public abstract class ElementNode : NodeBase { }
 
 
@@ -422,7 +421,7 @@ public class WaterNode : ElementNode // 2
         Damage = 8f;
         Range = 4f;
         Speed = 7f;
-        Weight = 1.07f;
+        Weight = 1.73f;
         PrimaryColor = new Color(0.35f, 0.82f, 0.95f);
         EmissionIntensity = 0.8f;
         TrailLength = 1.1f;

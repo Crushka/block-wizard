@@ -604,7 +604,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 1000
+    maxNumParticles: 200
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -870,7 +870,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 10
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -5111,7 +5111,7 @@ Rigidbody:
   m_GameObject: {fileID: 3602737079790508653}
   serializedVersion: 5
   m_Mass: 10
-  m_LinearDamping: 0
+  m_LinearDamping: 7
   m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -5155,16 +5155,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b750dbffdc9b6a45aa7e104e244553a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BeeEnemy
-  maxHP: 100
-  HP: 100
-  speed: 15
+  maxHP: 80
+  HP: 80
+  speed: 8
   reg_points: 0
   target: {fileID: 0}
   animator: {fileID: 0}
+  isDead: 0
   baseAI: {fileID: 0}
   rb: {fileID: 0}
-  detectionRange: 30
-  moveSpeed: 4
+  detectionRange: 28
+  moveSpeed: 10
   hoverHeight: 4
   minHorizontalDistance: 2.5
   heightAdjustSpeed: 3
@@ -5172,7 +5173,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 1
-  attackRange: 7
+  attackRange: 9
   attackCooldown: 2
   windUpTime: 0.6
   dashSpeed: 18
@@ -6010,7 +6011,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 1000
+    maxNumParticles: 200
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -6276,7 +6277,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 10
       minScalar: 10
       maxCurve:
         serializedVersion: 2

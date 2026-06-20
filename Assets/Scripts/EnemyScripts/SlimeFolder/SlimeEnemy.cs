@@ -23,7 +23,14 @@ public class SlimeEnemy : Enemy
     public override void InitializeAI()
     {
         rb = GetComponent<Rigidbody>();
-        rb.useGravity = false;
+        if (rb == null)
+        {
+            Debug.LogError($"{name}: на SlimeEnemy нет компонента Rigidbody! Прыжки и физика работать не будут.");
+        }
+        else
+        {
+            rb.useGravity = false;
+        }
         base.InitializeAI();
     }
 

@@ -57,9 +57,9 @@ MonoBehaviour:
   baseAI: {fileID: 0}
   chargeTime: 1.5
   fireRate: 1
-  projectileSpeed: 45
+  projectileSpeed: 67
   damage: 50
-  activationRange: 40
+  activationRange: 200
   viewAngle: 100
   leadAccuracy: 1
   projectilePrefab: {fileID: 8073026611303936872, guid: 8eb8dc042d9c5db44a541a13c4245c8c, type: 3}

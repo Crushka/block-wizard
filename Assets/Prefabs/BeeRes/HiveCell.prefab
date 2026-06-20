@@ -81,7 +81,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CellLogic
   health: 100
   breakEffectPrefab: {fileID: 2277203461014763456, guid: 7a1099df61a05c54c9be2d7e3db06eff, type: 3}
-  beePrefab: {fileID: 3602737079790508653, guid: d9dc7a52ac3f5be43b2103608c9461e6, type: 3}
+  beePrefab: {fileID: 377623147861871477, guid: 87c27cf20d30e934fa8fecb76057e324, type: 3}
   beeCount: 1
   spawnRadius: 1.5
 --- !u!136 &3124998522611263360

@@ -16,7 +16,7 @@ public class SprayProjectile : ProjectTile
 
     public override void Setup(float damage, float range, float speed, float lifetime, float spread = 8f)
     {
-        _damage = damage * 0.06f;
+        _damage = damage * 0.068f;
         _lifetime = lifetime;
         _rb = GetComponent<Rigidbody>();
 

@@ -108,16 +108,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07748dd9ddc70224996b6bc3e43af67d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeEnemy
-  maxHP: 100
-  HP: 100
-  speed: 14
+  maxHP: 60
+  HP: 60
+  speed: 19
   reg_points: 0
   target: {fileID: 0}
   animator: {fileID: 0}
   baseAI: {fileID: 0}
   jumpHeight: 0.5
-  jumpInterval: 0.5
-  lookRadius: 15
+  jumpInterval: 0.2
+  lookRadius: 38
   attackRange: 5
   gravityMultiplier: 1.5
   damage: 15

@@ -27,6 +27,12 @@ public class QueenCombatBehaviour : EnemyBehaviour
 
     public override void execute()
     {
+        if (owner.target == null)
+        {
+            owner.FindTarget();
+            if (owner.target == null) return;
+        }
+
         if (!enabled || queen == null || queen.HP <= 0) return;
 
         // Королева больше НЕ вызывает MaintainDistance. 
@@ -42,6 +48,14 @@ public class QueenCombatBehaviour : EnemyBehaviour
         while (queen.HP > 0)
         {
             yield return new WaitForSeconds(Random.Range(2f, 3f));
+
+            // Цель могла исчезнуть пока мы ждали — без этой проверки
+            // следующие корутины упадут с NullReferenceException
+            if (owner.target == null)
+            {
+                owner.FindTarget();
+                continue;
+            }
 
             if (attacksCount >= 2 && Time.time >= nextLaserTime)
             {
@@ -64,6 +78,8 @@ public class QueenCombatBehaviour : EnemyBehaviour
 
     private IEnumerator LaserAttackRoutine()
     {
+        if (owner.target == null) yield break;
+
         isExecutingAction = true;
         BossQueen.MinionsFrozen = true;
         Debug.Log("ЖНЕЦ: Подготовка главного калибра...");
@@ -76,6 +92,13 @@ public class QueenCombatBehaviour : EnemyBehaviour
             transform.position = Vector3.MoveTowards(transform.position, airPos, 10f * Time.deltaTime);
             RotateTowardsPlayer();
             yield return null;
+        }
+
+        if (owner.target == null)
+        {
+            BossQueen.MinionsFrozen = false;
+            isExecutingAction = false;
+            yield break;
         }
 
         // 2. ФОРМИРОВАНИЕ НАЧАЛЬНОЙ ТОЧКИ (Как в Mass Effect)
@@ -93,6 +116,9 @@ public class QueenCombatBehaviour : EnemyBehaviour
 
         while (attackTimer < duration)
         {
+            // Цель могла исчезнуть прямо во время атаки (6 секунд — долгий цикл)
+            if (owner.target == null) break;
+
             // 1. Двигаем "целевую точку" за игроком (горизонтально)
             laserPoint = Vector3.MoveTowards(laserPoint, owner.target.position, queen.laserTrackingSpeed * Time.deltaTime);
 
@@ -158,6 +184,9 @@ public class QueenCombatBehaviour : EnemyBehaviour
         float timer = 0;
         while (timer < 4f)
         {
+            // Цель могла исчезнуть прямо во время атаки
+            if (owner.target == null) break;
+
             // Поворот на игрока
             Vector3 dirToPlayer = (owner.target.position - transform.position).normalized;
             Vector3 flatDir = new Vector3(dirToPlayer.x, 0, dirToPlayer.z);

@@ -158,8 +158,8 @@ Transform:
   m_GameObject: {fileID: 3612829939282421150}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 313.5518, y: -0.32813, z: -312.6559}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalPosition: {x: 313.5518, y: 1.339, z: -312.66}
+  m_LocalScale: {x: 1.4150213, y: 1.4150213, z: 1.4150213}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7105554221792260646}
@@ -192,22 +192,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 977262dabb1c0f5418805a3a26fbaa9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScreeperEnemy
-  maxHP: 100
-  HP: 100
+  maxHP: 74
+  HP: 74
   speed: 50
   reg_points: 0
   target: {fileID: 0}
   animator: {fileID: 0}
+  isDead: 0
   baseAI: {fileID: 0}
-  shootingRange: 30
+  shootingRange: 28
   hideDistance: 15
   laughDuration: 1
   audioSource: {fileID: 1851987282012919655}
   laughSound: {fileID: 8300000, guid: 08caf9544ce5353408039510eef51909, type: 3}
   projectilePrefab: {fileID: 5521224882582312425, guid: de69f775c7a25c6408571de0bd898311, type: 3}
   firePoint: {fileID: 5026743538231912091}
-  bulletSpeed: 50
-  bulletDamage: 15
+  bulletSpeed: 44
+  bulletDamage: 16
   leadAccuracy: 1
   agent: {fileID: 0}
 --- !u!195 &362155915406252588

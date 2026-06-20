@@ -15,13 +15,7 @@ public class InventoryManager : MonoBehaviour
         if (inventoryContainer == null) return;
         foreach (Transform child in inventoryContainer) Destroy(child.gameObject);
 
-        CreateNode(ElementType.Water);
-        CreateNode(ElementType.Fire);
-        CreateNode(ElementType.Air);
-        CreateNode(ElementType.Lightning);
-        CreateNode(ElementType.Ice);
-        CreateNode(ElementType.Earth);
-        CreateNode(ElementType.Cold);
+    
     }
 
     public void CreateNode(ElementType type)

@@ -13,6 +13,12 @@ public class QueenFlight : EnemyBehaviour
 
     public override void execute()
     {
+        if (owner.target == null)
+        {
+            owner.FindTarget();
+            if (owner.target == null) return;
+        }
+
         if (queen.waypoints.Length < 2) return;
 
         Transform target = queen.waypoints[currentWaypointIndex];

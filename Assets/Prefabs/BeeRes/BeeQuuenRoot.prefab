@@ -73,8 +73,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e36200ce93c4594a8b15c41f1e0feae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossQueen
-  maxHP: 1500
-  HP: 1500
+  maxHP: 980
+  HP: 980
   speed: 14
   reg_points: 0
   target: {fileID: 0}
@@ -92,7 +92,7 @@ MonoBehaviour:
   minionPrefab: {fileID: 3602737079790508653, guid: adcaaeb02f3cf8540b2de3e98c9bea8f, type: 3}
   waypoints: []
   phase2LandingSpot: {fileID: 0}
-  minionsToSummon: 0
+  minionsToSummon: 3
   laserLine: {fileID: -8716020337650571964}
   laserFlyHeight: 10
   laserDamage: 2
@@ -101,7 +101,7 @@ MonoBehaviour:
   phase2Speed: 15
   hoverDistance: 10
   bulletDamage: 5
-  bulletSpeed: 20
+  bulletSpeed: 43
 --- !u!120 &-8716020337650571964
 LineRenderer:
   serializedVersion: 3
@@ -232,6 +232,30 @@ PrefabInstance:
     - target: {fileID: 455137959033415999, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 796987926084829511, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 796987926084829511, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3071482539059305097, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
+      propertyPath: ShapeModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3071482539059305097, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
+      propertyPath: EmissionModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3071482539059305097, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3071482539059305097, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5558109367955504743, guid: 39834041ed350ac4984f8a1f38d5c5a9, type: 3}
       propertyPath: m_Name

@@ -30,6 +30,11 @@ public class SlimeBehaviour : EnemyBehaviour
             {
                 yield return StartCoroutine(RotateToTarget());
 
+                // Цель могла исчезнуть (умереть/быть отключена) прямо во время поворота —
+                // RotateToTarget выходит по yield break, но без этой проверки
+                // следующая строка упадёт с NullReferenceException
+                if (owner.target == null) continue;
+
                 isAttackJump = (distance <= slime.attackRange);
                 Vector3 targetPos = isAttackJump
                     ? owner.target.position
@@ -44,6 +49,8 @@ public class SlimeBehaviour : EnemyBehaviour
 
     private IEnumerator PerformDynamicJump(Vector3 targetPoint)
     {
+        if (slime.rb == null) yield break;
+
         isJumping = true;
         hasDealtDamageInCurrentJump = false;
 
@@ -84,7 +91,7 @@ public class SlimeBehaviour : EnemyBehaviour
     public void OnJumpCollision(GameObject hitObject)
     {
         if (!isJumping || hasDealtDamageInCurrentJump) return;
-            
+
         if (hitObject.CompareTag("Player") || hitObject.CompareTag("PlayerBody"))
         {
             DealDamageToTarget(hitObject);
@@ -93,6 +100,8 @@ public class SlimeBehaviour : EnemyBehaviour
 
     private void DealDamageToTarget(GameObject target)
     {
+        if (target == null) return;
+
         if (hasDealtDamageInCurrentJump) return;
 
         IDamageable d = target.GetComponentInParent<IDamageable>();

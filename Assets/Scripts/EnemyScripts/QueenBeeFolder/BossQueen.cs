@@ -84,6 +84,13 @@ public class BossQueen : BossAI
         }
     }
 
+    public void IncreaseAnger()
+    {
+        // Увеличиваем базовую скорость, которая находится в Entity
+        this.speed += speedBonusPerCage;
+        Debug.Log($"Злость королевы растет! Новая скорость полета: {this.speed}");
+    }
+
 
     public override void takeDamage(float amount)
     {

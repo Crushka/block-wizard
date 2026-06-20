@@ -83,7 +83,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -109,9 +109,9 @@ MonoBehaviour:
   detectionRange: 30
   dashSpeed: 20
   heightAdjustSpeed: 5
-  stopDistance: 0.5
+  stopDistance: 1
   minRadius: 6
-  maxRadius: 12
+  maxRadius: 6
   hoverHeight: 3
   rotationSpeed: 8
   projectilePrefab: {fileID: 3910950108595853705, guid: cf3a9e3edb4864c47a661e1fe8086287, type: 3}
