@@ -47,11 +47,15 @@ public static class SpellSolverDebug
         _dataToUiIds = new Dictionary<NodeBase, string>(initialMap);
     }
 
-    public static (NodeBase result, List<VizStep> steps) Solve(SpellGraph graph)
+    public static (NodeBase result, List<VizStep> steps) Solve(SpellGraph _graph)
     {
+        var graph = _graph.Clone();
+        for (int i = 0; i < graph.Nodes.Count(); i++)
+        {
+            Debug.Log($"{graph.Nodes[i].Data.NodeType} {graph.Nodes[i].num} {graph.Nodes[i].Data.Weight}");
+        }
         var steps = new List<VizStep>();
-        graph.PrepareGraph();
-
+        //graph.PrepareGraph();
         var allNodes = CollectAllNodes(graph);
         var allAliveNodesInSolver = new HashSet<GraphNode>(allNodes);
 
@@ -63,7 +67,6 @@ public static class SpellSolverDebug
             HighlightIds = new List<string> { "START_NODE" },
             HighlightEdges = new List<(string, string)>()
         });
-
         var separateGraphs = SeparateGraph(graph);
 
         if (graph.StartNode != null)
@@ -78,20 +81,22 @@ public static class SpellSolverDebug
             allAliveNodesInSolver.Remove(graph.StartNode);
         }
 
+
         steps.Add(new VizStep
         {
             Type = VizStepType.SubgraphSplit,
             Description = $"Стартовая нода удалена. Граф разделен на {separateGraphs.Count} автономных веток",
             Nodes = Snapshot(allAliveNodesInSolver.ToList()),
-            HighlightIds = separateGraphs.SelectMany(sg => sg).Where(n => n != graph.StartNode).Select(GetId).ToList(),
+            HighlightIds = separateGraphs
+                .SelectMany(sg => sg)
+                .Where(n => n != graph.StartNode)
+                .Select(GetId)
+                .ToList(),
             HighlightEdges = new List<(string, string)>()
         });
 
         foreach (var subgraph in separateGraphs)
         {
-            subgraph.Remove(graph.StartNode);
-            if (subgraph.Count == 0) continue;
-
             CollapseCyclesWithSteps(subgraph, steps, allAliveNodesInSolver);
             CollapseTreeWithStep(subgraph, steps, allAliveNodesInSolver);
         }
@@ -121,10 +126,14 @@ public static class SpellSolverDebug
             finalNode.Data = MixAlgorithms.MixNodes(finalNode.Data, mergingNode.Data);
             allAliveNodesInSolver.Remove(mergingNode);
         }
+        Debug.Log($"[SpellSlover] graph weight: {graph.Weight} and node weight {finalNode.Data.Weight} and node type {finalNode.Data.NodeType}");
+        //if (graph.Nodes.Count() > 2) { 
+            
+        //    MixAlgorithms.IncreaseValue(finalNode.Data, finalNode.Data.Weight);
+        //}
+        MixAlgorithms.IncreaseValue(finalNode.Data, graph.Weight);
 
-        MixAlgorithms.IncreaseValue(finalNode.Data, null, graph.Weight);
-        MixAlgorithms.IncreaseValue(finalNode.Data, null, finalNode.Data.Weight);
-
+        finalNode.Data.GetBaseComposition().Threshold();
         steps.Add(new VizStep
         {
             Type = VizStepType.FinalResult,
@@ -133,7 +142,7 @@ public static class SpellSolverDebug
             HighlightIds = new List<string> { GetId(finalNode) },
             HighlightEdges = new List<(string, string)>(),
         });
-
+        Debug.Log($"[SpellSlover] {finalNode.Data.GetBaseComposition().GetFirstEffect()}");
         return (finalNode.Data, steps);
     }
 
@@ -228,6 +237,8 @@ public static class SpellSolverDebug
             ? graphList[0]
             : graphList.OrderByDescending(n => n.num).ThenBy(_ => Rng.Next()).First();
 
+        //Debug.Log($"[SlovGraph] start num:{start.num} type: {start.Data.NodeType}");
+
         var visited = new HashSet<GraphNode> { start };
         var queue = new Queue<GraphNode>();
         queue.Enqueue(start);
@@ -279,7 +290,7 @@ public static class SpellSolverDebug
         if (cycle.Count < 3) return null;
         
         float buff = MixAlgorithms.CountBuff(cycle);
-        foreach (var node in cycle) MixAlgorithms.IncreaseValue(node.Data, null, buff);
+        foreach (var node in cycle) MixAlgorithms.IncreaseValue(node.Data, buff);
 
         bool found = true;
         while (found)
@@ -356,7 +367,7 @@ public static class SpellSolverDebug
             {
                 id = GetId(node),
                 type = node.Data.NodeType,
-                weight = Mathf.RoundToInt(node.Data.Weight),
+                num = Mathf.RoundToInt(node.Data.Weight),
             };
             foreach (var nb in node.GetNeighbours())
                 if (inSet.Contains(nb)) model.AddLink(GetId(nb));
@@ -404,8 +415,8 @@ public static class SpellSolverDebug
             foreach (var nb in cur.GetNeighbours())
                 if (nb != exclude && visited.Add(nb)) queue.Enqueue(nb);
         }
-        return visited.ToList();
-    }
+        return result;
+    } 
 
     private static List<List<GraphNode>> FindAllCycles(HashSet<GraphNode> nodeSet, Dictionary<GraphNode, int> nodeIndex, List<GraphNode> sortedNodes)
     {
@@ -421,7 +432,14 @@ public static class SpellSolverDebug
         return allCycles;
     }
 
-    private static void DfsCollectAll(GraphNode current, GraphNode parent, GraphNode root, HashSet<GraphNode> nodeSet, Dictionary<GraphNode, int> nodeIndex, HashSet<GraphNode> onPath, List<List<GraphNode>> result, HashSet<string> seen)
+    private static void DfsCollectAll(GraphNode current, 
+        GraphNode parent, 
+        GraphNode root, 
+        HashSet<GraphNode> nodeSet, 
+        Dictionary<GraphNode, int> nodeIndex, 
+        HashSet<GraphNode> onPath, 
+        List<List<GraphNode>> result, 
+        HashSet<string> seen)
     {
         onPath.Add(current);
         foreach (var nb in current.GetNeighbours())

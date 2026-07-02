@@ -12,11 +12,10 @@ public class SprayProjectile : ProjectTile
     private Vector3 _rotationAxis;
     private float _rotationSpeed;
 
+    protected override float DamageMultiplier => 0.68f;
 
-
-    public override void Setup(float damage, float range, float speed, float lifetime, float spread = 8f)
+    protected override void OnInit(float lifetime, float spread)
     {
-        _damage = damage * 0.068f;
         _lifetime = lifetime;
         _rb = GetComponent<Rigidbody>();
 
@@ -30,8 +29,7 @@ public class SprayProjectile : ProjectTile
         dir += transform.up * 0.15f;
         dir.Normalize();
 
-        _rb.linearVelocity = dir * speed;
-
+        _rb.linearVelocity = dir * _speed;
         _rb.useGravity = true;
 
         Destroy(gameObject, lifetime);

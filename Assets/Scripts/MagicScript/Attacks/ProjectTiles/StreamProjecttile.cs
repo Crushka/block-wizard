@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using GLTFast.Schema;
+using UnityEngine;
 
 
 [RequireComponent(typeof(Rigidbody))]
@@ -9,10 +10,10 @@ public class StreamProjecttile : ProjectTile
     private bool _isDead;
     private Rigidbody _rb;
 
+    protected override float DamageMultiplier => 0.68f;
 
-    public override void Setup(float damage, float range, float speed, float lifetime, float spread = 8f)
+    protected override void OnInit(float lifetime, float spread)
     {
-        _damage = damage * 0.05f;
         _lifetime = lifetime;
         _rb = GetComponent<Rigidbody>();
 
@@ -29,7 +30,7 @@ public class StreamProjecttile : ProjectTile
 
         transform.rotation = Quaternion.LookRotation(dir);
 
-        _rb.linearVelocity = dir * speed;
+        _rb.linearVelocity = dir * _speed;
 
         _rb.useGravity = false;
 

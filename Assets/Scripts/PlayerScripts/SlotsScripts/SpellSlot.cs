@@ -45,7 +45,7 @@ public class SpellSlot
             var copy = new NodeModel(src.type)
             {
                 id = src.id,
-                weight = src.weight,
+                num = src.num,
                 anchoredPosition = savedPos // Сохраняем позицию!
             };
 
@@ -81,7 +81,7 @@ public class SpellSlot
         if (liveNone != null && savedNone != null)
         {
             liveNone.id = savedNone.id;
-            liveNone.weight = savedNone.weight;
+            liveNone.num = savedNone.num;
             liveNone.anchoredPosition = savedNone.anchoredPosition;
 
             // Находим её визуальный объект и двигаем на сохраненную позицию
@@ -138,11 +138,11 @@ public class SpellSlot
 
             foreach (var uiNode in graph.Nodes)
             {
-                NodeBase data = graph.GetElementData(uiNode.type);
+                NodeBase data = GraphIntegrator.GetElementData(uiNode.type, uiNode.num);
                 if (data == null) continue;
 
-                int num = (uiNode.weight == int.MaxValue) ? 0 : uiNode.weight;
-                float w = data.Weight > 0 ? data.Weight : 1.0f;
+                int num = (uiNode.num == int.MaxValue) ? 0 : uiNode.num;
+                float w = data.Weight >= 0 && data.Weight <= 10 ? 5f : data.Weight;
 
                 var gn = calcGraph.CreateNode(data, num, w);
                 map[uiNode.id] = gn;
@@ -174,7 +174,7 @@ public class SpellSlot
             }
 
             calcGraph.CalculateWeight();
-            compiledNode = SpellGraphSolver.SlowGraph(calcGraph);
+            compiledNode = SpellSolverDebug.Solve(calcGraph).result;
             Debug.Log($"[SpellSlot {index}] скомпилирован: {compiledNode?.GetDominantAttack()} dmg={compiledNode?.Damage:F1}");
             return compiledNode;
         }

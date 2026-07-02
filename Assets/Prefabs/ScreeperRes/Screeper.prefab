@@ -194,12 +194,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScreeperEnemy
   maxHP: 74
   HP: 74
-  speed: 50
+  speed: 30
   reg_points: 0
   target: {fileID: 0}
   animator: {fileID: 0}
   isDead: 0
   baseAI: {fileID: 0}
+  detectionRange: 25
   shootingRange: 28
   hideDistance: 15
   laughDuration: 1
@@ -322,7 +323,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: d423bba3738dbed46aba34004d4edbcc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -3231,13 +3231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f38c796bff92524792f8837d1f86f26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackFactory
-  sprayPrefab: {fileID: 5330108422660898962, guid: 02596779811105b4fb0c788401031a3f, type: 3}
-  ballPrefab: {fileID: 5521224882582312425, guid: 7910c8ea9d623f3489141d213fa23e47, type: 3}
-  thunderPrefab: {fileID: 2277203461014763456, guid: 7a1099df61a05c54c9be2d7e3db06eff, type: 3}
-  streamPrefab: {fileID: 5330108422660898962, guid: 7f1da8cacae98e247a800b356335ccc8, type: 3}
-  circleWave: {fileID: 693518769682398569, guid: 6225ec42cb667e04ab64d8486506d2ce, type: 3}
-  spikePrefab: {fileID: 5368400344658220531, guid: 9571e8a17e4590048b6a1ad0a866c2d3, type: 3}
-  beamPrefab: {fileID: 6706559353832587363, guid: ac4f668836eaf7f47900a2d4191b1e82, type: 3}
+  _attackConfigs: []
 --- !u!114 &5464365653719533028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10801,13 +10795,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f38c796bff92524792f8837d1f86f26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackFactory
-  sprayPrefab: {fileID: 5330108422660898962, guid: 02596779811105b4fb0c788401031a3f, type: 3}
-  ballPrefab: {fileID: 5521224882582312425, guid: 7910c8ea9d623f3489141d213fa23e47, type: 3}
-  thunderPrefab: {fileID: 2277203461014763456, guid: 7a1099df61a05c54c9be2d7e3db06eff, type: 3}
-  streamPrefab: {fileID: 5330108422660898962, guid: 7f1da8cacae98e247a800b356335ccc8, type: 3}
-  circleWave: {fileID: 693518769682398569, guid: 6225ec42cb667e04ab64d8486506d2ce, type: 3}
-  spikePrefab: {fileID: 5368400344658220531, guid: 9571e8a17e4590048b6a1ad0a866c2d3, type: 3}
-  beamPrefab: {fileID: 6706559353832587363, guid: ac4f668836eaf7f47900a2d4191b1e82, type: 3}
+  _attackConfigs:
+  - type: 0
+    prefab: {fileID: 5330108422660898962, guid: 02596779811105b4fb0c788401031a3f, type: 3}
+  - type: 1
+    prefab: {fileID: 5521224882582312425, guid: 7910c8ea9d623f3489141d213fa23e47, type: 3}
+  - type: 2
+    prefab: {fileID: 2277203461014763456, guid: 7a1099df61a05c54c9be2d7e3db06eff, type: 3}
+  - type: 3
+    prefab: {fileID: 5330108422660898962, guid: 7f1da8cacae98e247a800b356335ccc8, type: 3}
+  - type: 4
+    prefab: {fileID: 693518769682398569, guid: 6225ec42cb667e04ab64d8486506d2ce, type: 3}
+  - type: 5
+    prefab: {fileID: 5368400344658220531, guid: 9571e8a17e4590048b6a1ad0a866c2d3, type: 3}
+  - type: 6
+    prefab: {fileID: 6706559353832587363, guid: ac4f668836eaf7f47900a2d4191b1e82, type: 3}
 --- !u!114 &5217194277721744187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10840,7 +10842,7 @@ MonoBehaviour:
   gravity: 20
   rotationSpeed: 10
   dashSpeed: 8
-  dashDuration: 1
+  dashDuration: 0.7
   dashCooldown: 1
   allowAirDash: 0
   playerCamera: {fileID: 4086801276106208751}

@@ -24,13 +24,9 @@ public class BallProjectile : ProjectTile
             Destroy(gameObject);
 
     }
-    public override void Setup(float damage, float range, float speed, float _ = 0f, float __ = 0f)
+    protected override void OnInit(float lifetime, float spread)
     {
-        _damage = damage;
-        _range = range;
-        _speed = speed;
         _startPos = transform.position;
-
         _flyDirection = transform.forward;
         _rotationAxis = Random.onUnitSphere;
         _rotationSpeed = Random.Range(100f, 500f);

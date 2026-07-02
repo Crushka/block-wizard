@@ -221,7 +221,7 @@ public class BeeBehaviour : EnemyBehaviour
         {
             Vector3 dir = owner.target.position - transform.position;
             dir.y = 0;
-            velocity = dir.normalized * bee.moveSpeed;
+            velocity = dir.normalized * bee.speed;
         }
 
         // ¬ертикальное движение через velocity, а не через transform.position

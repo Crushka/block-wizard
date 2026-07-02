@@ -12,9 +12,7 @@ public class GameStateManager : MonoBehaviour
     public float PlayerMaxHP = 100f;
     public string LastSpawnPointId { get; set; } = "default";
 
-    public List<ElementType> SavedInventory = new(); // Инвентарь нод
-
-    // НОВОЕ: Сохраненный список обычных предметов инвентаря
+    public List<ElementType> SavedInventory = new();
     public List<SavedItemSlot> SavedItemInventory = new();
 
     public List<SpellSlot> SpellSlots = new();
@@ -73,13 +71,11 @@ public class GameStateManager : MonoBehaviour
             data.PlayerProgress.SavedInventory.Add((int)item);
         }
 
-        // НОВОЕ: Считываем состояние обычного инвентаря перед записью на диск
         var itemMgr = InventorySlotManager.Instance;
         if (itemMgr != null)
         {
             SavedItemInventory.Clear();
 
-            // Собираем предметы из основного инвентаря
             var normalSlots = itemMgr.GetInventorySlots();
             for (int i = 0; i < normalSlots.Count; i++)
             {
@@ -96,7 +92,6 @@ public class GameStateManager : MonoBehaviour
                 }
             }
 
-            // Собираем предметы из быстрых слотов
             var quickSlots = itemMgr.GetQuickSlots();
             for (int i = 0; i < quickSlots.Count; i++)
             {
@@ -115,10 +110,8 @@ public class GameStateManager : MonoBehaviour
         }
         Debug.Log("[GSM] начало");
 
-        // Записываем список в общую структуру сохранения
         data.PlayerProgress.SavedItemSlots = new List<SavedItemSlot>(this.SavedItemInventory);
 
-        // Если SpellSlots полностью сериализуемые (без Unity-объектов), сохраняем и их:
         data.PlayerProgress.SpellSlots = new List<SpellSlot>(this.SpellSlots);
 
         _saveSystem.Save(data);
@@ -218,7 +211,6 @@ public class GameStateManager : MonoBehaviour
         }
     }
 
-    // НОВОЕ: Восстановление обычного инвентаря в сцене
     public void RestoreItemInventory(InventorySlotManager itemMgr)
     {
         if (itemMgr == null) return;

@@ -15,10 +15,6 @@ public class ScreeperBehaviour : EnemyBehaviour
     private Vector3 lastPlayerPos;
     private Vector3 playerVelocity;
 
-    // Буфер для сглаживания скорости игрока по нескольким кадрам.
-    // Один кадр даёт слишком "дёрганое" значение — малейшее ускорение
-    // или physics step искажает предсказание. Среднее по 6 кадрам (~0.1 сек)
-    // даёт стабильную скорость без потери реактивности.
     private const int VELOCITY_BUFFER_SIZE = 6;
     private Vector3[] velocityBuffer = new Vector3[VELOCITY_BUFFER_SIZE];
     private int velocityBufferIndex = 0;
@@ -27,13 +23,12 @@ public class ScreeperBehaviour : EnemyBehaviour
     {
         base.Init(enemy);
         screeper = (ScreeperEnemy)enemy;
-        currentState = State.Stalking;
+        currentState = State.Idle;
         if (owner.target != null) lastPlayerPos = owner.target.position;
 
         if (screeper.agent != null)
         {
             screeper.agent.stoppingDistance = 0.5f;
-            // Увеличили ускорение до 500, чтобы он стартовал мгновенно
             screeper.agent.acceleration = 500f;
             screeper.agent.angularSpeed = 1000f;
             screeper.agent.updateRotation = false;
@@ -42,25 +37,43 @@ public class ScreeperBehaviour : EnemyBehaviour
 
     public override void execute()
     {
-
         if (owner.target == null)
         {
             owner.FindTarget();
             if (owner.target == null) return;
         }
 
-        if (owner.target == null || screeper.HP <= 0) return;
+        if (screeper.HP <= 0) return;
 
         CalculatePlayerVelocity();
 
         switch (currentState)
         {
+            case State.Idle:
+                HandleIdle();
+                break;
             case State.Stalking:
                 HandleStalking();
                 break;
             case State.Escaping:
                 HandleEscaping();
                 break;
+        }
+    }
+
+    private void HandleIdle()
+    {
+        if (screeper.agent.isActiveAndEnabled && !screeper.agent.isStopped)
+        {
+            screeper.agent.isStopped = true;
+            screeper.agent.ResetPath();
+            screeper.agent.velocity = Vector3.zero;
+        }
+
+        float dist = Vector3.Distance(transform.position, owner.target.position);
+        if (dist <= screeper.detectionRange)
+        {
+            currentState = State.Stalking;
         }
     }
 
@@ -76,6 +89,18 @@ public class ScreeperBehaviour : EnemyBehaviour
         {
             PickEscapePointStrict();
             currentState = State.Escaping;
+            return;
+        }
+
+        if (dist > screeper.detectionRange * 1.3f)
+        {
+            if (screeper.agent.isActiveAndEnabled)
+            {
+                screeper.agent.isStopped = true;
+                screeper.agent.ResetPath();
+                screeper.agent.velocity = Vector3.zero;
+            }
+            currentState = State.Idle;
             return;
         }
 
@@ -110,16 +135,15 @@ public class ScreeperBehaviour : EnemyBehaviour
         if (!screeper.agent.isActiveAndEnabled) return;
 
         screeper.agent.isStopped = false;
-        screeper.agent.speed = screeper.speed * 2.0f; // Сделали побег еще чуть быстрее
+        screeper.agent.speed = screeper.speed * 2.0f;
         screeper.agent.SetDestination(escapeTarget);
 
-        // --- НОВОЕ: Быстрый разворот в сторону бега ---
         Vector3 moveDir = (escapeTarget - transform.position).normalized;
         moveDir.y = 0;
         if (moveDir.sqrMagnitude > 0.001f)
         {
-            // Скорость поворота 40f позволяет развернуться почти мгновенно
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDir), Time.deltaTime * 40f);
+            transform.rotation = Quaternion.Slerp(transform.rotation,
+                Quaternion.LookRotation(moveDir), Time.deltaTime * 40f);
         }
 
         if (!screeper.agent.pathPending && screeper.agent.remainingDistance < 1.2f)
@@ -150,7 +174,6 @@ public class ScreeperBehaviour : EnemyBehaviour
         escapeStartTime = Time.time;
     }
 
-    // Все остальные методы (AttackSequence, RotateTowardsPredictedPos и т.д.) без изменений
     private IEnumerator AttackSequence()
     {
         currentState = State.Action;
@@ -159,13 +182,29 @@ public class ScreeperBehaviour : EnemyBehaviour
         screeper.agent.ResetPath();
 
         yield return new WaitForSeconds(0.15f);
-        FireProjectileWithLead();
 
+        // Проверка перед выстрелом
+        if (owner.target == null)
+        {
+            ResetToStalking();
+            yield break;
+        }
+
+        FireProjectileWithLead();
         screeper.PlayLaughSound();
+
         float laughTimer = 0;
         Vector3 startPos = transform.position;
         while (laughTimer < screeper.laughDuration)
         {
+            // Проверка на каждом кадре — цель могла быть уничтожена во время смеха
+            if (owner.target == null)
+            {
+                transform.position = startPos;
+                ResetToStalking();
+                yield break;
+            }
+
             transform.position = startPos + Random.insideUnitSphere * 0.08f;
             RotateTowardsPredictedPos();
             laughTimer += Time.deltaTime;
@@ -173,22 +212,26 @@ public class ScreeperBehaviour : EnemyBehaviour
         }
         transform.position = startPos;
 
+        // Проверка перед выбором точки побега
+        if (owner.target == null)
+        {
+            ResetToStalking();
+            yield break;
+        }
+
         PickEscapePointStrict();
         currentState = State.Escaping;
     }
 
     private void CalculatePlayerVelocity()
     {
-        if (Time.deltaTime <= 0) return;
+        if (owner.target == null || Time.deltaTime <= 0) return;
 
         Vector3 rawVelocity = (owner.target.position - lastPlayerPos) / Time.deltaTime;
         lastPlayerPos = owner.target.position;
 
-        // Фильтруем телепорты/резкие выбросы
         if (rawVelocity.magnitude > 50f) rawVelocity = Vector3.zero;
 
-        // Пишем в кольцевой буфер и считаем среднее —
-        // это убирает кадровый шум и даёт стабильное направление скорости
         velocityBuffer[velocityBufferIndex] = rawVelocity;
         velocityBufferIndex = (velocityBufferIndex + 1) % VELOCITY_BUFFER_SIZE;
 
@@ -199,6 +242,8 @@ public class ScreeperBehaviour : EnemyBehaviour
 
     private void RotateTowardsPredictedPos()
     {
+        if (owner.target == null) return;
+
         Vector3 targetAimPos = owner.target.position;
 
         Vector3 predictedPos = targetAimPos;
@@ -220,7 +265,7 @@ public class ScreeperBehaviour : EnemyBehaviour
 
     private bool HasLineOfSight()
     {
-        if (screeper.firePoint == null) return false;
+        if (screeper.firePoint == null || owner.target == null) return false;
         RaycastHit hit;
         Vector3 origin = screeper.firePoint.position;
         Vector3 targetPos = owner.target.position;
@@ -236,11 +281,10 @@ public class ScreeperBehaviour : EnemyBehaviour
 
     private void FireProjectileWithLead()
     {
-        if (screeper.projectilePrefab == null || screeper.firePoint == null) return;
+        if (screeper.projectilePrefab == null || screeper.firePoint == null || owner.target == null) return;
 
         Vector3 targetAimPos = owner.target.position;
 
-        // Итеративное уточнение точки упреждения (твой текущий код)
         Vector3 predictedPos = targetAimPos;
         for (int i = 0; i < 3; i++)
         {
@@ -256,7 +300,6 @@ public class ScreeperBehaviour : EnemyBehaviour
 
         if (p != null)
         {
-            // ПЕРЕДАЕМ owner.target для Slight Homing
             p.SetupDirect(fireDir, screeper.bulletSpeed, screeper.bulletDamage, owner.target);
         }
     }

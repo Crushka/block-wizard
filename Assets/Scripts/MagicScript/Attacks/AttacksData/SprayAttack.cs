@@ -42,10 +42,11 @@ public class SprayAttack : IAttack
         float dmg = _nodeData != null ? _nodeData.Damage : 10f;
         float range = _nodeData?.Range ?? 12f;
         float speed = _nodeData?.Speed ?? 10f;
+        StatusEffectType effect = _nodeData.GetBaseComposition().GetFirstEffect();
+        Debug.Log($"[SprayAttack] effect type: {effect}");
 
-        Debug.Log("[SprayAttack]" + speed);
 
-        spray.Setup(dmg, range, speed, ProjectileLifetime, SpreadAngle);
+        spray.Setup(dmg, range, speed, effect, ProjectileLifetime, SpreadAngle);
         spray.SetupVisual(_nodeData);
     }
 }

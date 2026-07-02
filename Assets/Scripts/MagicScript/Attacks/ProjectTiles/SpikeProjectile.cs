@@ -18,6 +18,7 @@ public class SpikeAttackRunner : MonoBehaviour
         float range = nodeData?.Range ?? 12f;
         float damage = nodeData?.Damage ?? 15f;
         float speed = nodeData?.Speed ?? 6f;
+        StatusEffectType effect = nodeData?.GetBaseComposition().GetFirstEffect() ?? StatusEffectType.Slow;
 
         Vector3 dir = spawnPoint.forward;
         dir.y = 0f;
@@ -37,7 +38,7 @@ public class SpikeAttackRunner : MonoBehaviour
             {
                 GameObject spike = Instantiate(prefab, groundPos.Value, Quaternion.identity);
                 var proj = spike.GetComponent<SpikeProjectile>();
-                proj?.Setup(damage, range, speed);
+                proj?.Setup(damage, range, speed, effect);
                 proj?.SetupVisual(nodeData);
             }
 
@@ -72,13 +73,6 @@ public class SpikeProjectile : ProjectTile
 
     private Vector3 _belowGround;
     private Vector3 _peakPos;
-
-    public override void Setup(float damage, float range, float speed, float _ = 0f, float __ = 0f)
-    {
-        _damage = damage;
-        _speed  = speed;
-        _range = range;
-    }
 
     public override void SetupVisual(NodeBase node)
     {

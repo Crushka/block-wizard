@@ -19,12 +19,11 @@ namespace SaveSystem.Data
     public sealed class PlayerProgressData
     {
         public List<string> DeadBossIds = new List<string>();
-        public List<int> SavedInventory = new List<int>(); // Инвентарь заклинаний/нод
-        public List<SavedItemSlot> SavedItemSlots = new List<SavedItemSlot>(); // НОВОЕ: Обычный инвентарь предметов
+        public List<int> SavedInventory = new List<int>(); 
+        public List<SavedItemSlot> SavedItemSlots = new List<SavedItemSlot>();
         public List<SpellSlot> SpellSlots = new List<SpellSlot>();
     }
 
-    // НОВОЕ: Структура для сохранения одной заполненной ячейки инвентаря
     [Serializable]
     public sealed class SavedItemSlot
     {

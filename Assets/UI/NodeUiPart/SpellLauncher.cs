@@ -127,7 +127,7 @@ public class SpellCasterButton : MonoBehaviour
         manager.Graph.Nodes.Clear();
         ClearUIContainers();
 
-        var startModel = new NodeModel(ElementType.None) { weight = 0 };
+        var startModel = new NodeModel(ElementType.None) { num = 0 };
         manager.Graph.Nodes.Add(startModel);
 
         var startObj = Instantiate(nodePrefab, manager.graphContainer);
@@ -296,10 +296,10 @@ public class SpellCasterButton : MonoBehaviour
 
         foreach (var uiNode in uiGraph.Nodes)
         {
-            NodeBase elementData = uiGraph.GetElementData(uiNode.type);
+            NodeBase elementData = GraphIntegrator.GetElementData(uiNode.type, uiNode.num);
             if (elementData == null && uiNode.type != ElementType.None) continue;
 
-            int num = (uiNode.weight == int.MaxValue) ? 0 : uiNode.weight;
+            int num = (uiNode.num == int.MaxValue) ? 0 : uiNode.num;
             float baseWeight = (elementData != null && elementData.Weight > 0) ? elementData.Weight : 1.0f;
 
             GraphNode newNode = graph.CreateNode(elementData, num, baseWeight);

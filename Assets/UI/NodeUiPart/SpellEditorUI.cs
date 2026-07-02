@@ -112,10 +112,10 @@ public class SpellEditorUI : MonoBehaviour
 
         foreach (var uiNode in uiGraph.Nodes)
         {
-            NodeBase data = uiGraph.GetElementData(uiNode.type);
+            NodeBase data = GraphIntegrator.GetElementData(uiNode.type, uiNode.num);
             if (data == null) continue;
 
-            int num = uiNode.weight == int.MaxValue ? 0 : uiNode.weight;
+            int num = uiNode.num == int.MaxValue ? 0 : uiNode.num;
             float baseW = data.Weight > 0 ? data.Weight : 1f;
             GraphNode gn = graph.CreateNode(data, num, baseW);
             map[uiNode.id] = gn;

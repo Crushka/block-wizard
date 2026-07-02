@@ -111,7 +111,7 @@ public class BeeEnemy : Enemy
     [SerializeField] public float detectionRange = 15f;
 
     [Header("Настройки движения")]
-    [SerializeField] public float moveSpeed = 4f;
+    //[SerializeField] public float moveSpeed = 4f;
     [SerializeField] public float hoverHeight = 2.5f;
     [SerializeField] public float minHorizontalDistance = 2.5f;
     [SerializeField] public float heightAdjustSpeed = 3f;

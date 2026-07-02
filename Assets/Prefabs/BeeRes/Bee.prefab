@@ -5076,6 +5076,7 @@ GameObject:
   - component: {fileID: 5704539875307334410}
   - component: {fileID: 3918986856066409561}
   - component: {fileID: 4432985213824892913}
+  - component: {fileID: 8326927889251301687}
   m_Layer: 10
   m_Name: Bee
   m_TagString: Untagged
@@ -5179,6 +5180,24 @@ MonoBehaviour:
   dashSpeed: 18
   dashDamage: 20
   dashDuration: 0.8
+--- !u!114 &8326927889251301687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3602737079790508653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e4fbd1f4fe4875408ea02c194d4d0fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatusEffectManager
+  effectsList:
+  - type: 2
+    effectSO: {fileID: 11400000, guid: a09030c1e6ecd704584f19bcc7867d1e, type: 2}
+  - type: 0
+    effectSO: {fileID: 11400000, guid: e74af99dfb6f1a54faf2e0993d8ebefc, type: 2}
+  interval: 0.1
 --- !u!1 &4762031770990386815
 GameObject:
   m_ObjectHideFlags: 0

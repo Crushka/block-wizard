@@ -32,8 +32,11 @@ public class StatusEffectManager : MonoBehaviour
 
     public void TriggerBuildup(StatusEffectType type, float amount)
     {
+        Debug.Log($"[SEM] TriggerBuildup called: type={type}, amount={amount}");
+        Debug.Log($"[SEM] Stack: {System.Environment.StackTrace}");
         if (!_effectsDict.ContainsKey(type)) return;
 
+        
         if (!_active.ContainsKey(type))
         {
             var instance = GetOrCreateInstance(type);

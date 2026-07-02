@@ -194,7 +194,7 @@ public class SpellSlotManager : MonoBehaviour
             var a = new InputAction($"Slot{i + 1}", InputActionType.Button);
             a.AddBinding($"<Keyboard>/{i + 1}");
             a.performed += _ => SwitchToSlot(idx);
-            a.Enable(); // включаем сразу, не ждём OnEnable
+            a.Enable();
             _slotActions[i] = a;
         }
         Debug.Log($"[SpellSlotManager] Input actions созданы и включены ({_slots.Count} шт.)");
@@ -204,7 +204,7 @@ public class SpellSlotManager : MonoBehaviour
     {
         foreach (var a in _slotActions)
         {
-            a.performed -= _ => { }; // убираем анонимные подписки не получится, но хотя бы Disable
+            a.performed -= _ => { };
             a.Disable();
             a.Dispose();
         }

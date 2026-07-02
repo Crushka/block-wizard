@@ -120,7 +120,7 @@
 //    {
 //        if (Data == null) return;
 //        if (typeText != null) typeText.text = Data.type.ToString();
-//        if (weightText != null) weightText.text = (Data.weight == int.MaxValue) ? "∞" : Data.weight.ToString();
+//        if (weightText != null) weightText.text = (Data.num == int.MaxValue) ? "∞" : Data.num.ToString();
 //        if (background != null) background.color = GetColor(Data.type);
 //    }
 
@@ -261,7 +261,7 @@ public class NodeView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         if (Data == null) return;
         if (typeText != null) typeText.text = Data.type.ToString();
-        if (weightText != null) weightText.text = (Data.weight == int.MaxValue) ? "∞" : Data.weight.ToString();
+        if (weightText != null) weightText.text = (Data.num == int.MaxValue) ? "∞" : Data.num.ToString();
         if (background != null) background.color = GetColor(Data.type);
     }
 

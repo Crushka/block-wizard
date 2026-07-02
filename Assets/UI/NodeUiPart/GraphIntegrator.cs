@@ -11,14 +11,14 @@ public class GraphIntegrator : MonoBehaviour
 
         foreach (var uiNode in uiNodes)
         {
-            NodeBase elementData = CreateElementFromType(uiNode.type);
+            NodeBase elementData = GetElementData(uiNode.type, uiNode.num);
             
             float baseWeight = elementData.Weight > 0 ? elementData.Weight : 1.0f;
-            GraphNode backendNode = backendGraph.CreateNode(elementData, uiNode.weight, baseWeight);
+            GraphNode backendNode = backendGraph.CreateNode(elementData, uiNode.num, baseWeight);
             
             map[uiNode.id] = backendNode;
 
-            if (uiNode.type == ElementType.Magic)
+            if (uiNode.type == ElementType.None)
                 backendGraph.StartNode = backendNode;
         }
 
@@ -38,18 +38,26 @@ public class GraphIntegrator : MonoBehaviour
         return backendGraph;
     }
 
-    private NodeBase CreateElementFromType(ElementType type)
+    public static NodeBase GetElementData(ElementType nodeType, int num)
     {
-        switch (type)
+        return nodeType switch
         {
-            case ElementType.Fire: return new FireNode();
-            case ElementType.Water: return new WaterNode();
-            case ElementType.Earth: return new EartNode();
-            case ElementType.Air: return new AirNode();
-            case ElementType.Magic: return new NoneElement();
-            case ElementType.Lightning: return new LightningNode();
-            case ElementType.Cold: return new ColdNode();
-            default: return new NoneElement();
-        }
+            ElementType.None => new NoneElement(),
+            ElementType.Fire => new FireNode(num),
+            ElementType.Water => new WaterNode(num),
+            ElementType.Earth => new EartNode(num),
+            ElementType.Air => new AirNode(num),
+            ElementType.Lightning => new LightningNode(num),
+            ElementType.Cold => new ColdNode(num),
+            ElementType.Steam => new SteamNode(num),
+            ElementType.Ice => new ColdNode(num),
+            ElementType.Lava => new LavaNode(num),
+            ElementType.Sound => new SoundNode(num),
+            ElementType.Fog => new FogNode(num),
+            ElementType.Plasma => new PlasmaNode(num),
+            ElementType.Acid => new AcidNode(num),
+
+            _ => new NoneElement()
+        };
     }
 }

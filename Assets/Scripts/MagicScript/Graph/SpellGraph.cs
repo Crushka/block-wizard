@@ -32,7 +32,6 @@ public class SpellGraph
         foreach (GraphNode node in Nodes)
         {
             ElementType type = node.Data.NodeType;
-            UnityEngine.Debug.Log(type);
             if (type == ElementType.None || type == ElementType.Unknown) continue;
 
             if (Elements.ContainsKey(type))
@@ -46,10 +45,9 @@ public class SpellGraph
     {
         for (int i = 0; i < Nodes.Count; i++)
         {
-            MixAlgorithms.IncreaseValue(Nodes[i].Data, null, Nodes[i].Weight);
+            MixAlgorithms.IncreaseValue(Nodes[i].Data, Nodes[i].Weight);
         }
     }
-
 
     public void CalculateWeight()
     {
@@ -57,7 +55,7 @@ public class SpellGraph
 
         int n = Nodes.Count;
         int r = Elements.Values.Max();
-        Weight = (float)(1 / (Math.Pow(n, Math.Sqrt(r * 0.5) / (Math.Max(1, n - r))))) + 0.2f;
+        Weight = (float)(1 / (Math.Pow(n, Math.Sqrt(r * 0.5) / (Math.Max(1, n - r))))) + 0.43f;
     }
 
     public IEnumerable<GraphNode> AllNodes()
@@ -77,5 +75,28 @@ public class SpellGraph
                 if (visited.Add(neighbor))
                     queue.Enqueue(neighbor);
         }
+    }
+
+    public SpellGraph Clone()
+    {
+        var copy = new SpellGraph { Weight = this.Weight };
+
+        var map = new Dictionary<GraphNode, GraphNode>();
+        foreach (var node in Nodes)
+        {
+            var cloned = node.Clone();
+            map[node] = cloned;
+            copy.Nodes.Add(cloned);
+        }
+
+        foreach (var node in Nodes)
+            foreach (var nb in node.GetNeighbours())
+                if (map.ContainsKey(nb))
+                    map[node].AddNeighbour(map[nb]);
+
+        if (StartNode != null && map.ContainsKey(StartNode))
+            copy.StartNode = map[StartNode];
+
+        return copy;
     }
 }

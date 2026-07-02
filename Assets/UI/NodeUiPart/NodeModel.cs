@@ -6,7 +6,7 @@ public class NodeModel
 {
     public string id;
     public ElementType type; 
-    public int weight = int.MaxValue;
+    public int num = int.MaxValue;
     public List<string> connectedIds = new List<string>();
 
     public Vector2 anchoredPosition;
@@ -17,7 +17,7 @@ public class NodeModel
         type = t;
 
         if (type == ElementType.None) 
-            weight = 0;
+            num = 0;
     }
 
     public void AddLink(string targetId) 
@@ -35,7 +35,7 @@ public class GraphModel
     public void RecalculateWeights() 
     {
         foreach (var node in Nodes)
-            node.weight = (node.type == ElementType.None) ? 0 : int.MaxValue;
+            node.num = (node.type == ElementType.None) ? 0 : int.MaxValue;
 
         Queue<NodeModel> queue = new Queue<NodeModel>();
         var startNode = Nodes.Find(n => n.type == ElementType.None);
@@ -49,31 +49,14 @@ public class GraphModel
             foreach (var neighborId in current.connectedIds) 
             {
                 var neighbor = Nodes.Find(n => n.id == neighborId);
-                if (neighbor != null && neighbor.weight == int.MaxValue) 
+                if (neighbor != null && neighbor.num == int.MaxValue) 
                 {
-                    neighbor.weight = current.weight + 1;
+                    neighbor.num = current.num + 1;
                     queue.Enqueue(neighbor);
                 }
             }
         }
     }
 
-    public NodeBase GetElementData(ElementType nodeType)
-    {
-        return nodeType switch
-        {
-            ElementType.None      => new NoneElement(),
-            ElementType.Fire      => new FireNode(),
-            ElementType.Water     => new WaterNode(),
-            ElementType.Earth     => new EartNode(),
-            ElementType.Air       => new AirNode(),
-            ElementType.Lightning => new LightningNode(),
-            ElementType.Mud       => new MudNode(),
-            ElementType.Steam     => new SteamNode(),
-            ElementType.Plasma    => new PlasmaNode(),
-            ElementType.Cold => new ColdNode(),
-
-            _ => new NoneElement() 
-        };
-    }
+    
 }

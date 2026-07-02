@@ -11,8 +11,8 @@ public class SpellCaster : MonoBehaviour
 
     public void PrepareSpell(SpellGraph graph)
     {
-        NodeBase result = SpellGraphSolver.SlowGraph(graph);
-        Debug.Log($"dmg : {result.Damage} | speed : {result.Speed} | range :  {result.Range}");
+        NodeBase result = SpellSolverDebug.Solve(graph).result;
+        Debug.Log($"[SpellCaster] dmg : {result.Damage} | speed : {result.Speed} | range :  {result.Range}");
         CurrentSpellNode = result;
         _currentAttack = attackFactory.GetAttack(result);
     }

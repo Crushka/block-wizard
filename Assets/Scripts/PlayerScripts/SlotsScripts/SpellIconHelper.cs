@@ -34,10 +34,7 @@ public static class SpellIconHelper
         ElementType.Lightning => "⚡",
         ElementType.Steam => "♨",
         ElementType.Ice => "Ice",
-        ElementType.Mud => "Mud",
         ElementType.Plasma => "Plsm",
-        ElementType.Poison => "☠",
-        ElementType.Magic => "✨",
         ElementType.Unknown => "Mix",   // CompositeNode – blended spell
         ElementType.None => "—",
         _ => "?"

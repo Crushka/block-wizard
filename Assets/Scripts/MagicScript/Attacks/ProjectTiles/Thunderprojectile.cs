@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
-public class ThunderProjectile : ContinuousBeam // Наследуемся от нашего нового класса
+public class ThunderProjectile : ContinuousBeam 
 {
     [Header("главная молния")]
     public int SegmentCount = 12;
@@ -27,7 +27,7 @@ public class ThunderProjectile : ContinuousBeam // Наследуемся от �
 
     protected override void Awake()
     {
-        base.Awake(); // ОБЯЗАТЕЛЬНО вызываем Awake родителя, чтобы определились маски слоев!
+        base.Awake();
 
         _mainLine = GetComponent<LineRenderer>();
         SetupLineRenderer(_mainLine, StartWidth, EndWidth, BoltColor);
@@ -44,7 +44,6 @@ public class ThunderProjectile : ContinuousBeam // Наследуемся от �
         }
     }
 
-    // Этот метод вызывается автоматически из родительского класса
     protected override void OnUpdateVisual(Vector3 start, Vector3 end)
     {
         _jitterTimer -= Time.deltaTime;

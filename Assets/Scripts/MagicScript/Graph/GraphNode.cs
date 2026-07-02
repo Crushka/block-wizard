@@ -20,4 +20,14 @@ public class GraphNode
     {
         _neighbours.Remove(node);
     }
+    public GraphNode Clone()
+    {
+        return new GraphNode
+        {
+            Data = Data.Clone(),
+            num = num,
+            Weight = Weight,
+        };
+    }
+
 }

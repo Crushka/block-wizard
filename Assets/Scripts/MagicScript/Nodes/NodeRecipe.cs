@@ -1,8 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+
+
 
 [System.Serializable]
-public class NodeComposition
+public class NodeRecipe
 {
+    private static readonly List<AttackType> AttackPriority = new List<AttackType>
+    {
+        AttackType.Ball,
+        AttackType.Spray,
+        AttackType.Spike,
+        AttackType.Beam,
+        AttackType.Stream,
+        AttackType.Thunder
+    };
+
     public Dictionary<ElementType, float> Elements { get; } = new();
     public Dictionary<AttackType, float> AttackTypes { get; } = new();
     public Dictionary<StatusEffectType, float> Effects { get; } = new();
@@ -16,7 +29,7 @@ public class NodeComposition
         dict.TryGetValue(key, out float current);
         dict[key] = current + weight;
     }
-
+ 
     public void Normalize()
     {
         NormalizeDict(Elements);
@@ -26,7 +39,7 @@ public class NodeComposition
 
     public void Threshold()
     {
-        float minValue = 0.35f;
+        float minValue = 0.32f;
         ThresholdDict(Elements, minValue);
         ThresholdDict(AttackTypes, minValue);
         ThresholdDict(Effects, minValue);
@@ -47,24 +60,40 @@ public class NodeComposition
         foreach (var k in keys)
             if (dict[k] < minValue)
                 dict.Remove(k);
+        Normalize();
     }
 
-    public ElementType GetDominantElement() => GetDominant(Elements, ElementType.None);
-    public AttackType GetDominantAttack() => GetDominant(AttackTypes, AttackType.Ball);
-    public StatusEffectType GetDominantEffect() => GetDominant(Effects, StatusEffectType.Burn);
-
-    public static T GetDominant<T>(Dictionary<T, float> dict, T fallback) where T : struct
+    public static T GetDominant<T>(Dictionary<T, float> dict, T fallback, List<T> priority) where T : struct
     {
         T best = fallback;
         float max = -1;
+        int bestPriority = int.MaxValue;
+
         foreach (var kvp in dict)
-            if (kvp.Value > max) { max = kvp.Value; best = kvp.Key; }
+        {
+            int currentPriority = priority.IndexOf(kvp.Key);
+            if (currentPriority == -1) currentPriority = int.MaxValue;
+
+            if (kvp.Value > max || (kvp.Value == max && currentPriority < bestPriority))
+            {
+                max = kvp.Value;
+                best = kvp.Key;
+                bestPriority = currentPriority;
+            }
+        }
         return best;
     }
 
-    public static NodeComposition Merge(NodeComposition a, NodeComposition b)
+    public AttackType GetDominantAttack() => GetDominant(AttackTypes, AttackType.Ball, AttackPriority);
+    public StatusEffectType GetFirstEffect()
     {
-        var result = new NodeComposition();
+        if (Effects.Count == 0) return StatusEffectType.Slow;
+        return Effects.Keys.First();
+    }
+
+    public static NodeRecipe Merge(NodeRecipe a, NodeRecipe b)
+    {
+        var result = new NodeRecipe();
 
         foreach (var kvp in a.Elements) result.Add(kvp.Key, kvp.Value);
         foreach (var kvp in b.Elements) result.Add(kvp.Key, kvp.Value);
@@ -75,5 +104,14 @@ public class NodeComposition
 
         result.Normalize();
         return result;
+    }
+
+    public NodeRecipe Clone()
+    {
+        var copy = new NodeRecipe();
+        foreach (var kvp in Elements) copy.Elements[kvp.Key] = kvp.Value;
+        foreach (var kvp in AttackTypes) copy.AttackTypes[kvp.Key] = kvp.Value;
+        foreach (var kvp in Effects) copy.Effects[kvp.Key] = kvp.Value;
+        return copy;
     }
 }

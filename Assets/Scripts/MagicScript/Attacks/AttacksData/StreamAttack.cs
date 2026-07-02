@@ -43,8 +43,9 @@ public class StreamAttack : IAttack
         float dmg = _nodeData != null ? _nodeData.Damage : 10f;
         float range = _nodeData?.Range ?? 12f;
         float speed = _nodeData?.Speed ?? 10f;
+        StatusEffectType effect = _nodeData.GetBaseComposition().GetFirstEffect();
 
-        stream.Setup(dmg, range, speed, ProjectileLifetime ,SpreadAngle);
+        stream.Setup(dmg, range, speed, effect, ProjectileLifetime ,SpreadAngle);
         stream.SetupVisual(_nodeData);
 
     }

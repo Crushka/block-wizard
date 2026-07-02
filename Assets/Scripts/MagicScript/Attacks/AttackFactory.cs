@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public enum AttackType
@@ -17,72 +15,61 @@ public enum AttackType
     Beam
 }
 
+[System.Serializable]
+public class AttackConfig
+{
+    public AttackType type;
+    public GameObject prefab;
+}
+
 public class AttackFactory : MonoBehaviour
 {
-    [SerializeField] private GameObject sprayPrefab;
-    [SerializeField] private GameObject ballPrefab;
-    [SerializeField] private GameObject thunderPrefab;
-    [SerializeField] private GameObject streamPrefab;
-    [SerializeField] private GameObject circleWave;
-    [SerializeField] private GameObject spikePrefab;
-    [SerializeField] private GameObject beamPrefab;
+    [SerializeField] private List<AttackConfig> _attackConfigs = new();
+
+    private Dictionary<AttackType, GameObject> _prefabMap;
+    private Dictionary<AttackType, Func<IAttack>> _creators;
     private readonly Dictionary<NodeBase, IAttack> _cache = new();
+
+    private void Awake()
+    {
+        _prefabMap = _attackConfigs.ToDictionary(c => c.type, c => c.prefab);
+
+        _creators = new()
+        {
+            { AttackType.Spray,        () => new SprayAttack() },
+            { AttackType.Ball,         () => new BallAttack() },
+            { AttackType.Thunder,      () => new ThunderAttack() },
+            { AttackType.Stream,       () => new StreamAttack() },
+            { AttackType.CircularWave, () => new CircleWaveAttack() },
+            { AttackType.Spike,        () => new SpikeAttack() },
+            { AttackType.Beam,         () => new BeamAttack() }
+        };
+    }
 
     public IAttack GetAttack(NodeBase node)
     {
         if (_cache.TryGetValue(node, out IAttack cached))
             return cached;
-        
-        IAttack attack = ParseNode(node);
+
+        var type = node.GetDominantAttack();
+
+        if (!_creators.TryGetValue(type, out Func<IAttack> creator))
+        {
+            Debug.LogError($"[AttackFactory] Нет создателя для {type}");
+            creator = () => new BallAttack();
+            type = AttackType.Ball;
+        }
+
+        if (!_prefabMap.TryGetValue(type, out GameObject prefab))
+        {
+            Debug.LogError($"[AttackFactory] Нет префаба для {type}");
+            return null;
+        }
+
+        IAttack attack = creator();
+        attack.Init(node, prefab);
+
         _cache[node] = attack;
         return attack;
-    }
-
-    private IAttack ParseNode(NodeBase node)
-    {
-        Debug.Log($"[AttackFactory] dominant attack: {node.GetDominantAttack()}, node type: {node.GetElementType()}");
-        switch (node.GetDominantAttack())
-        {
-            case AttackType.Spray:
-                var spray = new SprayAttack();
-                spray.Init(node, sprayPrefab);
-                return spray;
-
-            case AttackType.Ball:
-                var ball = new BallAttack();
-                ball.Init(node, ballPrefab);
-                return ball;
-
-            case AttackType.Thunder:
-                var thunder = new ThunderAttack();
-                thunder.Init(node, thunderPrefab);
-                return thunder;
-            
-            case AttackType.Stream:
-                var stream = new StreamAttack();
-                stream.Init(node, streamPrefab);
-                return stream;
-
-            case AttackType.CircularWave:
-                var waveAttack = new CircleWaveAttack();
-                waveAttack.Init(node, circleWave);
-                return waveAttack;
-
-            case AttackType.Spike:
-                var spike = new SpikeAttack();
-                spike.Init(node, spikePrefab);
-                return spike;
-
-            case AttackType.Beam:
-                var beam = new BeamAttack();
-                beam.Init(node, beamPrefab);
-                return beam;
-
-            default:
-                Debug.Log("[AttacFactory] не определённый type атаки");
-                var def = new BallAttack();
-                def.Init(node, ballPrefab);
-                return def;
-        }
     }
 }
